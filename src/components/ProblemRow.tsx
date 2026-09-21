@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { Bookmark, Check, NotebookPen } from 'lucide-react';
+import { Bookmark, Check, Sparkles } from 'lucide-react';
 import type { Problem } from '../types';
 import { usePaceStore } from '../state/store';
 import ResourceLinks from './ResourceLinks';
@@ -9,7 +9,8 @@ interface ProblemRowProps {
   problem: Problem;
   index: number;
   highlighted?: boolean;
-  onOpenNotes: (problemId: string) => void;
+  onOpenNotes?: (problemId: string) => void;
+  onOpenTutor?: (problemId: string) => void;
 }
 
 const DIFFICULTY_CLASS: Record<string, string> = {
@@ -20,14 +21,23 @@ const DIFFICULTY_CLASS: Record<string, string> = {
 };
 
 const ProblemRow = forwardRef<HTMLDivElement, ProblemRowProps>(function ProblemRow(
-  { problem, index, highlighted, onOpenNotes },
+  { problem, index, highlighted, onOpenNotes, onOpenTutor },
   ref
 ) {
   const solved = usePaceStore((s) => !!s.progress[problem.id]);
   const toggleProblem = usePaceStore((s) => s.toggleProblem);
+  const hasChat = usePaceStore((s) => !!s.tutorChats[problem.id]?.length);
   const hasNote = usePaceStore((s) => !!s.notes[problem.id]?.trim());
   const bookmarked = usePaceStore((s) => !!s.bookmarks[problem.id]);
   const toggleBookmark = usePaceStore((s) => s.toggleBookmark);
+
+  const handleTutorClick = () => {
+    if (onOpenTutor) {
+      onOpenTutor(problem.id);
+    } else if (onOpenNotes) {
+      onOpenNotes(problem.id);
+    }
+  };
 
   return (
     <div ref={ref} className={`${styles.row} ${highlighted ? styles.highlighted : ''}`}>
@@ -51,12 +61,12 @@ const ProblemRow = forwardRef<HTMLDivElement, ProblemRowProps>(function ProblemR
       <ResourceLinks links={problem.links} />
 
       <button
-        className={`${styles.iconButton} ${hasNote ? styles.iconActive : ''}`}
-        onClick={() => onOpenNotes(problem.id)}
-        aria-label="Notes"
-        title="Notes"
+        className={`${styles.iconButton} ${styles.tutorBtn} ${hasChat || hasNote ? styles.tutorActive : ''}`}
+        onClick={handleTutorClick}
+        aria-label="Ask AI Tutor"
+        title="Ask AI Tutor"
       >
-        <NotebookPen size={14} />
+        <Sparkles size={13} />
       </button>
 
       <button

@@ -7,12 +7,21 @@ import { usePaceStore } from '../state/store';
 import type { TrackId } from '../types';
 import Lane from '../components/Lane';
 import TopicSection from '../components/TopicSection';
-import NotesDrawer from '../components/NotesDrawer';
+import AITutorDrawer from '../components/AITutorDrawer';
 import ConfirmDialog from '../components/ConfirmDialog';
+import type { Problem } from '../types';
 import styles from './TrackSheet.module.css';
 
 const DIFFICULTIES = ['All', 'Easy', 'Medium', 'Hard'];
 const STATUSES = ['All', 'Solved', 'Unsolved'];
+
+interface TutorSessionState {
+  topicKey: string;
+  topicId: string;
+  topicTitle: string;
+  problems: Problem[];
+  currentProblem?: Problem | null;
+}
 
 export default function TrackSheet() {
   const { trackId } = useParams<{ trackId: string }>();
@@ -22,7 +31,7 @@ export default function TrackSheet() {
   const [query, setQuery] = useState('');
   const [difficulty, setDifficulty] = useState('All');
   const [status, setStatus] = useState('All');
-  const [notesFor, setNotesFor] = useState<string | null>(null);
+  const [tutorSession, setTutorSession] = useState<TutorSessionState | null>(null);
   const [confirmingReset, setConfirmingReset] = useState(false);
 
   const progress = usePaceStore((s) => s.progress);
@@ -38,10 +47,6 @@ export default function TrackSheet() {
   const meta = TRACK_META[id];
   const track = getTrack(id);
   const stat = stats[id];
-
-  const problemsForTitle = notesFor
-    ? track.groups.flatMap((g) => g.problems).find((p) => p.id === notesFor)
-    : null;
 
   const filteredGroups = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -142,13 +147,38 @@ export default function TrackSheet() {
             note={getTopicNote(id, group.id, group.title)}
             defaultOpen={i === 0 && !query && difficulty === 'All' && status === 'All'}
             highlightId={highlightId}
-            onOpenNotes={setNotesFor}
+            onOpenTutor={(session) => {
+              setTutorSession({
+                topicKey: `${safeId}_${session.topicId}`,
+                topicId: session.topicId,
+                topicTitle: session.topicTitle,
+                problems: session.problems,
+                currentProblem: session.currentProblem,
+              });
+            }}
+            onOpenNotes={(problemId) => {
+              const prob = group.problems.find((p) => p.id === problemId);
+              setTutorSession({
+                topicKey: `${safeId}_${group.id}`,
+                topicId: group.id,
+                topicTitle: group.title,
+                problems: group.problems,
+                currentProblem: prob || null,
+              });
+            }}
           />
         ))}
       </div>
 
-      {notesFor && problemsForTitle && (
-        <NotesDrawer problemId={notesFor} problemTitle={problemsForTitle.title} onClose={() => setNotesFor(null)} />
+      {tutorSession && (
+        <AITutorDrawer
+          topicKey={tutorSession.topicKey}
+          topicTitle={tutorSession.topicTitle}
+          trackTitle={meta.label}
+          problems={tutorSession.problems}
+          currentProblem={tutorSession.currentProblem}
+          onClose={() => setTutorSession(null)}
+        />
       )}
 
       {confirmingReset && (

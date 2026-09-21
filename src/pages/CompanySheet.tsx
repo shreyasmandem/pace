@@ -5,16 +5,16 @@ import {
   Check,
   ChevronDown,
   Lightbulb,
-  NotebookPen,
   RotateCcw,
   Search,
+  Sparkles,
   ExternalLink,
 } from 'lucide-react';
 import { COMPANIES, fetchCompanyProblems, getCompanyMeta } from '../data';
 import { usePaceStore } from '../state/store';
 import type { CompanyProblem } from '../types';
 import Lane from '../components/Lane';
-import NotesDrawer from '../components/NotesDrawer';
+import AITutorDrawer from '../components/AITutorDrawer';
 import ConfirmDialog from '../components/ConfirmDialog';
 import ResourceLinks from '../components/ResourceLinks';
 import styles from './CompanySheet.module.css';
@@ -59,8 +59,9 @@ export default function CompanySheet() {
   const [companySearch, setCompanySearch] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Notes drawer & Reset dialog
-  const [notesFor, setNotesFor] = useState<{ id: string; title: string } | null>(null);
+  // Tutor drawer & Reset dialog
+  const [tutorProblem, setTutorProblem] = useState<CompanyProblem | null>(null);
+  const [companyTutorOpen, setCompanyTutorOpen] = useState(false);
   const [confirmingReset, setConfirmingReset] = useState(false);
 
   // Store
@@ -270,6 +271,14 @@ export default function CompanySheet() {
         <div className={styles.heroText}>
           <div className={styles.titleRow}>
             <h1 className={styles.title}>{companyMeta.name}</h1>
+            <button
+              className={styles.companyTutorBtn}
+              onClick={() => setCompanyTutorOpen(true)}
+              title={`Ask AI Coach about ${companyMeta.name} interview questions`}
+            >
+              <Sparkles size={13} />
+              <span>Ask AI Coach</span>
+            </button>
           </div>
           <p className={styles.subtitle}>
             Most frequently asked coding interview problems, verified across candidate assessments.
@@ -464,12 +473,16 @@ export default function CompanySheet() {
                   <ResourceLinks links={p.links} />
 
                   <button
-                    className={`${styles.iconButton} ${hasNote ? styles.iconActive : ''}`}
-                    onClick={() => setNotesFor({ id: p.id, title: p.title })}
-                    aria-label="Notes"
-                    title="Notes"
+                    className={`${styles.iconButton} ${styles.tutorBtn} ${
+                      usePaceStore.getState().tutorChats[`company_${currentCompanyId}_${p.id}`]?.length || hasNote
+                        ? styles.tutorActive
+                        : ''
+                    }`}
+                    onClick={() => setTutorProblem(p)}
+                    aria-label="Ask AI Tutor"
+                    title="Ask AI Tutor"
                   >
-                    <NotebookPen size={14} />
+                    <Sparkles size={13} />
                   </button>
 
                   <button
@@ -512,12 +525,37 @@ export default function CompanySheet() {
         )}
       </div>
 
-      {/* Notes Drawer */}
-      {notesFor && (
-        <NotesDrawer
-          problemId={notesFor.id}
-          problemTitle={notesFor.title}
-          onClose={() => setNotesFor(null)}
+      {/* AI Tutor Drawer */}
+      {(tutorProblem || companyTutorOpen) && (
+        <AITutorDrawer
+          topicKey={
+            tutorProblem
+              ? `company_${currentCompanyId}_${tutorProblem.id}`
+              : `company_${currentCompanyId}`
+          }
+          topicTitle={
+            tutorProblem
+              ? `${companyMeta.name} — ${tutorProblem.title}`
+              : `${companyMeta.name} Interview Preparation`
+          }
+          companyName={companyMeta.name}
+          patternTip={companyMeta.interviewTip || undefined}
+          problems={problems.slice(0, 30).map((pr) => ({ id: pr.id, title: pr.title, difficulty: pr.difficulty }))}
+          currentProblem={
+            tutorProblem
+              ? {
+                  id: tutorProblem.id,
+                  title: tutorProblem.title,
+                  difficulty: tutorProblem.difficulty,
+                  acceptance: tutorProblem.acceptance || undefined,
+                  topics: tutorProblem.topics,
+                }
+              : null
+          }
+          onClose={() => {
+            setTutorProblem(null);
+            setCompanyTutorOpen(false);
+          }}
         />
       )}
 

@@ -73,6 +73,37 @@
   margin-top: 2px;
 }
 
+.tutorBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  margin-top: 1px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tutorBtn:hover {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.tutorBtn:active {
+  transform: scale(0.94);
+}
+
+.tutorSparkle {
+  color: var(--accent);
+}
+
 .videoLink {
   display: flex;
   align-items: center;

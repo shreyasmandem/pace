@@ -8,6 +8,13 @@ function todayISO(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
+}
+
 interface PaceState {
   theme: Theme;
   setTheme: (t: Theme) => void;
@@ -18,6 +25,10 @@ interface PaceState {
 
   notes: Record<string, string>;
   setNote: (id: string, text: string) => void;
+
+  tutorChats: Record<string, ChatMessage[]>;
+  addTutorMessage: (topicKey: string, message: { role: 'user' | 'assistant'; content: string }) => void;
+  clearTutorChat: (topicKey: string) => void;
 
   bookmarks: Record<string, boolean>;
   toggleBookmark: (id: string) => void;
@@ -72,6 +83,30 @@ export const usePaceStore = create<PaceState>()(
           return { notes };
         }),
 
+      tutorChats: {},
+      addTutorMessage: (topicKey, message) =>
+        set((state) => {
+          const current = state.tutorChats[topicKey] || [];
+          const newMessage: ChatMessage = {
+            id: 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+            role: message.role,
+            content: message.content,
+            timestamp: Date.now(),
+          };
+          return {
+            tutorChats: {
+              ...state.tutorChats,
+              [topicKey]: [...current, newMessage],
+            },
+          };
+        }),
+      clearTutorChat: (topicKey) =>
+        set((state) => {
+          const tutorChats = { ...state.tutorChats };
+          delete tutorChats[topicKey];
+          return { tutorChats };
+        }),
+
       bookmarks: {},
       toggleBookmark: (id) =>
         set((state) => {
@@ -101,9 +136,9 @@ export const usePaceStore = create<PaceState>()(
       resetAll: () => set({ progress: {}, notes: {}, bookmarks: {}, solveLog: {} }),
 
       exportSnapshot: () => {
-        const { progress, notes, bookmarks, solveLog } = get();
+        const { progress, notes, bookmarks, solveLog, tutorChats } = get();
         return JSON.stringify(
-          { exportedAt: new Date().toISOString(), progress, notes, bookmarks, solveLog },
+          { exportedAt: new Date().toISOString(), progress, notes, bookmarks, solveLog, tutorChats },
           null,
           2
         );
@@ -117,6 +152,7 @@ export const usePaceStore = create<PaceState>()(
             notes: parsed.notes ?? {},
             bookmarks: parsed.bookmarks ?? {},
             solveLog: parsed.solveLog ?? {},
+            tutorChats: parsed.tutorChats ?? {},
           });
           return true;
         } catch {
@@ -130,6 +166,7 @@ export const usePaceStore = create<PaceState>()(
         theme: state.theme,
         progress: state.progress,
         notes: state.notes,
+        tutorChats: state.tutorChats,
         bookmarks: state.bookmarks,
         solveLog: state.solveLog,
       }),

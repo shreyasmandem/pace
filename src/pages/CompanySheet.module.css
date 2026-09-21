@@ -205,9 +205,35 @@
 
 .titleRow {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-3);
   margin-bottom: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.companyTutorBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.companyTutorBtn:hover {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.companyTutorBtn:active {
+  transform: scale(0.95);
 }
 
 .title {
@@ -689,6 +715,16 @@
 
 .iconActive {
   color: var(--accent);
+}
+
+.tutorBtn {
+  color: var(--text-tertiary);
+}
+
+.tutorActive {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-radius: var(--radius-sm);
 }
 
 .pagination {

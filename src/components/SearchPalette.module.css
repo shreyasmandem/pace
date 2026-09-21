@@ -125,3 +125,15 @@
   flex: none;
   color: var(--text-tertiary);
 }
+
+@media (max-width: 600px) {
+  .backdrop {
+    padding: calc(env(safe-area-inset-top, 0px) + 16px) var(--space-3) calc(env(safe-area-inset-bottom, 0px) + 80px);
+    align-items: flex-start;
+  }
+
+  .panel {
+    max-height: 80vh;
+  }
+}
+

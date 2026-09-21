@@ -143,6 +143,16 @@
   color: var(--accent);
 }
 
+.tutorBtn {
+  color: var(--text-tertiary);
+}
+
+.tutorActive {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-radius: var(--radius-sm);
+}
+
 @media (max-width: 640px) {
   .index {
     display: none;

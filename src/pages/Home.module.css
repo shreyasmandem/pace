@@ -271,3 +271,39 @@
 .companyCta:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 760px) {
+  .page {
+    padding: var(--space-3) var(--space-4) var(--space-6);
+  }
+
+  .intro {
+    margin-bottom: var(--space-4);
+  }
+
+  .heading {
+    font-size: 1.6rem;
+    max-width: none;
+  }
+
+  .sub {
+    font-size: 0.9rem;
+  }
+
+  .momentum {
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--space-4);
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+  }
+
+  .figureValue {
+    font-size: 2rem;
+  }
+
+  .companyGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
