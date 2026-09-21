@@ -43,6 +43,13 @@ function mergeSolveLog(a: Record<string, number>, b: Record<string, number>) {
   return merged;
 }
 
+function mapsEqual(a: Record<string, unknown>, b: Record<string, unknown>): boolean {
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  if (aKeys.length !== bKeys.length) return false;
+  return aKeys.every((k) => a[k] === b[k]);
+}
+
 function mergeSyncable(local: SyncableState, remote: SyncableState): SyncableState {
   return {
     progress: mergeBooleanMaps(local.progress, remote.progress),
@@ -132,7 +139,7 @@ async function startSyncing(user: User) {
 
       // If merging pulled in anything the remote doc didn't have yet, push the merge back.
       const changed = SYNC_FIELDS.some(
-        (k) => JSON.stringify(merged[k]) !== JSON.stringify(remote[k] || {})
+        (k) => !mapsEqual(merged[k], remote[k] || {})
       );
       if (changed) schedulePush(user.uid);
     },
