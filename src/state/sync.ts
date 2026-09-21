@@ -14,49 +14,57 @@ type SyncableState = {
 
 const SYNC_FIELDS: (keyof SyncableState)[] = ['progress', 'notes', 'bookmarks', 'solveLog'];
 
+function cleanProgressMap(map: Record<string, boolean> | undefined): Record<string, boolean> {
+  const clean: Record<string, boolean> = {};
+  if (!map) return clean;
+  for (const [k, v] of Object.entries(map)) {
+    if (v === true) clean[k] = true;
+  }
+  return clean;
+}
+
+function cleanNotesMap(map: Record<string, string> | undefined): Record<string, string> {
+  const clean: Record<string, string> = {};
+  if (!map) return clean;
+  for (const [k, v] of Object.entries(map)) {
+    if (typeof v === 'string' && v.trim()) clean[k] = v;
+  }
+  return clean;
+}
+
+function cleanBookmarksMap(map: Record<string, boolean> | undefined): Record<string, boolean> {
+  const clean: Record<string, boolean> = {};
+  if (!map) return clean;
+  for (const [k, v] of Object.entries(map)) {
+    if (v === true) clean[k] = true;
+  }
+  return clean;
+}
+
 function pickSyncable(state: ReturnType<typeof usePaceStore.getState>): SyncableState {
   return {
-    progress: state.progress,
-    notes: state.notes,
-    bookmarks: state.bookmarks,
-    solveLog: state.solveLog,
+    progress: cleanProgressMap(state.progress),
+    notes: cleanNotesMap(state.notes),
+    bookmarks: cleanBookmarksMap(state.bookmarks),
+    solveLog: state.solveLog || {},
   };
 }
 
-function mergeBooleanMaps(a: Record<string, boolean>, b: Record<string, boolean>) {
-  return { ...a, ...b }; // union: true from either side wins, since both maps only ever hold `true`.
-}
-
-function mergeNotes(local: Record<string, string>, remote: Record<string, string>) {
-  const merged: Record<string, string> = { ...remote };
-  for (const [id, text] of Object.entries(local)) {
-    if (text.trim() && !merged[id]) merged[id] = text;
-  }
-  return merged;
-}
-
-function mergeSolveLog(a: Record<string, number>, b: Record<string, number>) {
-  const merged: Record<string, number> = { ...a };
-  for (const [day, count] of Object.entries(b)) {
+function mergeSolveLog(a: Record<string, number> | undefined, b: Record<string, number> | undefined) {
+  const merged: Record<string, number> = { ...(b || {}) };
+  for (const [day, count] of Object.entries(a || {})) {
     merged[day] = Math.max(merged[day] || 0, count);
   }
   return merged;
 }
 
-function mapsEqual(a: Record<string, unknown>, b: Record<string, unknown>): boolean {
+function mapsEqual(a: Record<string, unknown> | undefined, b: Record<string, unknown> | undefined): boolean {
+  if (!a && !b) return true;
+  if (!a || !b) return false;
   const aKeys = Object.keys(a);
   const bKeys = Object.keys(b);
   if (aKeys.length !== bKeys.length) return false;
   return aKeys.every((k) => a[k] === b[k]);
-}
-
-function mergeSyncable(local: SyncableState, remote: SyncableState): SyncableState {
-  return {
-    progress: mergeBooleanMaps(local.progress, remote.progress),
-    notes: mergeNotes(local.notes, remote.notes),
-    bookmarks: mergeBooleanMaps(local.bookmarks, remote.bookmarks),
-    solveLog: mergeSolveLog(local.solveLog, remote.solveLog),
-  };
 }
 
 let unsubscribeSnapshot: Unsubscribe | null = null;
@@ -64,13 +72,17 @@ let unsubscribeStore: (() => void) | null = null;
 let applyingRemoteUpdate = false;
 let pushTimer: ReturnType<typeof setTimeout> | null = null;
 let currentUid: string | null = null;
+let lastPushedAt = 0;
+let isInitialLoad = true;
 
 const listeners = new Set<(status: SyncStatus) => void>();
 let status: SyncStatus = 'signed-out';
+
 function setStatus(next: SyncStatus) {
   status = next;
   listeners.forEach((l) => l(status));
 }
+
 export function subscribeSyncStatus(listener: (status: SyncStatus) => void) {
   listeners.add(listener);
   listener(status);
@@ -87,25 +99,45 @@ function stopListening() {
   if (pushTimer) clearTimeout(pushTimer);
   pushTimer = null;
   currentUid = null;
+  lastPushedAt = 0;
+  isInitialLoad = true;
 }
 
 function pushToFirestore(uid: string) {
   if (!db) return;
   const payload = pickSyncable(usePaceStore.getState());
-  setDoc(doc(db, 'users', uid), { ...payload, updatedAt: Date.now() }, { merge: true })
+  const now = Date.now();
+  lastPushedAt = now;
+
+  // Use mergeFields so that deleted keys inside maps are completely overwritten and removed
+  setDoc(
+    doc(db, 'users', uid),
+    {
+      progress: payload.progress,
+      notes: payload.notes,
+      bookmarks: payload.bookmarks,
+      solveLog: payload.solveLog,
+      updatedAt: now,
+    },
+    { mergeFields: ['progress', 'notes', 'bookmarks', 'solveLog', 'updatedAt'] }
+  )
     .then(() => setStatus('synced'))
-    .catch(() => setStatus('offline')); // queued locally by Firestore's persistent cache; will retry on reconnect
+    .catch(() => setStatus('offline'));
 }
 
 function schedulePush(uid: string) {
   if (pushTimer) clearTimeout(pushTimer);
   setStatus('syncing');
-  pushTimer = setTimeout(() => pushToFirestore(uid), 800);
+  pushTimer = setTimeout(() => {
+    pushTimer = null;
+    pushToFirestore(uid);
+  }, 500);
 }
 
 async function startSyncing(user: User) {
   if (!db) return;
   currentUid = user.uid;
+  isInitialLoad = true;
   setStatus('syncing');
 
   const ref = doc(db, 'users', user.uid);
@@ -114,34 +146,81 @@ async function startSyncing(user: User) {
     ref,
     { includeMetadataChanges: true },
     (snap) => {
-      if (snap.metadata.hasPendingWrites) return; // our own optimistic write echoing back
+      // Ignore in-flight local writes
+      if (snap.metadata.hasPendingWrites) return;
 
       if (!snap.exists()) {
-        // First sign-in on this account: seed the remote doc from whatever's local.
+        // First sign-in on this account: seed remote doc from local
+        isInitialLoad = false;
         pushToFirestore(user.uid);
         return;
       }
 
-      const remote = snap.data() as Partial<SyncableState>;
-      const local = pickSyncable(usePaceStore.getState());
-      const merged = mergeSyncable(local, {
-        progress: remote.progress || {},
-        notes: remote.notes || {},
-        bookmarks: remote.bookmarks || {},
-        solveLog: remote.solveLog || {},
-      });
+      const remoteData = snap.data() as Partial<SyncableState & { updatedAt?: number }>;
+      const remoteUpdatedAt = remoteData?.updatedAt || 0;
 
-      applyingRemoteUpdate = true;
-      usePaceStore.setState(merged);
-      applyingRemoteUpdate = false;
+      // If this snapshot is just the echo of our own recent write, do not revert or re-apply
+      if (!isInitialLoad && remoteUpdatedAt <= lastPushedAt) {
+        setStatus(snap.metadata.fromCache ? 'offline' : 'synced');
+        return;
+      }
+
+      const local = pickSyncable(usePaceStore.getState());
+
+      if (isInitialLoad) {
+        isInitialLoad = false;
+        const hasLocalProgress =
+          Object.keys(local.progress).length > 0 ||
+          Object.keys(local.bookmarks).length > 0 ||
+          Object.keys(local.notes).length > 0;
+
+        // One-time merge on initial sign-in if this device had offline solves before logging in
+        if (hasLocalProgress && remoteUpdatedAt > 0) {
+          const merged: SyncableState = {
+            progress: {
+              ...cleanProgressMap(remoteData.progress),
+              ...local.progress,
+            },
+            notes: {
+              ...cleanNotesMap(remoteData.notes),
+              ...local.notes,
+            },
+            bookmarks: {
+              ...cleanBookmarksMap(remoteData.bookmarks),
+              ...local.bookmarks,
+            },
+            solveLog: mergeSolveLog(local.solveLog, remoteData.solveLog),
+          };
+
+          applyingRemoteUpdate = true;
+          usePaceStore.setState(merged);
+          applyingRemoteUpdate = false;
+          pushToFirestore(user.uid);
+          return;
+        }
+      }
+
+      // If the user has a pending local action on this device, let local changes proceed
+      if (pushTimer) {
+        return;
+      }
+
+      // Clean remote state from Firestore
+      const cleanRemote: SyncableState = {
+        progress: cleanProgressMap(remoteData.progress),
+        notes: cleanNotesMap(remoteData.notes),
+        bookmarks: cleanBookmarksMap(remoteData.bookmarks),
+        solveLog: remoteData.solveLog || {},
+      };
+
+      const hasDiff = SYNC_FIELDS.some((k) => !mapsEqual(local[k], cleanRemote[k]));
+      if (hasDiff) {
+        applyingRemoteUpdate = true;
+        usePaceStore.setState(cleanRemote);
+        applyingRemoteUpdate = false;
+      }
 
       setStatus(snap.metadata.fromCache ? 'offline' : 'synced');
-
-      // If merging pulled in anything the remote doc didn't have yet, push the merge back.
-      const changed = SYNC_FIELDS.some(
-        (k) => !mapsEqual(merged[k], remote[k] || {})
-      );
-      if (changed) schedulePush(user.uid);
     },
     () => setStatus('offline')
   );
@@ -149,7 +228,9 @@ async function startSyncing(user: User) {
   unsubscribeStore = usePaceStore.subscribe((state, prevState) => {
     if (applyingRemoteUpdate) return;
     const changed = SYNC_FIELDS.some((k) => state[k] !== prevState[k]);
-    if (changed && currentUid) schedulePush(currentUid);
+    if (changed && currentUid) {
+      schedulePush(currentUid);
+    }
   });
 }
 

@@ -59,8 +59,14 @@ export const usePaceStore = create<PaceState>()(
           const day = todayISO();
           log[day] = (log[day] || 0) + (next ? 1 : -1);
           if (log[day] <= 0) delete log[day];
+          const progress = { ...state.progress };
+          if (next) {
+            progress[id] = true;
+          } else {
+            delete progress[id];
+          }
           return {
-            progress: { ...state.progress, [id]: next },
+            progress,
             solveLog: log,
           };
         }),
