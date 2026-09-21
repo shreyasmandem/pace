@@ -130,12 +130,21 @@
   border-radius: var(--radius-sm);
   font-size: 0.78rem;
   color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chip:active {
+  transform: scale(0.93);
 }
 
 .chipActive {
   background: var(--surface-hover);
   color: var(--text-primary);
-  font-weight: 500;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .resetButton {
@@ -147,16 +156,36 @@
   border-radius: var(--radius-md);
   color: var(--text-tertiary);
   font-size: 0.78rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
   margin-left: auto;
+  transition: color 0.2s ease, transform 0.1s ease;
 }
 
 .resetButton:hover {
   color: var(--difficulty-hard);
 }
 
+.resetButton:active {
+  transform: scale(0.95);
+}
+
 .groups {
   display: flex;
   flex-direction: column;
+  animation: groupFade 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes groupFade {
+  from {
+    opacity: 0.7;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .empty {

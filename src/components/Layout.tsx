@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import MobileNav from './MobileNav';
 import SearchPalette from './SearchPalette';
@@ -7,6 +7,7 @@ import styles from './Layout.module.css';
 
 export default function Layout() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -23,7 +24,9 @@ export default function Layout() {
     <div className={styles.shell}>
       <Sidebar onOpenSearch={() => setSearchOpen(true)} />
       <main className={styles.main}>
-        <Outlet />
+        <div key={location.pathname} className={styles.pageTransition}>
+          <Outlet />
+        </div>
       </main>
       <MobileNav onOpenSearch={() => setSearchOpen(true)} />
       {searchOpen && <SearchPalette onClose={() => setSearchOpen(false)} />}

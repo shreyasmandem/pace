@@ -13,17 +13,25 @@
   width: 100%;
   padding: var(--space-4) var(--space-2);
   text-align: left;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s var(--easing);
+  cursor: pointer;
+}
+
+.header:hover {
+  background: var(--surface-hover);
 }
 
 .chevron {
   flex: none;
   margin-top: 3px;
   color: var(--text-tertiary);
-  transition: transform 0.2s var(--easing);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
 }
 
 .chevronOpen {
   transform: rotate(90deg);
+  color: var(--accent);
 }
 
 .topicIndex {
@@ -53,6 +61,16 @@
   color: var(--text-secondary);
   line-height: 1.5;
   max-width: 62ch;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.25s ease;
+}
+
+.noteVisible {
+  max-height: 120px;
+  opacity: 1;
+  margin-top: 2px;
 }
 
 .videoLink {
@@ -80,10 +98,34 @@
   margin-top: 2px;
   font-size: 0.78rem;
   color: var(--text-tertiary);
+  transition: color 0.2s ease;
 }
 
 .fractionDone {
   color: var(--difficulty-easy);
+  font-weight: 600;
+}
+
+.accordionWrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.accordionWrapperOpen {
+  grid-template-rows: 1fr;
+}
+
+.accordionContent {
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.22s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.accordionWrapperOpen .accordionContent {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .problems {

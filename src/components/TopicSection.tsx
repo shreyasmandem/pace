@@ -50,7 +50,9 @@ export default function TopicSection({
         <span className={styles.topicIndex}>{String(index + 1).padStart(2, '0')}</span>
         <span className={styles.titleBlock}>
           <span className={styles.title}>{group.title}</span>
-          {open && note && <span className={styles.note}>{note}</span>}
+          {note && (
+            <span className={`${styles.note} ${open ? styles.noteVisible : ''}`}>{note}</span>
+          )}
         </span>
         {group.videoUrl && (
           <a
@@ -70,20 +72,22 @@ export default function TopicSection({
       </button>
       <Lane percent={percent} color={accent} size="sm" />
 
-      {open && (
-        <div className={styles.problems}>
-          {group.problems.map((p, i) => (
-            <ProblemRow
-              key={p.id}
-              problem={p}
-              index={i}
-              ref={p.id === highlightId ? highlightRef : undefined}
-              highlighted={p.id === highlightId}
-              onOpenNotes={onOpenNotes}
-            />
-          ))}
+      <div className={`${styles.accordionWrapper} ${open ? styles.accordionWrapperOpen : ''}`}>
+        <div className={styles.accordionContent}>
+          <div className={styles.problems}>
+            {group.problems.map((p, i) => (
+              <ProblemRow
+                key={p.id}
+                problem={p}
+                index={i}
+                ref={p.id === highlightId ? highlightRef : undefined}
+                highlighted={p.id === highlightId}
+                onOpenNotes={onOpenNotes}
+              />
+            ))}
+          </div>
         </div>
-      )}
+      </div>
     </section>
   );
 }

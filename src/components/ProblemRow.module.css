@@ -4,7 +4,11 @@
   gap: var(--space-3);
   padding: var(--space-3) var(--space-2);
   border-bottom: 1px solid var(--border-hairline);
-  transition: background-color 0.4s var(--easing);
+  transition: background-color 0.15s var(--easing);
+}
+
+.row:hover {
+  background: var(--surface-hover);
 }
 
 .row:last-child {
@@ -25,16 +29,40 @@
   border-radius: 50%;
   border: 1.5px solid var(--border-strong);
   color: var(--accent-ink);
-  transition: background-color 0.15s var(--easing), border-color 0.15s var(--easing), transform 0.1s var(--easing);
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s var(--easing),
+              border-color 0.2s var(--easing),
+              transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.2s var(--easing);
+}
+
+.checkbox:hover {
+  border-color: var(--accent);
+  transform: scale(1.08);
 }
 
 .checkbox:active {
-  transform: scale(0.9);
+  transform: scale(0.88);
 }
 
 .checked {
   background: var(--accent);
   border-color: var(--accent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 40%, transparent);
+  animation: checkBounce 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes checkBounce {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .index {
@@ -53,6 +81,7 @@
   white-space: nowrap;
   font-size: 0.88rem;
   color: var(--text-primary);
+  transition: color 0.25s var(--easing);
 }
 
 .titleSolved {
@@ -65,6 +94,7 @@
   font-weight: 600;
   padding: 3px 8px;
   border-radius: var(--radius-full);
+  transition: transform 0.15s ease;
 }
 
 .easy {
@@ -95,12 +125,18 @@
   flex: none;
   border-radius: var(--radius-sm);
   color: var(--text-tertiary);
-  transition: background-color 0.15s var(--easing), color 0.15s var(--easing);
+  cursor: pointer;
+  transition: background-color 0.15s var(--easing), color 0.15s var(--easing), transform 0.1s var(--easing);
 }
 
 .iconButton:hover {
   background: var(--surface-hover);
   color: var(--text-primary);
+  transform: scale(1.05);
+}
+
+.iconButton:active {
+  transform: scale(0.9);
 }
 
 .iconActive {
