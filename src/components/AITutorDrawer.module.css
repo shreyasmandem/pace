@@ -1,13 +1,14 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  z-index: 150;
+  z-index: 99999;
   display: flex;
   justify-content: flex-end;
-  background: rgba(5, 5, 8, 0.65);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  animation: fadeIn 0.2s ease-out;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: fadeIn 0.2s ease-out both;
+  touch-action: none;
 }
 
 @keyframes fadeIn {
@@ -22,10 +23,11 @@
   flex-direction: column;
   background: var(--bg-raised);
   border-left: 1px solid var(--border-strong);
-  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.5);
-  animation: slideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.6);
+  animation: slideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
   overflow: hidden;
   position: relative;
+  touch-action: auto;
 }
 
 @keyframes slideIn {
@@ -669,15 +671,20 @@
 @media (max-width: 760px) {
   .backdrop {
     align-items: flex-end;
+    justify-content: center;
   }
 
   .panel {
     width: 100%;
-    height: 92vh;
+    height: 90vh;
+    height: 90dvh;
+    max-height: 90dvh;
     border-left: none;
     border-top: 1px solid var(--border-strong);
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
+    transform: translateY(0);
+    animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   @keyframes slideUp {
@@ -691,17 +698,17 @@
 
   .mobileHandle {
     display: block;
-    width: 38px;
+    width: 40px;
     height: 4px;
     border-radius: 2px;
     background: var(--border-strong);
-    margin: 8px auto 0;
+    margin: 10px auto 2px;
     flex: none;
   }
 
   .header {
     padding: var(--space-3) var(--space-4);
-    padding-top: calc(env(safe-area-inset-top, 0px) * 0.4 + 10px);
+    padding-top: calc(env(safe-area-inset-top, 0px) * 0.3 + 8px);
   }
 
   .title {
@@ -709,7 +716,19 @@
   }
 
   .thread {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
     padding: var(--space-3) var(--space-4);
+  }
+
+  .notesContainer {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .messageBubble {
@@ -719,6 +738,6 @@
 
   .inputArea {
     padding: var(--space-3) var(--space-4);
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
   }
 }

@@ -26,8 +26,8 @@ const ProblemRow = forwardRef<HTMLDivElement, ProblemRowProps>(function ProblemR
 ) {
   const solved = usePaceStore((s) => !!s.progress[problem.id]);
   const toggleProblem = usePaceStore((s) => s.toggleProblem);
-  const hasChat = usePaceStore((s) => !!s.tutorChats[problem.id]?.length);
-  const hasNote = usePaceStore((s) => !!s.notes[problem.id]?.trim());
+  const hasChat = usePaceStore((s) => !!s.tutorChats?.[problem.id]?.length);
+  const hasNote = usePaceStore((s) => !!s.notes?.[problem.id]?.trim());
   const bookmarked = usePaceStore((s) => !!s.bookmarks[problem.id]);
   const toggleBookmark = usePaceStore((s) => s.toggleBookmark);
 

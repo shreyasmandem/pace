@@ -13,9 +13,9 @@ function getGroqApiKey(): string {
 
 // High-performance models available on Groq with fallback
 const CANDIDATE_MODELS = [
+  'qwen/qwen3.8-27b',
   'openai/gpt-oss-120b',
   'openai/gpt-oss-20b',
-  'qwen/qwen3.8-27b',
   'groq/compound-mini',
 ];
 
@@ -104,9 +104,10 @@ export async function askGroqTutor(
       }
 
       const data = await response.json();
-      const reply = data.choices?.[0]?.message?.content;
-      if (reply && typeof reply === 'string') {
-        return reply.trim();
+      const message = data.choices?.[0]?.message;
+      const reply = (message?.content || message?.reasoning || '').trim();
+      if (reply) {
+        return reply;
       }
     } catch (err: any) {
       console.warn(`[Pace Tutor] Failed with model ${model}:`, err.message);

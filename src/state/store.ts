@@ -92,7 +92,8 @@ export const usePaceStore = create<PaceState>()(
       tutorChats: {},
       addTutorMessage: (topicKey, message) =>
         set((state) => {
-          const current = state.tutorChats[topicKey] || [];
+          const tutorChats = state.tutorChats || {};
+          const current = tutorChats[topicKey] || [];
           const newMessage: ChatMessage = {
             id: 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
             role: message.role,
@@ -101,14 +102,14 @@ export const usePaceStore = create<PaceState>()(
           };
           return {
             tutorChats: {
-              ...state.tutorChats,
+              ...tutorChats,
               [topicKey]: [...current, newMessage],
             },
           };
         }),
       clearTutorChat: (topicKey) =>
         set((state) => {
-          const tutorChats = { ...state.tutorChats };
+          const tutorChats = { ...(state.tutorChats || {}) };
           delete tutorChats[topicKey];
           return { tutorChats };
         }),
@@ -144,7 +145,7 @@ export const usePaceStore = create<PaceState>()(
       exportSnapshot: () => {
         const { progress, notes, bookmarks, solveLog, tutorChats } = get();
         return JSON.stringify(
-          { exportedAt: new Date().toISOString(), progress, notes, bookmarks, solveLog, tutorChats },
+          { exportedAt: new Date().toISOString(), progress, notes, bookmarks, solveLog, tutorChats: tutorChats || {} },
           null,
           2
         );
@@ -172,9 +173,18 @@ export const usePaceStore = create<PaceState>()(
         theme: state.theme,
         progress: state.progress,
         notes: state.notes,
-        tutorChats: state.tutorChats,
+        tutorChats: state.tutorChats || {},
         bookmarks: state.bookmarks,
         solveLog: state.solveLog,
+      }),
+      merge: (persistedState: any, currentState: PaceState) => ({
+        ...currentState,
+        ...(persistedState || {}),
+        progress: persistedState?.progress ?? {},
+        notes: persistedState?.notes ?? {},
+        tutorChats: persistedState?.tutorChats ?? {},
+        bookmarks: persistedState?.bookmarks ?? {},
+        solveLog: persistedState?.solveLog ?? {},
       }),
     }
   )

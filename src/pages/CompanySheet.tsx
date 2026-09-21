@@ -474,7 +474,7 @@ export default function CompanySheet() {
 
                   <button
                     className={`${styles.iconButton} ${styles.tutorBtn} ${
-                      usePaceStore.getState().tutorChats[`company_${currentCompanyId}_${p.id}`]?.length || hasNote
+                      usePaceStore.getState().tutorChats?.[`company_${currentCompanyId}_${p.id}`]?.length || hasNote
                         ? styles.tutorActive
                         : ''
                     }`}

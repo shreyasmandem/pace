@@ -8,12 +8,14 @@ import Settings from './pages/Settings';
 import CompanySheet from './pages/CompanySheet';
 import { useThemeEffect } from './hooks/useTheme';
 import { initSync } from './state/sync';
+import ErrorBoundary from './components/ErrorBoundary';
 
 export default function App() {
   useThemeEffect();
   useEffect(() => initSync(), []);
 
   return (
+    <ErrorBoundary fallbackTitle="Pace encountered an unexpected error">
     /*
       THESIS: progress is shown as a filling lane/track (the Pace metaphor),
       not another dashboard of rings and stat cards.
@@ -39,5 +41,6 @@ export default function App() {
         </Route>
       </Routes>
     </HashRouter>
+    </ErrorBoundary>
   );
 }

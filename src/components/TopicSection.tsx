@@ -66,7 +66,19 @@ export default function TopicSection({
 
   return (
     <section className={styles.section}>
-      <button className={styles.header} onClick={() => setOpen((o) => !o)} aria-expanded={open}>
+      <div
+        className={styles.header}
+        onClick={() => setOpen((o) => !o)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setOpen((o) => !o);
+          }
+        }}
+        aria-expanded={open}
+      >
         <ChevronRight size={16} className={`${styles.chevron} ${open ? styles.chevronOpen : ''}`} />
         <span className={styles.topicIndex}>{String(index + 1).padStart(2, '0')}</span>
         <span className={styles.titleBlock}>
@@ -99,7 +111,7 @@ export default function TopicSection({
         <span className={`${styles.fraction} mono ${complete ? styles.fractionDone : ''}`}>
           {solved}/{group.problems.length}
         </span>
-      </button>
+      </div>
       <Lane percent={percent} color={accent} size="sm" />
 
       <div className={`${styles.accordionWrapper} ${open ? styles.accordionWrapperOpen : ''}`}>

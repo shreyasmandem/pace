@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Bot,
   Check,
@@ -12,6 +13,7 @@ import {
 } from 'lucide-react';
 import { usePaceStore } from '../state/store';
 import { askGroqTutor, type TutorContext } from '../lib/groq';
+import ErrorBoundary from './ErrorBoundary';
 import styles from './AITutorDrawer.module.css';
 
 export interface AITutorDrawerProps {
@@ -41,6 +43,7 @@ export default function AITutorDrawer({
   currentProblem,
   onClose,
 }: AITutorDrawerProps) {
+  const [mounted, setMounted] = useState(false);
   const [tab, setTab] = useState<'tutor' | 'notes'>('tutor');
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,14 +55,35 @@ export default function AITutorDrawer({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const notesTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Zustand Store
-  const chatMessages = usePaceStore((s) => s.tutorChats[topicKey] || []);
+  // Mount check and body scroll lock
+  useEffect(() => {
+    setMounted(true);
+    const origOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = origOverflow;
+    };
+  }, []);
+
+  // Escape key closes modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  // Zustand Store - safe defensive access
+  const chatMessages = usePaceStore((s) => (s.tutorChats && s.tutorChats[topicKey]) || []);
   const addTutorMessage = usePaceStore((s) => s.addTutorMessage);
   const clearTutorChat = usePaceStore((s) => s.clearTutorChat);
 
   // Manual note support (tied to current problem if present, or topicKey)
   const noteKey = currentProblem?.id || topicKey;
-  const note = usePaceStore((s) => s.notes[noteKey] ?? '');
+  const note = usePaceStore((s) => (s.notes && s.notes[noteKey]) ?? '');
   const setNote = usePaceStore((s) => s.setNote);
 
   // Auto scroll to bottom of chat
@@ -128,68 +152,77 @@ export default function AITutorDrawer({
 
   // Helper to render markdown text and code blocks cleanly
   const renderFormattedContent = (content: string) => {
-    // Split by code blocks ```lang ... ```
-    const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
-    const parts: React.ReactNode[] = [];
-    let lastIndex = 0;
-    let match: RegExpExecArray | null;
-    let blockCounter = 0;
+    if (!content || typeof content !== 'string') return null;
+    try {
+      // Split by code blocks ```lang ... ```
+      const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
+      const parts: React.ReactNode[] = [];
+      let lastIndex = 0;
+      let match: RegExpExecArray | null;
+      let blockCounter = 0;
 
-    while ((match = codeBlockRegex.exec(content)) !== null) {
-      // Text before code block
-      if (match.index > lastIndex) {
-        const textSegment = content.slice(lastIndex, match.index);
+      while ((match = codeBlockRegex.exec(content)) !== null) {
+        // Text before code block
+        if (match.index > lastIndex) {
+          const textSegment = content.slice(lastIndex, match.index);
+          parts.push(
+            <div key={`text-${lastIndex}`} className={styles.textBlock}>
+              {renderInlineMarkdown(textSegment)}
+            </div>
+          );
+        }
+
+        const lang = match[1] || 'code';
+        const code = match[2];
+        const codeIndex = blockCounter++;
+
         parts.push(
-          <div key={`text-${lastIndex}`} className={styles.textBlock}>
-            {renderInlineMarkdown(textSegment)}
+          <div key={`code-${codeIndex}`} className={styles.codeBlockWrapper}>
+            <div className={styles.codeBlockHeader}>
+              <span className={styles.codeBlockLang}>{lang}</span>
+              <button
+                className={styles.copyBtn}
+                onClick={() => handleCopyCode(code, codeIndex)}
+                title="Copy code"
+              >
+                {copiedIndex === codeIndex ? (
+                  <>
+                    <Check size={12} className={styles.copyCheck} />
+                    <span>Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy size={12} />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+            <pre className={styles.codePre}>
+              <code>{code}</code>
+            </pre>
+          </div>
+        );
+
+        lastIndex = match.index + match[0].length;
+      }
+
+      if (lastIndex < content.length) {
+        parts.push(
+          <div key={`text-end`} className={styles.textBlock}>
+            {renderInlineMarkdown(content.slice(lastIndex))}
           </div>
         );
       }
 
-      const lang = match[1] || 'code';
-      const code = match[2];
-      const codeIndex = blockCounter++;
-
-      parts.push(
-        <div key={`code-${codeIndex}`} className={styles.codeBlockWrapper}>
-          <div className={styles.codeBlockHeader}>
-            <span className={styles.codeBlockLang}>{lang}</span>
-            <button
-              className={styles.copyBtn}
-              onClick={() => handleCopyCode(code, codeIndex)}
-              title="Copy code"
-            >
-              {copiedIndex === codeIndex ? (
-                <>
-                  <Check size={12} className={styles.copyCheck} />
-                  <span>Copied</span>
-                </>
-              ) : (
-                <>
-                  <Copy size={12} />
-                  <span>Copy</span>
-                </>
-              )}
-            </button>
-          </div>
-          <pre className={styles.codePre}>
-            <code>{code}</code>
-          </pre>
-        </div>
-      );
-
-      lastIndex = match.index + match[0].length;
-    }
-
-    if (lastIndex < content.length) {
-      parts.push(
-        <div key={`text-end`} className={styles.textBlock}>
-          {renderInlineMarkdown(content.slice(lastIndex))}
+      return parts;
+    } catch {
+      return (
+        <div className={styles.textBlock}>
+          <p className={styles.paragraph}>{content}</p>
         </div>
       );
     }
-
-    return parts;
   };
 
   // Inline formatting helper
@@ -270,7 +303,9 @@ export default function AITutorDrawer({
     },
   ];
 
-  return (
+  if (!mounted || typeof document === 'undefined') return null;
+
+  return createPortal(
     <div className={styles.backdrop} onClick={onClose}>
       <div
         className={styles.panel}
@@ -278,6 +313,7 @@ export default function AITutorDrawer({
         role="dialog"
         aria-modal="true"
       >
+        <ErrorBoundary fallbackTitle="AI Tutor encountered an error" onReset={onClose}>
         {/* Mobile Drag Indicator */}
         <div className={styles.mobileHandle} />
 
@@ -477,7 +513,9 @@ export default function AITutorDrawer({
             </div>
           </div>
         )}
+        </ErrorBoundary>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

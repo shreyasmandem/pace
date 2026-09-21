@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './ConfirmDialog.module.css';
 
 interface ConfirmDialogProps {
@@ -9,7 +11,14 @@ interface ConfirmDialogProps {
 }
 
 export default function ConfirmDialog({ title, body, confirmLabel, onConfirm, onCancel }: ConfirmDialogProps) {
-  return (
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || typeof document === 'undefined') return null;
+
+  return createPortal(
     <div className={styles.backdrop} onClick={onCancel}>
       <div className={styles.panel} onClick={(e) => e.stopPropagation()} role="alertdialog" aria-modal="true">
         <h3 className={styles.title}>{title}</h3>
@@ -23,6 +32,7 @@ export default function ConfirmDialog({ title, body, confirmLabel, onConfirm, on
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
