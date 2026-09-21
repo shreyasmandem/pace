@@ -1,0 +1,122 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-2);
+  border-bottom: 1px solid var(--border-hairline);
+  transition: background-color 0.4s var(--easing);
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.highlighted {
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+}
+
+.checkbox {
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  flex: none;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-strong);
+  color: var(--accent-ink);
+  transition: background-color 0.15s var(--easing), border-color 0.15s var(--easing), transform 0.1s var(--easing);
+}
+
+.checkbox:active {
+  transform: scale(0.9);
+}
+
+.checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.index {
+  flex: none;
+  width: 20px;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+  text-align: right;
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+
+.titleSolved {
+  color: var(--text-tertiary);
+}
+
+.difficulty {
+  flex: none;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+.easy {
+  color: var(--difficulty-easy);
+  background: color-mix(in srgb, var(--difficulty-easy) 16%, transparent);
+}
+
+.medium {
+  color: var(--difficulty-medium);
+  background: color-mix(in srgb, var(--difficulty-medium) 16%, transparent);
+}
+
+.hard {
+  color: var(--difficulty-hard);
+  background: color-mix(in srgb, var(--difficulty-hard) 16%, transparent);
+}
+
+.practice {
+  color: var(--text-tertiary);
+  background: var(--surface-sunken);
+}
+
+.iconButton {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  transition: background-color 0.15s var(--easing), color 0.15s var(--easing);
+}
+
+.iconButton:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.iconActive {
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .index {
+    display: none;
+  }
+
+  .difficulty {
+    display: none;
+  }
+
+  .row {
+    gap: var(--space-2);
+  }
+}

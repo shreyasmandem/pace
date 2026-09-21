@@ -1,0 +1,57 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  overflow-x: auto;
+}
+
+.grid {
+  display: flex;
+  gap: 3px;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cell {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-hairline);
+}
+
+.level0 {
+  background: var(--surface-sunken);
+}
+
+.level1 {
+  background: color-mix(in srgb, var(--accent) 25%, var(--surface-sunken));
+  border-color: transparent;
+}
+
+.level2 {
+  background: color-mix(in srgb, var(--accent) 50%, var(--surface-sunken));
+  border-color: transparent;
+}
+
+.level3 {
+  background: color-mix(in srgb, var(--accent) 75%, var(--surface-sunken));
+  border-color: transparent;
+}
+
+.level4 {
+  background: var(--accent);
+  border-color: transparent;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+}

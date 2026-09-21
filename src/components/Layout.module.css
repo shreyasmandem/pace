@@ -1,0 +1,15 @@
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .main {
+    padding-bottom: 76px;
+  }
+}

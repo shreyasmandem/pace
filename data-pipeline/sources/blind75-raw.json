@@ -1,0 +1,171 @@
+{
+  "source": "https://neetcode.io/practice/practice/blind75",
+  "fetchedAt": "2026-09-21",
+  "categories": [
+    {
+      "title": "Arrays & Hashing",
+      "problems": [
+        { "title": "Contains Duplicate", "difficulty": "Easy" },
+        { "title": "Valid Anagram", "difficulty": "Easy" },
+        { "title": "Two Sum", "difficulty": "Easy" },
+        { "title": "Group Anagrams", "difficulty": "Medium" },
+        { "title": "Top K Frequent Elements", "difficulty": "Medium" },
+        { "title": "Encode and Decode Strings", "difficulty": "Medium" },
+        { "title": "Product of Array Except Self", "difficulty": "Medium" },
+        { "title": "Longest Consecutive Sequence", "difficulty": "Medium" }
+      ]
+    },
+    {
+      "title": "Two Pointers",
+      "problems": [
+        { "title": "Valid Palindrome", "difficulty": "Easy" },
+        { "title": "3Sum", "difficulty": "Medium" },
+        { "title": "Container With Most Water", "difficulty": "Medium" }
+      ]
+    },
+    {
+      "title": "Sliding Window",
+      "problems": [
+        { "title": "Best Time to Buy And Sell Stock", "difficulty": "Easy" },
+        { "title": "Longest Substring Without Repeating Characters", "difficulty": "Medium" },
+        { "title": "Longest Repeating Character Replacement", "difficulty": "Medium" },
+        { "title": "Minimum Window Substring", "difficulty": "Hard" }
+      ]
+    },
+    {
+      "title": "Stack",
+      "problems": [
+        { "title": "Valid Parentheses", "difficulty": "Easy" }
+      ]
+    },
+    {
+      "title": "Binary Search",
+      "problems": [
+        { "title": "Find Minimum In Rotated Sorted Array", "difficulty": "Medium" },
+        { "title": "Search In Rotated Sorted Array", "difficulty": "Medium" }
+      ]
+    },
+    {
+      "title": "Linked List",
+      "problems": [
+        { "title": "Reverse Linked List", "difficulty": "Easy" },
+        { "title": "Merge Two Sorted Lists", "difficulty": "Easy" },
+        { "title": "Linked List Cycle", "difficulty": "Easy" },
+        { "title": "Reorder List", "difficulty": "Medium" },
+        { "title": "Remove Nth Node From End of List", "difficulty": "Medium" },
+        { "title": "Merge K Sorted Lists", "difficulty": "Hard" }
+      ]
+    },
+    {
+      "title": "Trees",
+      "problems": [
+        { "title": "Invert Binary Tree", "difficulty": "Easy" },
+        { "title": "Maximum Depth of Binary Tree", "difficulty": "Easy" },
+        { "title": "Same Tree", "difficulty": "Easy" },
+        { "title": "Subtree of Another Tree", "difficulty": "Easy" },
+        { "title": "Lowest Common Ancestor of a Binary Search Tree", "difficulty": "Medium" },
+        { "title": "Binary Tree Level Order Traversal", "difficulty": "Medium" },
+        { "title": "Validate Binary Search Tree", "difficulty": "Medium" },
+        { "title": "Kth Smallest Element In a Bst", "difficulty": "Medium" },
+        { "title": "Construct Binary Tree From Preorder And Inorder Traversal", "difficulty": "Medium" },
+        { "title": "Binary Tree Maximum Path Sum", "difficulty": "Hard" },
+        { "title": "Serialize And Deserialize Binary Tree", "difficulty": "Hard" }
+      ]
+    },
+    {
+      "title": "Heap / Priority Queue",
+      "problems": [
+        { "title": "Find Median From Data Stream", "difficulty": "Hard" }
+      ]
+    },
+    {
+      "title": "Backtracking",
+      "problems": [
+        { "title": "Combination Sum", "difficulty": "Medium" },
+        { "title": "Word Search", "difficulty": "Medium" }
+      ]
+    },
+    {
+      "title": "Tries",
+      "problems": [
+        { "title": "Implement Trie Prefix Tree", "difficulty": "Medium" },
+        { "title": "Design Add And Search Words Data Structure", "difficulty": "Medium" },
+        { "title": "Word Search II", "difficulty": "Hard" }
+      ]
+    },
+    {
+      "title": "Graphs",
+      "problems": [
+        { "title": "Number of Islands", "difficulty": "Medium" },
+        { "title": "Clone Graph", "difficulty": "Medium" },
+        { "title": "Pacific Atlantic Water Flow", "difficulty": "Medium" },
+        { "title": "Course Schedule", "difficulty": "Medium" },
+        { "title": "Graph Valid Tree", "difficulty": "Medium" },
+        { "title": "Number of Connected Components In An Undirected Graph", "difficulty": "Medium" }
+      ]
+    },
+    {
+      "title": "Advanced Graphs",
+      "problems": [
+        { "title": "Alien Dictionary", "difficulty": "Hard" }
+      ]
+    },
+    {
+      "title": "1-D Dynamic Programming",
+      "problems": [
+        { "title": "Climbing Stairs", "difficulty": "Easy" },
+        { "title": "House Robber", "difficulty": "Medium" },
+        { "title": "House Robber II", "difficulty": "Medium" },
+        { "title": "Longest Palindromic Substring", "difficulty": "Medium" },
+        { "title": "Palindromic Substrings", "difficulty": "Medium" },
+        { "title": "Decode Ways", "difficulty": "Medium" },
+        { "title": "Coin Change", "difficulty": "Medium" },
+        { "title": "Maximum Product Subarray", "difficulty": "Medium" },
+        { "title": "Word Break", "difficulty": "Medium" },
+        { "title": "Longest Increasing Subsequence", "difficulty": "Medium" }
+      ]
+    },
+    {
+      "title": "2-D Dynamic Programming",
+      "problems": [
+        { "title": "Unique Paths", "difficulty": "Medium" },
+        { "title": "Longest Common Subsequence", "difficulty": "Medium" }
+      ]
+    },
+    {
+      "title": "Greedy",
+      "problems": [
+        { "title": "Maximum Subarray", "difficulty": "Medium" },
+        { "title": "Jump Game", "difficulty": "Medium" }
+      ]
+    },
+    {
+      "title": "Intervals",
+      "problems": [
+        { "title": "Insert Interval", "difficulty": "Medium" },
+        { "title": "Merge Intervals", "difficulty": "Medium" },
+        { "title": "Non Overlapping Intervals", "difficulty": "Medium" },
+        { "title": "Meeting Rooms", "difficulty": "Easy" },
+        { "title": "Meeting Rooms II", "difficulty": "Medium" }
+      ]
+    },
+    {
+      "title": "Math & Geometry",
+      "problems": [
+        { "title": "Rotate Image", "difficulty": "Medium" },
+        { "title": "Spiral Matrix", "difficulty": "Medium" },
+        { "title": "Set Matrix Zeroes", "difficulty": "Medium" }
+      ]
+    },
+    {
+      "title": "Bit Manipulation",
+      "problems": [
+        { "title": "Number of 1 Bits", "difficulty": "Easy" },
+        { "title": "Counting Bits", "difficulty": "Easy" },
+        { "title": "Reverse Bits", "difficulty": "Easy" },
+        { "title": "Missing Number", "difficulty": "Easy" },
+        { "title": "Sum of Two Integers", "difficulty": "Medium" }
+      ]
+    }
+  ]
+}

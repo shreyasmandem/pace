@@ -1,0 +1,90 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+}
+
+.link {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  color: var(--text-tertiary);
+  transition: background-color 0.15s var(--easing), color 0.15s var(--easing), transform 0.15s var(--easing);
+}
+
+.link:hover {
+  transform: translateY(-1px);
+}
+
+.monogram {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.youtube {
+  background: color-mix(in srgb, #ff0000 14%, var(--surface-sunken));
+  color: #ff3b3b;
+}
+
+.youtube:hover {
+  background: color-mix(in srgb, #ff0000 22%, var(--surface-sunken));
+}
+
+.leetcode {
+  background: color-mix(in srgb, #ffa116 16%, var(--surface-sunken));
+  color: #ffa116;
+}
+
+.leetcode:hover {
+  background: color-mix(in srgb, #ffa116 26%, var(--surface-sunken));
+}
+
+.gfg {
+  background: color-mix(in srgb, #2f8d46 16%, var(--surface-sunken));
+  color: #3dbb5f;
+}
+
+.gfg:hover {
+  background: color-mix(in srgb, #2f8d46 26%, var(--surface-sunken));
+}
+
+.neetcode {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.neetcode:hover {
+  background: color-mix(in srgb, var(--accent) 26%, var(--surface-sunken));
+}
+
+.codestudio {
+  background: color-mix(in srgb, #7c5cff 16%, var(--surface-sunken));
+  color: #9c85ff;
+}
+
+.codestudio:hover {
+  background: color-mix(in srgb, #7c5cff 26%, var(--surface-sunken));
+}
+
+.article {
+  background: color-mix(in srgb, #64748b 16%, var(--surface-sunken));
+  color: #94a3b8;
+}
+
+.article:hover {
+  background: color-mix(in srgb, #64748b 26%, var(--surface-sunken));
+}
+
+.practice {
+  background: color-mix(in srgb, #3b6ef6 16%, var(--surface-sunken));
+  color: #6690ff;
+}
+
+.practice:hover {
+  background: color-mix(in srgb, #3b6ef6 26%, var(--surface-sunken));
+}

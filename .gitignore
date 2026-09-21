@@ -1,0 +1,11 @@
+node_modules/
+dist/
+*.local
+.claude/settings.local.json
+.impeccable/
+
+# Third-party reference repos used only by the data pipeline (see data-pipeline/).
+# Their extracted output is committed at src/data/*.json — these aren't needed to build or run the app.
+_source_algo/
+_source_neetcode/
+_source_nc250/
