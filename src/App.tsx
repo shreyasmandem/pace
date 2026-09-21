@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import TrackSheet from './pages/TrackSheet';
 import Stats from './pages/Stats';
 import Settings from './pages/Settings';
+import CompanySheet from './pages/CompanySheet';
 import { useThemeEffect } from './hooks/useTheme';
 import { initSync } from './state/sync';
 
@@ -31,6 +32,8 @@ export default function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/track/:trackId" element={<TrackSheet />} />
+          <Route path="/companies" element={<CompanySheet />} />
+          <Route path="/company/:companyId" element={<CompanySheet />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/settings" element={<Settings />} />
         </Route>

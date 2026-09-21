@@ -1,17 +1,27 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, CornerDownLeft } from 'lucide-react';
-import { getTrack, TRACK_META, TRACK_ORDER } from '../data';
+import { Search, X, CornerDownLeft, Building2 } from 'lucide-react';
+import { getTrack, TRACK_META, TRACK_ORDER, COMPANIES } from '../data';
 import { usePaceStore } from '../state/store';
 import styles from './SearchPalette.module.css';
 
-interface Hit {
+interface ProblemHit {
+  type: 'problem';
   id: string;
   title: string;
   trackId: (typeof TRACK_ORDER)[number];
   groupId: string;
   difficulty: string;
 }
+
+interface CompanyHit {
+  type: 'company';
+  id: string;
+  title: string;
+  total: number;
+}
+
+type Hit = ProblemHit | CompanyHit;
 
 export default function SearchPalette({ onClose }: { onClose: () => void }) {
   const [query, setQuery] = useState('');
@@ -24,29 +34,55 @@ export default function SearchPalette({ onClose }: { onClose: () => void }) {
     inputRef.current?.focus();
   }, []);
 
-  const allHits = useMemo<Hit[]>(() => {
-    const hits: Hit[] = [];
+  const allHits = useMemo<ProblemHit[]>(() => {
+    const hits: ProblemHit[] = [];
     for (const trackId of TRACK_ORDER) {
       const track = getTrack(trackId);
       for (const group of track.groups) {
         for (const p of group.problems) {
-          hits.push({ id: p.id, title: p.title, trackId, groupId: group.id, difficulty: p.difficulty });
+          hits.push({
+            type: 'problem',
+            id: p.id,
+            title: p.title,
+            trackId,
+            groupId: group.id,
+            difficulty: p.difficulty,
+          });
         }
       }
     }
     return hits;
   }, []);
 
-  const results = useMemo(() => {
+  const results = useMemo<Hit[]>(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
-    return allHits.filter((h) => h.title.toLowerCase().includes(q)).slice(0, 40);
+
+    // Check company matches
+    const matchedCompanies: CompanyHit[] = COMPANIES.filter(
+      (c) => c.name.toLowerCase().includes(q) || c.id.includes(q)
+    )
+      .slice(0, 5)
+      .map((c) => ({
+        type: 'company',
+        id: c.id,
+        title: c.name,
+        total: c.total,
+      }));
+
+    const matchedProblems = allHits.filter((h) => h.title.toLowerCase().includes(q)).slice(0, 35);
+
+    return [...matchedCompanies, ...matchedProblems];
   }, [query, allHits]);
 
   useEffect(() => setActiveIndex(0), [query]);
 
   function go(hit: Hit) {
-    navigate(`/track/${hit.trackId}?highlight=${encodeURIComponent(hit.id)}`);
+    if (hit.type === 'company') {
+      navigate(`/company/${hit.id}`);
+    } else {
+      navigate(`/track/${hit.trackId}?highlight=${encodeURIComponent(hit.id)}`);
+    }
     onClose();
   }
 
@@ -85,20 +121,33 @@ export default function SearchPalette({ onClose }: { onClose: () => void }) {
         {query.trim() && (
           <ul className={styles.results}>
             {results.length === 0 && <li className={styles.empty}>No problems match "{query}".</li>}
-            {results.map((hit, i) => (
-              <li key={`${hit.trackId}-${hit.id}`}>
-                <button
-                  className={`${styles.result} ${i === activeIndex ? styles.resultActive : ''}`}
-                  onClick={() => go(hit)}
-                  onMouseEnter={() => setActiveIndex(i)}
-                >
-                  <span className={progress[hit.id] ? styles.solvedDot : styles.openDot} />
-                  <span className={styles.resultTitle}>{hit.title}</span>
-                  <span className={styles.resultTrack}>{TRACK_META[hit.trackId].shortLabel}</span>
-                  {i === activeIndex && <CornerDownLeft size={13} className={styles.enterHint} />}
-                </button>
-              </li>
-            ))}
+            {results.map((hit, i) => {
+              const key = hit.type === 'company' ? `company-${hit.id}` : `${hit.trackId}-${hit.id}`;
+              return (
+                <li key={key}>
+                  <button
+                    className={`${styles.result} ${i === activeIndex ? styles.resultActive : ''}`}
+                    onClick={() => go(hit)}
+                    onMouseEnter={() => setActiveIndex(i)}
+                  >
+                    {hit.type === 'company' ? (
+                      <>
+                        <Building2 size={13} color="var(--accent)" style={{ flex: 'none' }} />
+                        <span className={styles.resultTitle}>{hit.title}</span>
+                        <span className={`${styles.resultTrack} mono`}>{hit.total} problems</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className={progress[hit.id] ? styles.solvedDot : styles.openDot} />
+                        <span className={styles.resultTitle}>{hit.title}</span>
+                        <span className={styles.resultTrack}>{TRACK_META[hit.trackId].shortLabel}</span>
+                      </>
+                    )}
+                    {i === activeIndex && <CornerDownLeft size={13} className={styles.enterHint} />}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

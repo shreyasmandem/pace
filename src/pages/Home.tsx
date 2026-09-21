@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Bookmark, Flame, NotebookPen } from 'lucide-react';
-import { TRACK_META, TRACK_ORDER } from '../data';
+import { ArrowRight, Bookmark, Flame, NotebookPen, Building2 } from 'lucide-react';
+import { TRACK_META, TRACK_ORDER, getFeaturedCompanies } from '../data';
 import { useAggregateStat, useTrackStats } from '../hooks/useTrackStats';
 import { usePaceStore, currentStreak } from '../state/store';
 import PaceRing from '../components/PaceRing';
@@ -17,14 +17,15 @@ export default function Home() {
 
   const noteCount = Object.keys(notes).length;
   const bookmarkCount = Object.keys(bookmarks).length;
+  const featuredCompanies = getFeaturedCompanies().slice(0, 12);
 
   return (
     <div className={styles.page}>
       <header className={styles.intro}>
         <h1 className={styles.heading}>Every DSA sheet worth doing, in one place.</h1>
         <p className={styles.sub}>
-          Striver's A2Z, NeetCode 150, NeetCode 250, and Blind 75 — real links, real lecture videos,
-          your own notes, tracked for free.
+          Striver's A2Z, NeetCode 150, NeetCode 250, Blind 75, and 500+ Company Question Sets — real
+          links, real lecture videos, your own notes, tracked for free.
         </p>
       </header>
 
@@ -77,6 +78,33 @@ export default function Home() {
             </Link>
           );
         })}
+      </section>
+
+      <section className={styles.companySection}>
+        <div className={styles.companyHeader}>
+          <div className={styles.companyTitleRow}>
+            <Building2 size={18} color="var(--accent)" />
+            <h2 className={styles.companyTitle}>Company-Wise DSA Sheets</h2>
+            <span className={styles.companyBadge}>500+ Companies</span>
+          </div>
+        </div>
+        <p className={styles.companySub}>
+          Target your interview prep with real problem frequencies asked by FAANG, Tier-1 tech, and
+          top Indian startups.
+        </p>
+        <div className={styles.companyGrid}>
+          {featuredCompanies.map((comp) => (
+            <Link key={comp.id} to={`/company/${comp.id}`} className={styles.companyCard}>
+              <span className={styles.companyCardName}>{comp.name}</span>
+              <span className={`${styles.companyCardCount} mono`}>{comp.total} questions</span>
+            </Link>
+          ))}
+        </div>
+        <div className={styles.companyCtaRow}>
+          <Link to="/companies" className={styles.companyCta}>
+            Browse all 500+ companies <ArrowRight size={14} />
+          </Link>
+        </div>
       </section>
     </div>
   );

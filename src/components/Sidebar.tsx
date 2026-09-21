@@ -1,5 +1,5 @@
-import { NavLink } from 'react-router-dom';
-import { Flame, Search, Settings, BarChart3 } from 'lucide-react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { Flame, Search, Settings, BarChart3, Building2 } from 'lucide-react';
 import { TRACK_META, TRACK_ORDER } from '../data';
 import { useTrackStats } from '../hooks/useTrackStats';
 import { usePaceStore } from '../state/store';
@@ -10,9 +10,12 @@ import AccountButton from './AccountButton';
 import styles from './Sidebar.module.css';
 
 export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) {
+  const location = useLocation();
   const stats = useTrackStats();
   const solveLog = usePaceStore((s) => s.solveLog);
   const streak = currentStreak(solveLog);
+
+  const isCompanyActive = location.pathname.startsWith('/compan');
 
   return (
     <aside className={styles.sidebar}>
@@ -29,11 +32,19 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
 
       <nav className={styles.nav}>
         <NavLink
+          to="/companies"
+          className={`${styles.utilityLink} ${isCompanyActive ? styles.active : ''}`}
+        >
+          <Building2 size={15} />
+          <span>Company DSA</span>
+          <span className={styles.navBadge}>500+</span>
+        </NavLink>
+        <NavLink
           to="/stats"
           className={({ isActive }) => `${styles.utilityLink} ${isActive ? styles.active : ''}`}
         >
           <BarChart3 size={15} />
-          Progress &amp; streaks
+          <span>Progress &amp; streaks</span>
         </NavLink>
       </nav>
 

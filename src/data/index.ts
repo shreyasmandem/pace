@@ -3,6 +3,7 @@ import nc150Raw from './neetcode150.json';
 import nc250Raw from './neetcode250.json';
 import blind75Raw from './blind75.json';
 import topicNotesRaw from './topic-notes.json';
+import companiesRaw from './companies.json';
 import type {
   A2ZData,
   GroupedTrackData,
@@ -10,7 +11,11 @@ import type {
   TopicNotes,
   TrackId,
   TrackMeta,
+  CompanyMeta,
+  CompanyProblem,
 } from '../types';
+
+export const COMPANIES: CompanyMeta[] = companiesRaw as CompanyMeta[];
 
 const a2z = a2zRaw as A2ZData;
 const nc150 = nc150Raw as GroupedTrackData;
@@ -103,3 +108,26 @@ export function getTopicNote(trackId: TrackId, groupId: string, groupTitle: stri
 }
 
 export const ALL_TRACKS = NORMALIZED;
+
+const companyCache = new Map<string, CompanyProblem[]>();
+
+export function getCompanyMeta(id: string): CompanyMeta | undefined {
+  return COMPANIES.find((c) => c.id === id);
+}
+
+export function getFeaturedCompanies(): CompanyMeta[] {
+  return COMPANIES.filter((c) => c.featured);
+}
+
+export async function fetchCompanyProblems(id: string): Promise<CompanyProblem[]> {
+  if (companyCache.has(id)) {
+    return companyCache.get(id)!;
+  }
+  const res = await fetch(`/data/companies/${id}.json`);
+  if (!res.ok) {
+    throw new Error(`Failed to load company questions for ${id}`);
+  }
+  const data: CompanyProblem[] = await res.json();
+  companyCache.set(id, data);
+  return data;
+}

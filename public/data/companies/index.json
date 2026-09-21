@@ -1,0 +1,5122 @@
+[
+  {
+    "id": "google",
+    "name": "Google",
+    "total": 2385,
+    "easy": 622,
+    "medium": 1245,
+    "hard": 518,
+    "interviewTip": "Focus on backtracking and dynamic programming.",
+    "featured": true
+  },
+  {
+    "id": "amazon",
+    "name": "Amazon",
+    "total": 2074,
+    "easy": 545,
+    "medium": 1129,
+    "hard": 400,
+    "interviewTip": "Work on sliding window, heap, and DFS/BFS.",
+    "featured": true
+  },
+  {
+    "id": "microsoft",
+    "name": "Microsoft",
+    "total": 1448,
+    "easy": 407,
+    "medium": 794,
+    "hard": 247,
+    "interviewTip": "Practice binary search, greedy algorithms.",
+    "featured": true
+  },
+  {
+    "id": "meta",
+    "name": "Meta",
+    "total": 1399,
+    "easy": 427,
+    "medium": 763,
+    "hard": 209,
+    "interviewTip": null,
+    "featured": true
+  },
+  {
+    "id": "bloomberg",
+    "name": "Bloomberg",
+    "total": 1268,
+    "easy": 407,
+    "medium": 679,
+    "hard": 182,
+    "interviewTip": "Work on arrays, dynamic programming, and graphs.",
+    "featured": true
+  },
+  {
+    "id": "uber",
+    "name": "Uber",
+    "total": 512,
+    "easy": 72,
+    "medium": 301,
+    "hard": 139,
+    "interviewTip": "Work on graphs, BFS/DFS, and Dijkstra's algorithm.",
+    "featured": true
+  },
+  {
+    "id": "apple",
+    "name": "Apple",
+    "total": 474,
+    "easy": 135,
+    "medium": 266,
+    "hard": 73,
+    "interviewTip": "Prioritize dynamic programming and divide and conquer.",
+    "featured": true
+  },
+  {
+    "id": "oracle",
+    "name": "Oracle",
+    "total": 387,
+    "easy": 89,
+    "medium": 236,
+    "hard": 62,
+    "interviewTip": "Focus on matrix traversal and dynamic programming.",
+    "featured": true
+  },
+  {
+    "id": "tiktok",
+    "name": "TikTok",
+    "total": 348,
+    "easy": 34,
+    "medium": 243,
+    "hard": 71,
+    "interviewTip": "Prioritize dynamic programming and recursion.",
+    "featured": true
+  },
+  {
+    "id": "adobe",
+    "name": "Adobe",
+    "total": 309,
+    "easy": 91,
+    "medium": 167,
+    "hard": 51,
+    "interviewTip": "Practice sorting and searching techniques.",
+    "featured": true
+  },
+  {
+    "id": "goldman-sachs",
+    "name": "Goldman Sachs",
+    "total": 268,
+    "easy": 46,
+    "medium": 173,
+    "hard": 49,
+    "interviewTip": "Focus on arrays, hashing, and string manipulation.",
+    "featured": true
+  },
+  {
+    "id": "tcs",
+    "name": "TCS",
+    "total": 268,
+    "easy": 113,
+    "medium": 131,
+    "hard": 24,
+    "interviewTip": null,
+    "featured": true
+  },
+  {
+    "id": "salesforce",
+    "name": "Salesforce",
+    "total": 240,
+    "easy": 34,
+    "medium": 151,
+    "hard": 55,
+    "interviewTip": "Work on greedy algorithms and dynamic programming.",
+    "featured": true
+  },
+  {
+    "id": "infosys",
+    "name": "Infosys",
+    "total": 238,
+    "easy": 53,
+    "medium": 134,
+    "hard": 51,
+    "interviewTip": null,
+    "featured": true
+  },
+  {
+    "id": "linkedin",
+    "name": "LinkedIn",
+    "total": 230,
+    "easy": 37,
+    "medium": 153,
+    "hard": 40,
+    "interviewTip": "Focus on two-pointer and sliding window techniques.",
+    "featured": true
+  },
+  {
+    "id": "zoho",
+    "name": "Zoho",
+    "total": 155,
+    "easy": 55,
+    "medium": 84,
+    "hard": 16,
+    "interviewTip": null,
+    "featured": true
+  },
+  {
+    "id": "paypal",
+    "name": "PayPal",
+    "total": 152,
+    "easy": 30,
+    "medium": 101,
+    "hard": 21,
+    "interviewTip": "Prioritize binary search and sorting problems.",
+    "featured": true
+  },
+  {
+    "id": "walmart-labs",
+    "name": "Walmart",
+    "total": 152,
+    "easy": 23,
+    "medium": 102,
+    "hard": 27,
+    "interviewTip": "Focus on hashing, prefix sums, and arrays.",
+    "featured": true
+  },
+  {
+    "id": "nvidia",
+    "name": "Nvidia",
+    "total": 143,
+    "easy": 34,
+    "medium": 93,
+    "hard": 16,
+    "interviewTip": "Practice bit manipulation and backtracking.",
+    "featured": true
+  },
+  {
+    "id": "flipkart",
+    "name": "Flipkart",
+    "total": 138,
+    "easy": 8,
+    "medium": 98,
+    "hard": 32,
+    "interviewTip": null,
+    "featured": true
+  },
+  {
+    "id": "atlassian",
+    "name": "Atlassian",
+    "total": 124,
+    "easy": 17,
+    "medium": 90,
+    "hard": 17,
+    "interviewTip": "Focus on graph traversal and dynamic programming.",
+    "featured": true
+  },
+  {
+    "id": "netflix",
+    "name": "Netflix",
+    "total": 73,
+    "easy": 7,
+    "medium": 59,
+    "hard": 7,
+    "interviewTip": "Prioritize dynamic programming and DP on trees.",
+    "featured": true
+  },
+  {
+    "id": "swiggy",
+    "name": "Swiggy",
+    "total": 73,
+    "easy": 6,
+    "medium": 62,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": true
+  },
+  {
+    "id": "zomato",
+    "name": "Zomato",
+    "total": 72,
+    "easy": 2,
+    "medium": 61,
+    "hard": 9,
+    "interviewTip": null,
+    "featured": true
+  },
+  {
+    "id": "zepto",
+    "name": "Zepto",
+    "total": 65,
+    "easy": 1,
+    "medium": 62,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": true
+  },
+  {
+    "id": "stripe",
+    "name": "Stripe",
+    "total": 59,
+    "easy": 1,
+    "medium": 57,
+    "hard": 1,
+    "interviewTip": "Practice greedy algorithms and string manipulation.",
+    "featured": true
+  },
+  {
+    "id": "cred",
+    "name": "CRED",
+    "total": 58,
+    "easy": 1,
+    "medium": 57,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": true
+  },
+  {
+    "id": "razorpay",
+    "name": "Razorpay",
+    "total": 56,
+    "easy": 1,
+    "medium": 53,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": true
+  },
+  {
+    "id": "walmart",
+    "name": "Walmart",
+    "total": 53,
+    "easy": 0,
+    "medium": 53,
+    "hard": 0,
+    "interviewTip": "Focus on hashing, prefix sums, and arrays.",
+    "featured": true
+  },
+  {
+    "id": "c",
+    "name": "C",
+    "total": 800,
+    "easy": 205,
+    "medium": 444,
+    "hard": 151,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "f",
+    "name": "F",
+    "total": 737,
+    "easy": 191,
+    "medium": 412,
+    "hard": 134,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "facebook",
+    "name": "Facebook",
+    "total": 556,
+    "easy": 136,
+    "medium": 322,
+    "hard": 98,
+    "interviewTip": "Master recursion, graphs, and bit manipulation.",
+    "featured": false
+  },
+  {
+    "id": "visa",
+    "name": "Visa",
+    "total": 176,
+    "easy": 36,
+    "medium": 113,
+    "hard": 27,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ibm",
+    "name": "IBM",
+    "total": 175,
+    "easy": 54,
+    "medium": 105,
+    "hard": 16,
+    "interviewTip": "Master dynamic programming and recursion problems.",
+    "featured": false
+  },
+  {
+    "id": "de-shaw",
+    "name": "D.E. Shaw",
+    "total": 159,
+    "easy": 14,
+    "medium": 114,
+    "hard": 31,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ebay",
+    "name": "eBay",
+    "total": 157,
+    "easy": 35,
+    "medium": 98,
+    "hard": 24,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "bytedance",
+    "name": "ByteDance",
+    "total": 152,
+    "easy": 17,
+    "medium": 106,
+    "hard": 29,
+    "interviewTip": "Master sorting algorithms and binary search.",
+    "featured": false
+  },
+  {
+    "id": "cisco",
+    "name": "Cisco",
+    "total": 144,
+    "easy": 38,
+    "medium": 88,
+    "hard": 18,
+    "interviewTip": "Focus on linked lists and dynamic programming.",
+    "featured": false
+  },
+  {
+    "id": "accenture",
+    "name": "Accenture",
+    "total": 140,
+    "easy": 58,
+    "medium": 71,
+    "hard": 11,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "yandex",
+    "name": "Yandex",
+    "total": 139,
+    "easy": 53,
+    "medium": 77,
+    "hard": 9,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "phonepe",
+    "name": "PhonePe",
+    "total": 127,
+    "easy": 3,
+    "medium": 87,
+    "hard": 37,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "yahoo",
+    "name": "Yahoo",
+    "total": 122,
+    "easy": 41,
+    "medium": 66,
+    "hard": 15,
+    "interviewTip": "Work on linked lists and recursion.",
+    "featured": false
+  },
+  {
+    "id": "goldman",
+    "name": "Goldman",
+    "total": 112,
+    "easy": 40,
+    "medium": 55,
+    "hard": 17,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "servicenow",
+    "name": "ServiceNow",
+    "total": 111,
+    "easy": 15,
+    "medium": 82,
+    "hard": 14,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "citadel",
+    "name": "Citadel",
+    "total": 110,
+    "easy": 13,
+    "medium": 62,
+    "hard": 35,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "de",
+    "name": "DE",
+    "total": 107,
+    "easy": 33,
+    "medium": 56,
+    "hard": 18,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "intuit",
+    "name": "Intuit",
+    "total": 105,
+    "easy": 12,
+    "medium": 70,
+    "hard": 23,
+    "interviewTip": "Work on backtracking and dynamic programming.",
+    "featured": false
+  },
+  {
+    "id": "vmware",
+    "name": "VMware",
+    "total": 105,
+    "easy": 19,
+    "medium": 69,
+    "hard": 17,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "snowflake",
+    "name": "Snowflake",
+    "total": 101,
+    "easy": 13,
+    "medium": 68,
+    "hard": 20,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "cognizant",
+    "name": "Cognizant",
+    "total": 100,
+    "easy": 30,
+    "medium": 68,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "expedia",
+    "name": "Expedia",
+    "total": 97,
+    "easy": 20,
+    "medium": 65,
+    "hard": 12,
+    "interviewTip": "Practice stack-based problems and recursion.",
+    "featured": false
+  },
+  {
+    "id": "morgan-stanley",
+    "name": "Morgan Stanley",
+    "total": 96,
+    "easy": 15,
+    "medium": 72,
+    "hard": 9,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "nutanix",
+    "name": "Nutanix",
+    "total": 90,
+    "easy": 8,
+    "medium": 61,
+    "hard": 21,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "snapchat",
+    "name": "Snap",
+    "total": 88,
+    "easy": 17,
+    "medium": 44,
+    "hard": 27,
+    "interviewTip": "Focus on graphs and dynamic programming.",
+    "featured": false
+  },
+  {
+    "id": "doordash",
+    "name": "DoorDash",
+    "total": 84,
+    "easy": 9,
+    "medium": 48,
+    "hard": 27,
+    "interviewTip": "Master binary trees and backtracking.",
+    "featured": false
+  },
+  {
+    "id": "meesho",
+    "name": "Meesho",
+    "total": 84,
+    "easy": 1,
+    "medium": 65,
+    "hard": 18,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "twitter",
+    "name": "Twitter / X",
+    "total": 82,
+    "easy": 17,
+    "medium": 42,
+    "hard": 23,
+    "interviewTip": "Work on greedy algorithms and interval problems.",
+    "featured": false
+  },
+  {
+    "id": "hcl",
+    "name": "HCL",
+    "total": 80,
+    "easy": 9,
+    "medium": 69,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "pinterest",
+    "name": "Pinterest",
+    "total": 80,
+    "easy": 4,
+    "medium": 48,
+    "hard": 28,
+    "interviewTip": "Master recursion and divide and conquer techniques.",
+    "featured": false
+  },
+  {
+    "id": "snap",
+    "name": "Snap",
+    "total": 80,
+    "easy": 5,
+    "medium": 46,
+    "hard": 29,
+    "interviewTip": "Focus on graphs and dynamic programming.",
+    "featured": false
+  },
+  {
+    "id": "wipro",
+    "name": "Wipro",
+    "total": 80,
+    "easy": 14,
+    "medium": 66,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "airbnb",
+    "name": "Airbnb",
+    "total": 79,
+    "easy": 14,
+    "medium": 40,
+    "hard": 25,
+    "interviewTip": "Practice graph traversal and backtracking.",
+    "featured": false
+  },
+  {
+    "id": "samsung",
+    "name": "Samsung",
+    "total": 72,
+    "easy": 15,
+    "medium": 37,
+    "hard": 20,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tech-mahindra",
+    "name": "Tech Mahindra",
+    "total": 70,
+    "easy": 2,
+    "medium": 68,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "paytm",
+    "name": "Paytm",
+    "total": 69,
+    "easy": 6,
+    "medium": 60,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "sap",
+    "name": "SAP",
+    "total": 69,
+    "easy": 22,
+    "medium": 36,
+    "hard": 11,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "roblox",
+    "name": "Roblox",
+    "total": 68,
+    "easy": 8,
+    "medium": 42,
+    "hard": 18,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "barclays",
+    "name": "Barclays",
+    "total": 65,
+    "easy": 7,
+    "medium": 54,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "capital-one",
+    "name": "Capital One",
+    "total": 63,
+    "easy": 13,
+    "medium": 40,
+    "hard": 10,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "lyft",
+    "name": "Lyft",
+    "total": 63,
+    "easy": 9,
+    "medium": 42,
+    "hard": 12,
+    "interviewTip": "Focus on two-pointer and sliding window techniques.",
+    "featured": false
+  },
+  {
+    "id": "capgemini",
+    "name": "Capgemini",
+    "total": 62,
+    "easy": 17,
+    "medium": 43,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "mathworks",
+    "name": "MathWorks",
+    "total": 62,
+    "easy": 13,
+    "medium": 36,
+    "hard": 13,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "mastercard",
+    "name": "Mastercard",
+    "total": 60,
+    "easy": 5,
+    "medium": 53,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "qualcomm",
+    "name": "Qualcomm",
+    "total": 58,
+    "easy": 29,
+    "medium": 22,
+    "hard": 7,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "wix",
+    "name": "Wix",
+    "total": 56,
+    "easy": 17,
+    "medium": 31,
+    "hard": 8,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "anduril",
+    "name": "Anduril",
+    "total": 54,
+    "easy": 9,
+    "medium": 37,
+    "hard": 8,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "coupang",
+    "name": "Coupang",
+    "total": 52,
+    "easy": 3,
+    "medium": 35,
+    "hard": 14,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "x",
+    "name": "X",
+    "total": 51,
+    "easy": 8,
+    "medium": 31,
+    "hard": 12,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tesla",
+    "name": "Tesla",
+    "total": 50,
+    "easy": 14,
+    "medium": 29,
+    "hard": 7,
+    "interviewTip": "Work on graph traversal and dynamic programming.",
+    "featured": false
+  },
+  {
+    "id": "jpmorgan-chase",
+    "name": "JPMorgan Chase",
+    "total": 50,
+    "easy": 0,
+    "medium": 50,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "epam-systems",
+    "name": "EPAM Systems",
+    "total": 49,
+    "easy": 16,
+    "medium": 30,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "palo-alto-networks",
+    "name": "Palo Alto Networks",
+    "total": 49,
+    "easy": 12,
+    "medium": 30,
+    "hard": 7,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "hsbc",
+    "name": "HSBC",
+    "total": 48,
+    "easy": 4,
+    "medium": 44,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tower-research",
+    "name": "Tower Research",
+    "total": 48,
+    "easy": 0,
+    "medium": 48,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "databricks",
+    "name": "Databricks",
+    "total": 47,
+    "easy": 3,
+    "medium": 31,
+    "hard": 13,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "deloitte",
+    "name": "Deloitte",
+    "total": 44,
+    "easy": 17,
+    "medium": 24,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "agoda",
+    "name": "Agoda",
+    "total": 43,
+    "easy": 13,
+    "medium": 28,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "sprinklr",
+    "name": "Sprinklr",
+    "total": 43,
+    "easy": 1,
+    "medium": 21,
+    "hard": 21,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "works",
+    "name": "Works",
+    "total": 43,
+    "easy": 11,
+    "medium": 24,
+    "hard": 8,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "rubrik",
+    "name": "Rubrik",
+    "total": 41,
+    "easy": 2,
+    "medium": 25,
+    "hard": 14,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "docusign",
+    "name": "Docusign",
+    "total": 40,
+    "easy": 5,
+    "medium": 28,
+    "hard": 7,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "yelp",
+    "name": "Yelp",
+    "total": 40,
+    "easy": 10,
+    "medium": 23,
+    "hard": 7,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "arista-networks",
+    "name": "Arista Networks",
+    "total": 39,
+    "easy": 10,
+    "medium": 26,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zillow",
+    "name": "Zillow",
+    "total": 38,
+    "easy": 11,
+    "medium": 22,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "quora",
+    "name": "Quora",
+    "total": 37,
+    "easy": 10,
+    "medium": 23,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "josh-technology",
+    "name": "josh technology",
+    "total": 36,
+    "easy": 8,
+    "medium": 25,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "wayfair",
+    "name": "Wayfair",
+    "total": 36,
+    "easy": 11,
+    "medium": 19,
+    "hard": 6,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "alibaba",
+    "name": "Alibaba",
+    "total": 35,
+    "easy": 9,
+    "medium": 18,
+    "hard": 8,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "media-net",
+    "name": "Media.net",
+    "total": 35,
+    "easy": 4,
+    "medium": 17,
+    "hard": 14,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "turing",
+    "name": "Turing",
+    "total": 35,
+    "easy": 7,
+    "medium": 23,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "wish",
+    "name": "Wish",
+    "total": 35,
+    "easy": 4,
+    "medium": 23,
+    "hard": 8,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "box",
+    "name": "Box",
+    "total": 33,
+    "easy": 6,
+    "medium": 14,
+    "hard": 13,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "autodesk",
+    "name": "Autodesk",
+    "total": 31,
+    "easy": 8,
+    "medium": 16,
+    "hard": 7,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "hashedin",
+    "name": "HashedIn",
+    "total": 31,
+    "easy": 4,
+    "medium": 19,
+    "hard": 8,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "qualtrics",
+    "name": "Qualtrics",
+    "total": 31,
+    "easy": 6,
+    "medium": 21,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "grammarly",
+    "name": "Grammarly",
+    "total": 30,
+    "easy": 7,
+    "medium": 19,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "huawei",
+    "name": "Huawei",
+    "total": 29,
+    "easy": 9,
+    "medium": 15,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "rippling",
+    "name": "Rippling",
+    "total": 29,
+    "easy": 1,
+    "medium": 19,
+    "hard": 9,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "waymo",
+    "name": "Waymo",
+    "total": 29,
+    "easy": 1,
+    "medium": 16,
+    "hard": 12,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "dropbox",
+    "name": "Dropbox",
+    "total": 28,
+    "easy": 4,
+    "medium": 13,
+    "hard": 11,
+    "interviewTip": "Master recursion and binary search on sorted arrays.",
+    "featured": false
+  },
+  {
+    "id": "indeed",
+    "name": "Indeed",
+    "total": 28,
+    "easy": 9,
+    "medium": 11,
+    "hard": 8,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zeta",
+    "name": "Zeta",
+    "total": 28,
+    "easy": 0,
+    "medium": 18,
+    "hard": 10,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "morgan",
+    "name": "Morgan",
+    "total": 28,
+    "easy": 13,
+    "medium": 12,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "american-express",
+    "name": "American Express",
+    "total": 27,
+    "easy": 8,
+    "medium": 13,
+    "hard": 6,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tekion",
+    "name": "Tekion",
+    "total": 27,
+    "easy": 1,
+    "medium": 19,
+    "hard": 7,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tencent",
+    "name": "Tencent",
+    "total": 27,
+    "easy": 11,
+    "medium": 13,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "grab",
+    "name": "Grab",
+    "total": 26,
+    "easy": 5,
+    "medium": 18,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "spotify",
+    "name": "Spotify",
+    "total": 26,
+    "easy": 10,
+    "medium": 10,
+    "hard": 6,
+    "interviewTip": "Focus on sorting, searching, and heaps.",
+    "featured": false
+  },
+  {
+    "id": "squarepoint-capital",
+    "name": "Squarepoint Capital",
+    "total": 26,
+    "easy": 2,
+    "medium": 18,
+    "hard": 6,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "baidu",
+    "name": "Baidu",
+    "total": 25,
+    "easy": 4,
+    "medium": 14,
+    "hard": 7,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "intel",
+    "name": "Intel",
+    "total": 25,
+    "easy": 10,
+    "medium": 14,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "mongodb",
+    "name": "MongoDB",
+    "total": 25,
+    "easy": 4,
+    "medium": 15,
+    "hard": 6,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "splunk",
+    "name": "Splunk",
+    "total": 25,
+    "easy": 4,
+    "medium": 18,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "twilio",
+    "name": "Twilio",
+    "total": 25,
+    "easy": 7,
+    "medium": 17,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ola-cabs",
+    "name": "Ola Cabs",
+    "total": 24,
+    "easy": 5,
+    "medium": 14,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "square",
+    "name": "Block (Square)",
+    "total": 24,
+    "easy": 3,
+    "medium": 16,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "robinhood",
+    "name": "Robinhood",
+    "total": 23,
+    "easy": 4,
+    "medium": 17,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "akuna",
+    "name": "Akuna",
+    "total": 23,
+    "easy": 4,
+    "medium": 14,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "jp",
+    "name": "JP",
+    "total": 23,
+    "easy": 9,
+    "medium": 12,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "deutsche-bank",
+    "name": "Deutsche Bank",
+    "total": 22,
+    "easy": 7,
+    "medium": 8,
+    "hard": 7,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ixl",
+    "name": "IXL",
+    "total": 22,
+    "easy": 5,
+    "medium": 14,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "j-p-morgan",
+    "name": "JPMorgan Chase",
+    "total": 22,
+    "easy": 9,
+    "medium": 11,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "audible",
+    "name": "Audible",
+    "total": 21,
+    "easy": 8,
+    "medium": 9,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "siemens",
+    "name": "Siemens",
+    "total": 21,
+    "easy": 6,
+    "medium": 12,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zenefits",
+    "name": "Zenefits",
+    "total": 21,
+    "easy": 5,
+    "medium": 11,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "palantir",
+    "name": "Palantir",
+    "total": 21,
+    "easy": 7,
+    "medium": 11,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "pocket",
+    "name": "Pocket",
+    "total": 21,
+    "easy": 2,
+    "medium": 13,
+    "hard": 6,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "booking-com",
+    "name": "Booking.com",
+    "total": 20,
+    "easy": 3,
+    "medium": 12,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "juspay",
+    "name": "Juspay",
+    "total": 20,
+    "easy": 2,
+    "medium": 13,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "myntra",
+    "name": "Myntra",
+    "total": 20,
+    "easy": 4,
+    "medium": 14,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tinkoff",
+    "name": "Tinkoff",
+    "total": 20,
+    "easy": 8,
+    "medium": 12,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "wells-fargo",
+    "name": "Wells Fargo",
+    "total": 20,
+    "easy": 9,
+    "medium": 9,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "accolite",
+    "name": "Accolite",
+    "total": 19,
+    "easy": 4,
+    "medium": 14,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "blackrock",
+    "name": "BlackRock",
+    "total": 19,
+    "easy": 6,
+    "medium": 12,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "bny-mellon",
+    "name": "BNY Mellon",
+    "total": 19,
+    "easy": 1,
+    "medium": 10,
+    "hard": 8,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "makemytrip",
+    "name": "MakeMyTrip",
+    "total": 19,
+    "easy": 0,
+    "medium": 14,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tripadvisor",
+    "name": "Tripadvisor",
+    "total": 19,
+    "easy": 7,
+    "medium": 10,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "two-sigma",
+    "name": "Two Sigma",
+    "total": 19,
+    "easy": 3,
+    "medium": 11,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "verkada",
+    "name": "Verkada",
+    "total": 19,
+    "easy": 4,
+    "medium": 10,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "two",
+    "name": "Two",
+    "total": 19,
+    "easy": 3,
+    "medium": 11,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "godaddy",
+    "name": "GoDaddy",
+    "total": 18,
+    "easy": 5,
+    "medium": 10,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "houzz",
+    "name": "Houzz",
+    "total": 18,
+    "easy": 0,
+    "medium": 10,
+    "hard": 8,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "okta",
+    "name": "Okta",
+    "total": 18,
+    "easy": 0,
+    "medium": 13,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "roku",
+    "name": "Roku",
+    "total": 18,
+    "easy": 2,
+    "medium": 10,
+    "hard": 6,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "akuna-capital",
+    "name": "Akuna Capital",
+    "total": 17,
+    "easy": 1,
+    "medium": 8,
+    "hard": 8,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "amd",
+    "name": "AMD",
+    "total": 17,
+    "easy": 8,
+    "medium": 9,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "dell",
+    "name": "Dell",
+    "total": 17,
+    "easy": 9,
+    "medium": 6,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "geico",
+    "name": "Geico",
+    "total": 17,
+    "easy": 1,
+    "medium": 15,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "hulu",
+    "name": "Hulu",
+    "total": 17,
+    "easy": 2,
+    "medium": 12,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "openai",
+    "name": "OpenAI",
+    "total": 17,
+    "easy": 1,
+    "medium": 14,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "capital",
+    "name": "Capital",
+    "total": 17,
+    "easy": 8,
+    "medium": 8,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "affirm",
+    "name": "Affirm",
+    "total": 16,
+    "easy": 2,
+    "medium": 10,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "coursera",
+    "name": "Coursera",
+    "total": 16,
+    "easy": 2,
+    "medium": 7,
+    "hard": 7,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "cruise",
+    "name": "Cruise",
+    "total": 16,
+    "easy": 0,
+    "medium": 14,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "epic-systems",
+    "name": "Epic Systems",
+    "total": 16,
+    "easy": 4,
+    "medium": 11,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "hudson-river-trading",
+    "name": "Hudson River Trading",
+    "total": 16,
+    "easy": 6,
+    "medium": 5,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "twitch",
+    "name": "Twitch",
+    "total": 16,
+    "easy": 3,
+    "medium": 10,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zscaler",
+    "name": "ZScaler",
+    "total": 16,
+    "easy": 3,
+    "medium": 7,
+    "hard": 6,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "bitgo",
+    "name": "BitGo",
+    "total": 15,
+    "easy": 0,
+    "medium": 10,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "citrix",
+    "name": "Citrix",
+    "total": 15,
+    "easy": 5,
+    "medium": 5,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "cohesity",
+    "name": "Cohesity",
+    "total": 15,
+    "easy": 2,
+    "medium": 7,
+    "hard": 6,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "moloco",
+    "name": "Moloco",
+    "total": 15,
+    "easy": 0,
+    "medium": 10,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "pocket-gems",
+    "name": "Pocket Gems",
+    "total": 15,
+    "easy": 1,
+    "medium": 10,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "sigmoid",
+    "name": "Sigmoid",
+    "total": 15,
+    "easy": 4,
+    "medium": 10,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "sofi",
+    "name": "SoFi",
+    "total": 15,
+    "easy": 1,
+    "medium": 9,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "uipath",
+    "name": "UiPath",
+    "total": 15,
+    "easy": 0,
+    "medium": 9,
+    "hard": 6,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zopsmart",
+    "name": "Zopsmart",
+    "total": 15,
+    "easy": 2,
+    "medium": 11,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "jane-street",
+    "name": "Jane Street",
+    "total": 14,
+    "easy": 7,
+    "medium": 4,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "karat",
+    "name": "Karat",
+    "total": 14,
+    "easy": 4,
+    "medium": 7,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "mitsogo",
+    "name": "Mitsogo",
+    "total": 14,
+    "easy": 3,
+    "medium": 9,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "nike",
+    "name": "Nike",
+    "total": 14,
+    "easy": 3,
+    "medium": 9,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tableau",
+    "name": "Tableau",
+    "total": 14,
+    "easy": 4,
+    "medium": 3,
+    "hard": 7,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "akamai",
+    "name": "Akamai",
+    "total": 13,
+    "easy": 6,
+    "medium": 7,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "aurora",
+    "name": "Aurora",
+    "total": 13,
+    "easy": 0,
+    "medium": 8,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "datadog",
+    "name": "Datadog",
+    "total": 13,
+    "easy": 3,
+    "medium": 7,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "general-motors",
+    "name": "General Motors",
+    "total": 13,
+    "easy": 1,
+    "medium": 8,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "inmobi",
+    "name": "InMobi",
+    "total": 13,
+    "easy": 0,
+    "medium": 4,
+    "hard": 9,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "nuro",
+    "name": "Nuro",
+    "total": 13,
+    "easy": 0,
+    "medium": 10,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "vk",
+    "name": "VK",
+    "total": 13,
+    "easy": 7,
+    "medium": 6,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "whatnot",
+    "name": "Whatnot",
+    "total": 13,
+    "easy": 4,
+    "medium": 9,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "dp-world",
+    "name": "DP world",
+    "total": 12,
+    "easy": 0,
+    "medium": 9,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "dream11",
+    "name": "Dream11",
+    "total": 12,
+    "easy": 1,
+    "medium": 10,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "millennium",
+    "name": "Millennium",
+    "total": 12,
+    "easy": 2,
+    "medium": 7,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "postmates",
+    "name": "Postmates",
+    "total": 12,
+    "easy": 2,
+    "medium": 8,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "revolut",
+    "name": "Revolut",
+    "total": 12,
+    "easy": 3,
+    "medium": 9,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "pure",
+    "name": "Pure",
+    "total": 12,
+    "easy": 5,
+    "medium": 5,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "quip",
+    "name": "Quip",
+    "total": 12,
+    "easy": 2,
+    "medium": 9,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "applied-intuition",
+    "name": "Applied Intuition",
+    "total": 11,
+    "easy": 0,
+    "medium": 7,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "cloudflare",
+    "name": "Cloudflare",
+    "total": 11,
+    "easy": 1,
+    "medium": 8,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "coinbase",
+    "name": "Coinbase",
+    "total": 11,
+    "easy": 2,
+    "medium": 8,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "crowdstrike",
+    "name": "CrowdStrike",
+    "total": 11,
+    "easy": 2,
+    "medium": 8,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "disney",
+    "name": "Disney",
+    "total": 11,
+    "easy": 1,
+    "medium": 9,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "hubspot",
+    "name": "Hubspot",
+    "total": 11,
+    "easy": 3,
+    "medium": 6,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "netapp",
+    "name": "NetApp",
+    "total": 11,
+    "easy": 4,
+    "medium": 7,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ozon",
+    "name": "Ozon",
+    "total": 11,
+    "easy": 6,
+    "medium": 4,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "pornhub",
+    "name": "PornHub",
+    "total": 11,
+    "easy": 2,
+    "medium": 9,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "sig",
+    "name": "SIG",
+    "total": 11,
+    "easy": 0,
+    "medium": 8,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ukg",
+    "name": "UKG",
+    "total": 11,
+    "easy": 3,
+    "medium": 5,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "verily",
+    "name": "Verily",
+    "total": 11,
+    "easy": 1,
+    "medium": 8,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "wissen-technology",
+    "name": "Wissen Technology",
+    "total": 11,
+    "easy": 1,
+    "medium": 9,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "arcesium",
+    "name": "Arcesium",
+    "total": 10,
+    "easy": 0,
+    "medium": 6,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "criteo",
+    "name": "Criteo",
+    "total": 10,
+    "easy": 7,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "flexport",
+    "name": "Flexport",
+    "total": 10,
+    "easy": 0,
+    "medium": 10,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "groupon",
+    "name": "Groupon",
+    "total": 10,
+    "easy": 3,
+    "medium": 6,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "liveramp",
+    "name": "LiveRamp",
+    "total": 10,
+    "easy": 3,
+    "medium": 7,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "microstrategy",
+    "name": "Microstrategy",
+    "total": 10,
+    "easy": 3,
+    "medium": 7,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "reddit",
+    "name": "Reddit",
+    "total": 10,
+    "easy": 2,
+    "medium": 7,
+    "hard": 1,
+    "interviewTip": "Work on hashing and bit manipulation.",
+    "featured": false
+  },
+  {
+    "id": "weride",
+    "name": "WeRide",
+    "total": 10,
+    "easy": 1,
+    "medium": 3,
+    "hard": 6,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zulily",
+    "name": "Zulily",
+    "total": 10,
+    "easy": 3,
+    "medium": 5,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "appdynamics",
+    "name": "AppDynamics",
+    "total": 9,
+    "easy": 2,
+    "medium": 6,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "avito",
+    "name": "Avito",
+    "total": 9,
+    "easy": 2,
+    "medium": 7,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "cloudera",
+    "name": "Cloudera",
+    "total": 9,
+    "easy": 4,
+    "medium": 5,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "compass",
+    "name": "Compass",
+    "total": 9,
+    "easy": 2,
+    "medium": 6,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "confluent",
+    "name": "Confluent",
+    "total": 9,
+    "easy": 0,
+    "medium": 7,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "factset",
+    "name": "FactSet",
+    "total": 9,
+    "easy": 4,
+    "medium": 5,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "freshworks",
+    "name": "FreshWorks",
+    "total": 9,
+    "easy": 1,
+    "medium": 7,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "instacart",
+    "name": "Instacart",
+    "total": 9,
+    "easy": 2,
+    "medium": 6,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "nokia",
+    "name": "Nokia",
+    "total": 9,
+    "easy": 5,
+    "medium": 2,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "opentext",
+    "name": "opentext",
+    "total": 9,
+    "easy": 6,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "publicis-sapient",
+    "name": "Publicis Sapient",
+    "total": 9,
+    "easy": 2,
+    "medium": 5,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "rivian",
+    "name": "Rivian",
+    "total": 9,
+    "easy": 2,
+    "medium": 6,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "sumo-logic",
+    "name": "Sumo Logic",
+    "total": 9,
+    "easy": 0,
+    "medium": 8,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "didi",
+    "name": "Didi",
+    "total": 9,
+    "easy": 2,
+    "medium": 4,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "redfin",
+    "name": "Redfin",
+    "total": 9,
+    "easy": 5,
+    "medium": 4,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "asana",
+    "name": "Asana",
+    "total": 8,
+    "easy": 2,
+    "medium": 6,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "axon",
+    "name": "Axon",
+    "total": 8,
+    "easy": 1,
+    "medium": 7,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "directi",
+    "name": "Directi",
+    "total": 8,
+    "easy": 0,
+    "medium": 5,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "info-edge",
+    "name": "Info Edge",
+    "total": 8,
+    "easy": 1,
+    "medium": 6,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "kla",
+    "name": "KLA",
+    "total": 8,
+    "easy": 1,
+    "medium": 3,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "lti",
+    "name": "LTI",
+    "total": 8,
+    "easy": 4,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "nagarro",
+    "name": "Nagarro",
+    "total": 8,
+    "easy": 4,
+    "medium": 4,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "netskope",
+    "name": "Netskope",
+    "total": 8,
+    "easy": 0,
+    "medium": 3,
+    "hard": 5,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "oyo",
+    "name": "oyo",
+    "total": 8,
+    "easy": 1,
+    "medium": 6,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "persistent-systems",
+    "name": "persistent systems",
+    "total": 8,
+    "easy": 5,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "pure-storage",
+    "name": "Pure Storage",
+    "total": 8,
+    "easy": 2,
+    "medium": 5,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "airtel",
+    "name": "Airtel",
+    "total": 7,
+    "easy": 1,
+    "medium": 6,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "citigroup",
+    "name": "Citigroup",
+    "total": 7,
+    "easy": 2,
+    "medium": 4,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "dunzo",
+    "name": "Dunzo",
+    "total": 7,
+    "easy": 0,
+    "medium": 4,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "groww",
+    "name": "Groww",
+    "total": 7,
+    "easy": 1,
+    "medium": 5,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "hive",
+    "name": "Hive",
+    "total": 7,
+    "easy": 0,
+    "medium": 3,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "imc",
+    "name": "IMC",
+    "total": 7,
+    "easy": 0,
+    "medium": 3,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "jio",
+    "name": "jio",
+    "total": 7,
+    "easy": 2,
+    "medium": 3,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "optiver",
+    "name": "Optiver",
+    "total": 7,
+    "easy": 2,
+    "medium": 4,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "rakuten",
+    "name": "Rakuten",
+    "total": 7,
+    "easy": 1,
+    "medium": 5,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "shopee",
+    "name": "Shopee",
+    "total": 7,
+    "easy": 0,
+    "medium": 6,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "urban-company",
+    "name": "Urban Company",
+    "total": 7,
+    "easy": 0,
+    "medium": 5,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "vimeo",
+    "name": "Vimeo",
+    "total": 7,
+    "easy": 1,
+    "medium": 5,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "warnermedia",
+    "name": "Warnermedia",
+    "total": 7,
+    "easy": 2,
+    "medium": 4,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ge",
+    "name": "GE",
+    "total": 7,
+    "easy": 3,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "cadence",
+    "name": "Cadence",
+    "total": 6,
+    "easy": 1,
+    "medium": 3,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "cashfree",
+    "name": "Cashfree",
+    "total": 6,
+    "easy": 1,
+    "medium": 4,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "comcast",
+    "name": "Comcast",
+    "total": 6,
+    "easy": 4,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "darwinbox",
+    "name": "Darwinbox",
+    "total": 6,
+    "easy": 0,
+    "medium": 3,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "faire",
+    "name": "Faire",
+    "total": 6,
+    "easy": 0,
+    "medium": 2,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "fidelity",
+    "name": "Fidelity",
+    "total": 6,
+    "easy": 5,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "lowe-s",
+    "name": "Lowe's",
+    "total": 6,
+    "easy": 3,
+    "medium": 1,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "lucid",
+    "name": "Lucid",
+    "total": 6,
+    "easy": 2,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "maq-software",
+    "name": "MAQ Software",
+    "total": 6,
+    "easy": 1,
+    "medium": 4,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "mercari",
+    "name": "Mercari",
+    "total": 6,
+    "easy": 3,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "moveworks",
+    "name": "Moveworks",
+    "total": 6,
+    "easy": 0,
+    "medium": 3,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "netease",
+    "name": "NetEase",
+    "total": 6,
+    "easy": 2,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "optum",
+    "name": "Optum",
+    "total": 6,
+    "easy": 2,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "paypay",
+    "name": "PayPay",
+    "total": 6,
+    "easy": 2,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "point72",
+    "name": "Point72",
+    "total": 6,
+    "easy": 3,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "pony-ai",
+    "name": "Pony.ai",
+    "total": 6,
+    "easy": 0,
+    "medium": 3,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ripple",
+    "name": "Ripple",
+    "total": 6,
+    "easy": 1,
+    "medium": 4,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "rokt",
+    "name": "Rokt",
+    "total": 6,
+    "easy": 2,
+    "medium": 2,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "target",
+    "name": "Target",
+    "total": 6,
+    "easy": 1,
+    "medium": 4,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "trilogy",
+    "name": "Trilogy",
+    "total": 6,
+    "easy": 0,
+    "medium": 4,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "upstart",
+    "name": "Upstart",
+    "total": 6,
+    "easy": 0,
+    "medium": 6,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "virtu-financial",
+    "name": "Virtu Financial",
+    "total": 6,
+    "easy": 5,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "virtusa",
+    "name": "Virtusa",
+    "total": 6,
+    "easy": 3,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "wise",
+    "name": "Wise",
+    "total": 6,
+    "easy": 1,
+    "medium": 5,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "workday",
+    "name": "Workday",
+    "total": 6,
+    "easy": 0,
+    "medium": 6,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zoox",
+    "name": "Zoox",
+    "total": 6,
+    "easy": 1,
+    "medium": 4,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zs-associates",
+    "name": "ZS Associates",
+    "total": 6,
+    "easy": 1,
+    "medium": 5,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "arista",
+    "name": "Arista Networks",
+    "total": 6,
+    "easy": 3,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "booking",
+    "name": "Booking.com",
+    "total": 6,
+    "easy": 1,
+    "medium": 4,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "drawbridge",
+    "name": "Drawbridge",
+    "total": 6,
+    "easy": 2,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "epic",
+    "name": "Epic",
+    "total": 6,
+    "easy": 3,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "amdocs",
+    "name": "Amdocs",
+    "total": 5,
+    "easy": 2,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "aon",
+    "name": "Aon",
+    "total": 5,
+    "easy": 2,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "athenahealth",
+    "name": "athenahealth",
+    "total": 5,
+    "easy": 1,
+    "medium": 4,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "attentive",
+    "name": "Attentive",
+    "total": 5,
+    "easy": 2,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "bolt",
+    "name": "Bolt",
+    "total": 5,
+    "easy": 3,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "careem",
+    "name": "Careem",
+    "total": 5,
+    "easy": 1,
+    "medium": 4,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "chewy",
+    "name": "Chewy",
+    "total": 5,
+    "easy": 2,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "dataminr",
+    "name": "Dataminr",
+    "total": 5,
+    "easy": 0,
+    "medium": 2,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "duolingo",
+    "name": "Duolingo",
+    "total": 5,
+    "easy": 0,
+    "medium": 3,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "garmin",
+    "name": "Garmin",
+    "total": 5,
+    "easy": 5,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "gsn-games",
+    "name": "GSN Games",
+    "total": 5,
+    "easy": 2,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "guidewire",
+    "name": "Guidewire",
+    "total": 5,
+    "easy": 0,
+    "medium": 5,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "gusto",
+    "name": "Gusto",
+    "total": 5,
+    "easy": 1,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "hp",
+    "name": "HP",
+    "total": 5,
+    "easy": 3,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "nielsen",
+    "name": "Nielsen",
+    "total": 5,
+    "easy": 0,
+    "medium": 4,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "remitly",
+    "name": "Remitly",
+    "total": 5,
+    "easy": 2,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "riot-games",
+    "name": "Riot Games",
+    "total": 5,
+    "easy": 1,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "shopify",
+    "name": "Shopify",
+    "total": 5,
+    "easy": 0,
+    "medium": 4,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "sony",
+    "name": "Sony",
+    "total": 5,
+    "easy": 3,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "squarespace",
+    "name": "Squarespace",
+    "total": 5,
+    "easy": 3,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "teradata",
+    "name": "Teradata",
+    "total": 5,
+    "easy": 0,
+    "medium": 2,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "the-trade-desk",
+    "name": "The Trade Desk",
+    "total": 5,
+    "easy": 0,
+    "medium": 4,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "toast",
+    "name": "Toast",
+    "total": 5,
+    "easy": 3,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "valve",
+    "name": "Valve",
+    "total": 5,
+    "easy": 2,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "electronic",
+    "name": "Electronic",
+    "total": 5,
+    "easy": 2,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "gsn",
+    "name": "GSN",
+    "total": 5,
+    "easy": 2,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "point",
+    "name": "Point",
+    "total": 5,
+    "easy": 3,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "acko",
+    "name": "Acko",
+    "total": 4,
+    "easy": 2,
+    "medium": 0,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "airbus-se",
+    "name": "Airbus SE",
+    "total": 4,
+    "easy": 2,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "altimetrik",
+    "name": "Altimetrik",
+    "total": 4,
+    "easy": 3,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "blinkit",
+    "name": "blinkit",
+    "total": 4,
+    "easy": 0,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "commvault",
+    "name": "Commvault",
+    "total": 4,
+    "easy": 1,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "delhivery",
+    "name": "Delhivery",
+    "total": 4,
+    "easy": 1,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "devrev",
+    "name": "DevRev",
+    "total": 4,
+    "easy": 1,
+    "medium": 1,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "earnin",
+    "name": "EarnIn",
+    "total": 4,
+    "easy": 0,
+    "medium": 4,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "fortinet",
+    "name": "Fortinet",
+    "total": 4,
+    "easy": 2,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "gameskraft",
+    "name": "Gameskraft",
+    "total": 4,
+    "easy": 0,
+    "medium": 0,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "harness",
+    "name": "Harness",
+    "total": 4,
+    "easy": 0,
+    "medium": 2,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "honeywell",
+    "name": "Honeywell",
+    "total": 4,
+    "easy": 2,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "hpe",
+    "name": "HPE",
+    "total": 4,
+    "easy": 2,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "liftoff",
+    "name": "Liftoff",
+    "total": 4,
+    "easy": 0,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "mindtickle",
+    "name": "Mindtickle",
+    "total": 4,
+    "easy": 0,
+    "medium": 0,
+    "hard": 4,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "mindtree",
+    "name": "MindTree",
+    "total": 4,
+    "easy": 4,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "nordstrom",
+    "name": "Nordstrom",
+    "total": 4,
+    "easy": 0,
+    "medium": 4,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "nykaa",
+    "name": "Nykaa",
+    "total": 4,
+    "easy": 0,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "otter-ai",
+    "name": "Otter.ai",
+    "total": 4,
+    "easy": 0,
+    "medium": 2,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "patreon",
+    "name": "Patreon",
+    "total": 4,
+    "easy": 2,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "poshmark",
+    "name": "Poshmark",
+    "total": 4,
+    "easy": 0,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "pwc",
+    "name": "Pwc",
+    "total": 4,
+    "easy": 3,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "societe-generale",
+    "name": "Societe Generale",
+    "total": 4,
+    "easy": 2,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "texas-instruments",
+    "name": "Texas Instruments",
+    "total": 4,
+    "easy": 0,
+    "medium": 3,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "thoughtspot",
+    "name": "thoughtspot",
+    "total": 4,
+    "easy": 0,
+    "medium": 1,
+    "hard": 3,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "trexquant",
+    "name": "Trexquant",
+    "total": 4,
+    "easy": 0,
+    "medium": 4,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tusimple",
+    "name": "TuSimple",
+    "total": 4,
+    "easy": 0,
+    "medium": 2,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ubs",
+    "name": "UBS",
+    "total": 4,
+    "easy": 1,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "works-applications",
+    "name": "Works Applications",
+    "total": 4,
+    "easy": 0,
+    "medium": 2,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ziprecruiter",
+    "name": "ZipRecruiter",
+    "total": 4,
+    "easy": 0,
+    "medium": 4,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zoom",
+    "name": "Zoom",
+    "total": 4,
+    "easy": 2,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "evernote",
+    "name": "Evernote",
+    "total": 4,
+    "easy": 1,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "hbo",
+    "name": "HBO",
+    "total": 4,
+    "easy": 1,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "riot",
+    "name": "Riot",
+    "total": 4,
+    "easy": 1,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "triplebyte",
+    "name": "Triplebyte",
+    "total": 4,
+    "easy": 1,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "virtu",
+    "name": "Virtu",
+    "total": 4,
+    "easy": 4,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "activision",
+    "name": "Activision",
+    "total": 3,
+    "easy": 1,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "airwallex",
+    "name": "Airwallex",
+    "total": 3,
+    "easy": 0,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "apollo-io",
+    "name": "Apollo.io",
+    "total": 3,
+    "easy": 0,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "appfolio",
+    "name": "AppFolio",
+    "total": 3,
+    "easy": 1,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "aqr-capital-management",
+    "name": "AQR Capital Management",
+    "total": 3,
+    "easy": 0,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "carwale",
+    "name": "carwale",
+    "total": 3,
+    "easy": 2,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "chime",
+    "name": "Chime",
+    "total": 3,
+    "easy": 0,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ciena",
+    "name": "ciena",
+    "total": 3,
+    "easy": 1,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "clari",
+    "name": "Clari",
+    "total": 3,
+    "easy": 0,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "cme-group",
+    "name": "CME Group",
+    "total": 3,
+    "easy": 1,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "deliveroo",
+    "name": "Deliveroo",
+    "total": 3,
+    "easy": 2,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "deltax",
+    "name": "DeltaX",
+    "total": 3,
+    "easy": 1,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "drw",
+    "name": "DRW",
+    "total": 3,
+    "easy": 1,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "fourkites",
+    "name": "fourkites",
+    "total": 3,
+    "easy": 1,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "freecharge",
+    "name": "Freecharge",
+    "total": 3,
+    "easy": 0,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ge-digital",
+    "name": "GE Digital",
+    "total": 3,
+    "easy": 1,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ge-healthcare",
+    "name": "GE Healthcare",
+    "total": 3,
+    "easy": 1,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "hilabs",
+    "name": "HiLabs",
+    "total": 3,
+    "easy": 1,
+    "medium": 0,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "larsen-toubro",
+    "name": "Larsen & Toubro",
+    "total": 3,
+    "easy": 3,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "navan",
+    "name": "Navan",
+    "total": 3,
+    "easy": 0,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "navi",
+    "name": "Navi",
+    "total": 3,
+    "easy": 0,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ncr",
+    "name": "NCR",
+    "total": 3,
+    "easy": 0,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "nextdoor",
+    "name": "Nextdoor",
+    "total": 3,
+    "easy": 0,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "niantic",
+    "name": "Niantic",
+    "total": 3,
+    "easy": 0,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "odoo",
+    "name": "Odoo",
+    "total": 3,
+    "easy": 2,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "opendoor",
+    "name": "Opendoor",
+    "total": 3,
+    "easy": 0,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "samsara",
+    "name": "Samsara",
+    "total": 3,
+    "easy": 1,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "snapdeal",
+    "name": "Snapdeal",
+    "total": 3,
+    "easy": 1,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "thoughtworks",
+    "name": "ThoughtWorks",
+    "total": 3,
+    "easy": 2,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "thousandeyes",
+    "name": "ThousandEyes",
+    "total": 3,
+    "easy": 0,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tiger-analytics",
+    "name": "Tiger Analytics",
+    "total": 3,
+    "easy": 3,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tinder",
+    "name": "Tinder",
+    "total": 3,
+    "easy": 1,
+    "medium": 0,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "toptal",
+    "name": "Toptal",
+    "total": 3,
+    "easy": 0,
+    "medium": 2,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tower-research-capital",
+    "name": "Tower Research Capital",
+    "total": 3,
+    "easy": 0,
+    "medium": 3,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "usaa",
+    "name": "USAA",
+    "total": 3,
+    "easy": 2,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "worldquant",
+    "name": "WorldQuant",
+    "total": 3,
+    "easy": 0,
+    "medium": 1,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "aetion",
+    "name": "Aetion",
+    "total": 3,
+    "easy": 1,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "american",
+    "name": "American",
+    "total": 3,
+    "easy": 0,
+    "medium": 1,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "deutsche",
+    "name": "Deutsche",
+    "total": 3,
+    "easy": 2,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "garena",
+    "name": "Garena",
+    "total": 3,
+    "easy": 0,
+    "medium": 1,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "hrt",
+    "name": "HRT",
+    "total": 3,
+    "easy": 3,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "amadeus",
+    "name": "Amadeus",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "analytics-quotient",
+    "name": "Analytics quotient",
+    "total": 2,
+    "easy": 2,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "bank-of-america",
+    "name": "Bank of America",
+    "total": 2,
+    "easy": 2,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "blackstone",
+    "name": "BlackStone",
+    "total": 2,
+    "easy": 1,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "bridgewater-associates",
+    "name": "Bridgewater Associates",
+    "total": 2,
+    "easy": 0,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "canonical",
+    "name": "Canonical",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "cars24",
+    "name": "CARS24",
+    "total": 2,
+    "easy": 0,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ey",
+    "name": "EY",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "fiverr",
+    "name": "Fiverr",
+    "total": 2,
+    "easy": 0,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "flexera",
+    "name": "Flexera",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "grubhub",
+    "name": "Grubhub",
+    "total": 2,
+    "easy": 0,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "hotstar",
+    "name": "Hotstar",
+    "total": 2,
+    "easy": 0,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "informatica",
+    "name": "Informatica",
+    "total": 2,
+    "easy": 0,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "instabase",
+    "name": "instabase",
+    "total": 2,
+    "easy": 0,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ivp",
+    "name": "IVP",
+    "total": 2,
+    "easy": 0,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "jump-trading",
+    "name": "Jump Trading",
+    "total": 2,
+    "easy": 1,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "kakao",
+    "name": "Kakao",
+    "total": 2,
+    "easy": 0,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "line",
+    "name": "LINE",
+    "total": 2,
+    "easy": 0,
+    "medium": 0,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "luxoft",
+    "name": "Luxoft",
+    "total": 2,
+    "easy": 2,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "machine-zone",
+    "name": "Machine Zone",
+    "total": 2,
+    "easy": 0,
+    "medium": 0,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "mckinsey",
+    "name": "McKinsey",
+    "total": 2,
+    "easy": 0,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "mixpanel",
+    "name": "Mixpanel",
+    "total": 2,
+    "easy": 0,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "national-payments-corporation-of-india",
+    "name": "National Payments Corporation of India",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "netsuite",
+    "name": "Netsuite",
+    "total": 2,
+    "easy": 2,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "paycom",
+    "name": "Paycom",
+    "total": 2,
+    "easy": 2,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "peak6",
+    "name": "peak6",
+    "total": 2,
+    "easy": 0,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "peloton",
+    "name": "Peloton",
+    "total": 2,
+    "easy": 0,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "pubmatic",
+    "name": "PubMatic",
+    "total": 2,
+    "easy": 0,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "rbc",
+    "name": "RBC",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "sentry",
+    "name": "Sentry",
+    "total": 2,
+    "easy": 0,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "sharechat",
+    "name": "ShareChat",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "softwire",
+    "name": "Softwire",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "soundhound",
+    "name": "SoundHound",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "stackadapt",
+    "name": "StackAdapt",
+    "total": 2,
+    "easy": 0,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "stackline",
+    "name": "Stackline",
+    "total": 2,
+    "easy": 0,
+    "medium": 1,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tanium",
+    "name": "Tanium",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tesco",
+    "name": "Tesco",
+    "total": 2,
+    "easy": 0,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "thomson-reuters",
+    "name": "Thomson Reuters",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "turvo",
+    "name": "Turvo",
+    "total": 2,
+    "easy": 1,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "unity",
+    "name": "Unity",
+    "total": 2,
+    "easy": 0,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zalando",
+    "name": "Zalando",
+    "total": 2,
+    "easy": 0,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zendesk",
+    "name": "Zendesk",
+    "total": 2,
+    "easy": 2,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zluri",
+    "name": "Zluri",
+    "total": 2,
+    "easy": 0,
+    "medium": 2,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zynga",
+    "name": "Zynga",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "forusall",
+    "name": "ForUsAll",
+    "total": 2,
+    "easy": 0,
+    "medium": 0,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "machine",
+    "name": "Machine",
+    "total": 2,
+    "easy": 0,
+    "medium": 0,
+    "hard": 2,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "radius",
+    "name": "Radius",
+    "total": 2,
+    "easy": 2,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "united",
+    "name": "United",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zappos",
+    "name": "Zappos",
+    "total": 2,
+    "easy": 1,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "avalara",
+    "name": "Avalara",
+    "total": 1,
+    "easy": 0,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "blizzard",
+    "name": "Blizzard",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "braze",
+    "name": "Braze",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "circle",
+    "name": "Circle",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "cleartrip",
+    "name": "Cleartrip",
+    "total": 1,
+    "easy": 0,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "ctc",
+    "name": "CTC",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "curefit",
+    "name": "CureFit",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "cvent",
+    "name": "CVENT",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "devsinc",
+    "name": "Devsinc",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "druva",
+    "name": "Druva",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "edelweiss-group",
+    "name": "Edelweiss Group",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "fastenal",
+    "name": "Fastenal",
+    "total": 1,
+    "easy": 0,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "fpt",
+    "name": "FPT",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "gsa-capital",
+    "name": "GSA Capital",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "highspot",
+    "name": "Highspot",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "iit-bombay",
+    "name": "IIT Bombay",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "juniper-networks",
+    "name": "Juniper Networks",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "lendingkart-technologies",
+    "name": "Lendingkart Technologies",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "lenskart",
+    "name": "Lenskart",
+    "total": 1,
+    "easy": 0,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "mapbox",
+    "name": "Mapbox",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "mobileye",
+    "name": "Mobileye",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "moengage",
+    "name": "Moengage",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "national-instruments",
+    "name": "National Instruments",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "okx",
+    "name": "OKX",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "payu",
+    "name": "PayU",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "redbus",
+    "name": "redbus",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "scale-ai",
+    "name": "Scale AI",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "slice",
+    "name": "Slice",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "smartnews",
+    "name": "smartnews",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "smartsheet",
+    "name": "Smartsheet",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "soti",
+    "name": "SOTI",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "synopsys",
+    "name": "Synopsys",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "veeva-systems",
+    "name": "Veeva Systems",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "veritas",
+    "name": "Veritas",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "wealthfront",
+    "name": "Wealthfront",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "western-digital",
+    "name": "Western Digital",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "zeta-suite",
+    "name": "zeta suite",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "affinity",
+    "name": "Affinity",
+    "total": 1,
+    "easy": 0,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "alation",
+    "name": "Alation",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "bloomreach",
+    "name": "Bloomreach",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "bytedancetoutiao",
+    "name": "Bytedance Toutiao",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "clutter",
+    "name": "Clutter",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "codenation",
+    "name": "Codenation",
+    "total": 1,
+    "easy": 0,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "deliveryhero",
+    "name": "Delivery Hero",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "emc",
+    "name": "EMC",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "fallible",
+    "name": "Fallible",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "fidessa",
+    "name": "Fidessa",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "gilt",
+    "name": "Gilt",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "helix",
+    "name": "Helix",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "honey",
+    "name": "Honey",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "iit",
+    "name": "IIT",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "jane",
+    "name": "Jane",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "jingchi",
+    "name": "JingChi",
+    "total": 1,
+    "easy": 0,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "jump",
+    "name": "Jump",
+    "total": 1,
+    "easy": 0,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "leap",
+    "name": "Leap",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "limebike",
+    "name": "LimeBike",
+    "total": 1,
+    "easy": 0,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "maq",
+    "name": "MAQ",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "meituan",
+    "name": "Meituan",
+    "total": 1,
+    "easy": 0,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "national",
+    "name": "National",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "poynt",
+    "name": "Poynt",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "pramp",
+    "name": "Pramp",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "quantcast",
+    "name": "Quantcast",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "rackspace",
+    "name": "Rackspace",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "sapient",
+    "name": "Sapient",
+    "total": 1,
+    "easy": 0,
+    "medium": 0,
+    "hard": 1,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "symantec",
+    "name": "Symantec",
+    "total": 1,
+    "easy": 1,
+    "medium": 0,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "tandemg",
+    "name": "TandemG",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "thumbtack",
+    "name": "Thumbtack",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "traveloka",
+    "name": "Traveloka",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  },
+  {
+    "id": "yatra",
+    "name": "Yatra",
+    "total": 1,
+    "easy": 0,
+    "medium": 1,
+    "hard": 0,
+    "interviewTip": null,
+    "featured": false
+  }
+]

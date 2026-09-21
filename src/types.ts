@@ -66,3 +66,26 @@ export interface TopicNotes {
   a2z: Record<string, string>;
   neetcode: Record<string, string>;
 }
+
+export interface CompanyMeta {
+  id: string;
+  name: string;
+  total: number;
+  easy: number;
+  medium: number;
+  hard: number;
+  interviewTip?: string | null;
+  featured?: boolean;
+}
+
+export interface CompanyProblem {
+  id: string;
+  slug: string;
+  title: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  acceptance?: string | null;
+  frequency: number;
+  topics: string[];
+  timeframe?: string;
+  links: ProblemLinks;
+}
