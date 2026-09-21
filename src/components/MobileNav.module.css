@@ -9,11 +9,17 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 30;
-    height: 60px;
-    padding-bottom: env(safe-area-inset-bottom);
-    background: var(--bg-raised);
-    border-top: 1px solid var(--border-hairline);
+    z-index: 100;
+    align-items: center;
+    justify-content: space-around;
+    background: rgba(8, 9, 12, 0.94);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 6px;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+    box-sizing: border-box;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
   }
 
   .item,
@@ -24,15 +30,52 @@
     align-items: center;
     justify-content: center;
     gap: 3px;
-    font-size: 0.62rem;
-    font-weight: 500;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 2px 0;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s var(--easing);
   }
 
-  .item {
+  .item:active,
+  .active:active {
+    transform: scale(0.92);
+  }
+
+  .iconWrapper {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 26px;
+    border-radius: var(--radius-full);
+    transition: all 0.2s var(--easing);
+  }
+
+  .item .iconWrapper {
     color: var(--text-tertiary);
   }
 
-  .active {
+  .active .iconWrapper {
     color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+  }
+
+  .label {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    transition: color 0.15s ease;
+  }
+
+  .item .label {
+    color: var(--text-tertiary);
+  }
+
+  .active .label {
+    color: var(--accent);
+    font-weight: 600;
   }
 }
