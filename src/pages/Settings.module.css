@@ -269,3 +269,73 @@
   color: rgb(239, 68, 68);
 }
 
+.langGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+@media (max-width: 580px) {
+  .langGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.langCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--border-hairline);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.langCard:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-focus);
+}
+
+.langCardSelected {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.langCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.langCardIcon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.langCardTitle {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.langCardCheck {
+  color: var(--accent);
+  flex: none;
+}
+
+.langCardDesc {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+}
+
+

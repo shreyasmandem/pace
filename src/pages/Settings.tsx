@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Download, Moon, Sun, Upload, Monitor, LogOut, Cloud, CloudOff, RefreshCw, Check } from 'lucide-react';
 import { usePaceStore } from '../state/store';
-import type { Theme } from '../state/store';
+import type { Theme, TutorLanguage } from '../state/store';
 import { TRACK_ORDER, TRACK_META, getTrack } from '../data';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { useAuthUser, useSyncStatus } from '../hooks/useAuth';
@@ -14,9 +14,62 @@ const THEME_OPTIONS: { value: Theme; label: string; icon: typeof Sun }[] = [
   { value: 'system', label: 'System', icon: Monitor },
 ];
 
+const TUTOR_LANGUAGES: { id: TutorLanguage; name: string; icon: string; desc: string }[] = [
+  {
+    id: 'python',
+    name: 'Python 3',
+    icon: '🐍',
+    desc: 'PEP 8, deque, heapq, defaultdict, tuples, slices',
+  },
+  {
+    id: 'cpp',
+    name: 'C++ (C++17/20)',
+    icon: '⚡',
+    desc: 'STL vectors, priority_queue, unordered_map, structured bindings',
+  },
+  {
+    id: 'java',
+    name: 'Java',
+    icon: '☕',
+    desc: 'Collections, ArrayDeque, PriorityQueue, StringBuilder',
+  },
+  {
+    id: 'javascript',
+    name: 'JavaScript (ES6+)',
+    icon: '🟨',
+    desc: 'ES6+, Map, Set, array methods, modern idioms',
+  },
+  {
+    id: 'typescript',
+    name: 'TypeScript',
+    icon: '🔷',
+    desc: 'Typed DSA, interface TreeNode/ListNode, Map<K, V>',
+  },
+  {
+    id: 'go',
+    name: 'Go (Golang)',
+    icon: '🐹',
+    desc: 'Slices, maps, container/heap, idiomatic Go',
+  },
+  {
+    id: 'rust',
+    name: 'Rust',
+    icon: '🦀',
+    desc: 'Vec, VecDeque, BinaryHeap, pattern matching',
+  },
+  {
+    id: 'neutral',
+    name: 'Language Neutral',
+    icon: '🌐',
+    desc: 'Conceptual, pseudocode & versatile multi-language',
+  },
+];
+
 export default function Settings() {
   const theme = usePaceStore((s) => s.theme);
   const setTheme = usePaceStore((s) => s.setTheme);
+  const tutorLanguage = usePaceStore((s) => s.tutorLanguage || 'python');
+  const setTutorLanguage = usePaceStore((s) => s.setTutorLanguage);
   const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
   const registerTrack = usePaceStore((s) => s.registerTrack);
   const unregisterTrack = usePaceStore((s) => s.unregisterTrack);
@@ -138,6 +191,33 @@ export default function Settings() {
               {label}
             </button>
           ))}
+        </div>
+      </section>
+
+      <section className={styles.block}>
+        <h2 className={styles.blockTitle}>Pacer AI Tutor Language</h2>
+        <p className={styles.blockText}>
+          Choose your primary programming language for Pacer AI tutor. Code walkthroughs, hints, standard library recommendations, and algorithmic idioms will be customized to your choice. Select &ldquo;Language Neutral&rdquo; for conceptual intuition and pseudocode.
+        </p>
+        <div className={styles.langGrid}>
+          {TUTOR_LANGUAGES.map((item) => {
+            const isSelected = tutorLanguage === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={`${styles.langCard} ${isSelected ? styles.langCardSelected : ''}`}
+                onClick={() => setTutorLanguage(item.id)}
+              >
+                <div className={styles.langCardHeader}>
+                  <span className={styles.langCardIcon}>{item.icon}</span>
+                  <span className={styles.langCardTitle}>{item.name}</span>
+                  {isSelected && <Check size={14} className={styles.langCardCheck} />}
+                </div>
+                <span className={styles.langCardDesc}>{item.desc}</span>
+              </button>
+            );
+          })}
         </div>
       </section>
 

@@ -5,6 +5,16 @@ import { getTrack } from '../data';
 
 export type Theme = 'light' | 'dark' | 'system';
 
+export type TutorLanguage =
+  | 'python'
+  | 'cpp'
+  | 'java'
+  | 'javascript'
+  | 'typescript'
+  | 'go'
+  | 'rust'
+  | 'neutral';
+
 function todayISO(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -40,6 +50,9 @@ export interface PlanItem {
 interface PaceState {
   theme: Theme;
   setTheme: (t: Theme) => void;
+
+  tutorLanguage: TutorLanguage;
+  setTutorLanguage: (lang: TutorLanguage) => void;
 
   progress: Record<string, boolean>;
   toggleProblem: (id: string) => void;
@@ -103,6 +116,9 @@ export const usePaceStore = create<PaceState>()(
     (set, get) => ({
       theme: 'system',
       setTheme: (theme) => set({ theme }),
+
+      tutorLanguage: 'python',
+      setTutorLanguage: (tutorLanguage) => set({ tutorLanguage }),
 
       registeredTracks: [],
       registerTrack: (trackId) =>
@@ -345,7 +361,7 @@ export const usePaceStore = create<PaceState>()(
         }),
 
       exportSnapshot: () => {
-        const { progress, notes, bookmarks, solveLog, tutorChats, planner, registeredTracks } = get();
+        const { progress, notes, bookmarks, solveLog, tutorChats, planner, registeredTracks, tutorLanguage } = get();
         return JSON.stringify(
           {
             exportedAt: new Date().toISOString(),
@@ -356,6 +372,7 @@ export const usePaceStore = create<PaceState>()(
             tutorChats: tutorChats || {},
             planner: planner || {},
             registeredTracks: registeredTracks || [],
+            tutorLanguage: tutorLanguage || 'python',
           },
           null,
           2
@@ -373,6 +390,7 @@ export const usePaceStore = create<PaceState>()(
             tutorChats: parsed.tutorChats ?? {},
             planner: parsed.planner ?? {},
             registeredTracks: Array.isArray(parsed.registeredTracks) ? parsed.registeredTracks : [],
+            tutorLanguage: parsed.tutorLanguage ?? 'python',
           });
           return true;
         } catch {
@@ -384,6 +402,7 @@ export const usePaceStore = create<PaceState>()(
       name: 'pace-store',
       partialize: (state) => ({
         theme: state.theme,
+        tutorLanguage: state.tutorLanguage || 'python',
         progress: state.progress,
         notes: state.notes,
         tutorChats: state.tutorChats || {},
@@ -397,6 +416,7 @@ export const usePaceStore = create<PaceState>()(
           return {
             ...currentState,
             theme: persistedState?.theme ?? currentState.theme,
+            tutorLanguage: persistedState?.tutorLanguage ?? 'python',
             progress: {},
             notes: persistedState?.notes ?? {},
             tutorChats: persistedState?.tutorChats ?? {},
@@ -409,6 +429,7 @@ export const usePaceStore = create<PaceState>()(
         return {
           ...currentState,
           ...(persistedState || {}),
+          tutorLanguage: persistedState?.tutorLanguage ?? 'python',
           progress: persistedState?.progress ?? {},
           notes: persistedState?.notes ?? {},
           tutorChats: persistedState?.tutorChats ?? {},

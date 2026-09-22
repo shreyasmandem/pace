@@ -69,9 +69,30 @@ export default function AITutorDrawer({
   const stateKeyRef = useRef<string>('');
   const touchStartRef = useRef<{ x: number; y: number; isLeftEdge: boolean } | null>(null);
 
+  const tutorLanguage = usePaceStore((s) => s.tutorLanguage || 'python');
+
+  const langDisplayName =
+    tutorLanguage === 'python'
+      ? 'Python 3'
+      : tutorLanguage === 'cpp'
+      ? 'C++'
+      : tutorLanguage === 'java'
+      ? 'Java'
+      : tutorLanguage === 'javascript'
+      ? 'JavaScript'
+      : tutorLanguage === 'typescript'
+      ? 'TypeScript'
+      : tutorLanguage === 'go'
+      ? 'Go'
+      : tutorLanguage === 'rust'
+      ? 'Rust'
+      : 'Neutral';
+
   const THINKING_MESSAGES = [
     'Pacer is analyzing problem context...',
-    'Synthesizing optimal Python approach...',
+    tutorLanguage === 'neutral'
+      ? 'Synthesizing optimal algorithmic approach...'
+      : `Synthesizing optimal ${langDisplayName} approach...`,
     'Checking edge cases & complexity...',
     'Drafting step-by-step guidance...',
   ];
@@ -86,7 +107,7 @@ export default function AITutorDrawer({
       setThinkingStep((prev) => (prev + 1) % THINKING_MESSAGES.length);
     }, 2000);
     return () => clearInterval(interval);
-  }, [loading]);
+  }, [loading, THINKING_MESSAGES.length]);
 
   // Handle close action (from UI button, backdrop, Escape key, or swipe gestures)
   const handleClose = useCallback(() => {
@@ -271,6 +292,7 @@ export default function AITutorDrawer({
     patternTip,
     problems: problems?.map((p) => ({ title: p.title, difficulty: p.difficulty })),
     currentProblem,
+    preferredLanguage: tutorLanguage,
   };
 
   const handleSendMessage = async (textToSend?: string) => {
@@ -434,7 +456,7 @@ export default function AITutorDrawer({
     });
   };
 
-  // Starter prompts tailored for intuitive, human-like Python DSA learning
+  // Starter prompts tailored for intuitive, human-like DSA learning in chosen language
   const starterPrompts = [
     {
       title: '💡 Intuition & Real-World Analogy',
@@ -444,17 +466,26 @@ export default function AITutorDrawer({
       ? [
           {
             title: `🪜 Step-by-Step Hint (No Spoilers)`,
-            prompt: `Give me a nudge or guiding question for solving "${currentProblem.title}" in Python. Don't give me the full code yet, just help my brain see the pattern!`,
+            prompt: `Give me a nudge or guiding question for solving "${currentProblem.title}"${
+              tutorLanguage !== 'neutral' ? ` in ${langDisplayName}` : ''
+            }. Don't give me the full code yet, just help my brain see the pattern!`,
           },
           {
-            title: '⚡ Python 3 Optimal Approach',
-            prompt: `Walk me through the optimal approach for "${currentProblem.title}" like a master teacher. Include small number examples and clean, idiomatic Python 3.`,
+            title:
+              tutorLanguage === 'neutral'
+                ? '⚡ Optimal Algorithmic Approach'
+                : `⚡ ${langDisplayName} Optimal Approach`,
+            prompt: `Walk me through the optimal approach for "${currentProblem.title}" like a master teacher. Include small number examples and clean${
+              tutorLanguage !== 'neutral' ? `, idiomatic ${langDisplayName}` : ' code/pseudocode'
+            }.`,
           },
         ]
       : [
           {
             title: '🪜 Step-by-Step Master Walkthrough',
-            prompt: `Walk me through a classic problem in "${topicTitle}" like a friendly, world-class teacher. Use small numbers to trace it, then show idiomatic Python 3.`,
+            prompt: `Walk me through a classic problem in "${topicTitle}" like a friendly, world-class teacher. Use small numbers to trace it, then show ${
+              tutorLanguage !== 'neutral' ? `idiomatic ${langDisplayName}` : 'the optimal solution'
+            }.`,
           },
         ]),
     {
@@ -489,6 +520,9 @@ export default function AITutorDrawer({
               <span className={styles.tutorBadge}>
                 <Sparkles size={13} className={styles.sparkleIcon} />
                 <span>Pacer</span>
+              </span>
+              <span className={styles.langBadge} title="Pacer's coding language (configurable in Settings)">
+                {langDisplayName}
               </span>
             </div>
             <h3 className={styles.title} title={topicTitle}>

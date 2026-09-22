@@ -1,7 +1,7 @@
 import { doc, onSnapshot, setDoc, type Unsubscribe } from 'firebase/firestore';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth, db } from '../lib/firebase';
-import { usePaceStore, currentStreak, type PlanItem, type TrackId } from './store';
+import { usePaceStore, currentStreak, type PlanItem, type TrackId, type TutorLanguage } from './store';
 import { publishToLeaderboard, calculateWeeklySolves } from '../lib/leaderboard';
 
 export type SyncStatus = 'signed-out' | 'syncing' | 'synced' | 'offline';
@@ -13,6 +13,7 @@ type SyncableState = {
   solveLog: Record<string, number>;
   planner: Record<string, PlanItem[]>;
   registeredTracks: TrackId[];
+  tutorLanguage?: TutorLanguage;
 };
 
 const SYNC_FIELDS: (keyof SyncableState)[] = [
@@ -22,6 +23,7 @@ const SYNC_FIELDS: (keyof SyncableState)[] = [
   'solveLog',
   'planner',
   'registeredTracks',
+  'tutorLanguage',
 ];
 
 function cleanProgressMap(map: Record<string, boolean> | undefined): Record<string, boolean> {
@@ -74,6 +76,7 @@ function pickSyncable(state: ReturnType<typeof usePaceStore.getState>): Syncable
     solveLog: state.solveLog || {},
     planner: cleanPlannerMap(state.planner),
     registeredTracks: cleanRegisteredTracks(state.registeredTracks),
+    tutorLanguage: state.tutorLanguage || 'python',
   };
 }
 
@@ -267,6 +270,7 @@ async function startSyncing(user: User) {
               ...local.planner,
             },
             registeredTracks: cleanRegisteredTracks(remoteData.registeredTracks || local.registeredTracks),
+            tutorLanguage: remoteData.tutorLanguage || local.tutorLanguage || 'python',
           };
 
           applyingRemoteUpdate = true;
@@ -290,6 +294,7 @@ async function startSyncing(user: User) {
         solveLog: remoteData.solveLog || {},
         planner: cleanPlannerMap(remoteData.planner),
         registeredTracks: cleanRegisteredTracks(remoteData.registeredTracks),
+        tutorLanguage: remoteData.tutorLanguage || local.tutorLanguage || 'python',
       };
 
       const hasDiff = SYNC_FIELDS.some((k) => !mapsEqual(local[k] as any, cleanRemote[k] as any));
