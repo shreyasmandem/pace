@@ -2,17 +2,25 @@
   display: flex;
   min-height: 100vh;
   min-height: 100dvh;
-  overflow-x: hidden;
+  position: relative;
 }
 
 .main {
   flex: 1;
   min-width: 0;
+  margin-left: 248px;
   overflow-x: hidden;
+}
+
+@media (max-width: 1080px) {
+  .main {
+    margin-left: 76px;
+  }
 }
 
 @media (max-width: 760px) {
   .main {
+    margin-left: 0;
     /* Use dvh so height stays stable when browser chrome appears/hides */
     min-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     padding-top: calc(env(safe-area-inset-top, 0px) + 14px);

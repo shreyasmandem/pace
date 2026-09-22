@@ -4,11 +4,16 @@
   width: 248px;
   flex: none;
   height: 100vh;
-  position: sticky;
+  height: 100dvh;
+  position: fixed;
   top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 40;
   padding: var(--space-5) var(--space-4) var(--space-4);
   border-right: 1px solid var(--border-hairline);
   background: var(--bg-raised);
+  box-sizing: border-box;
 }
 
 .brand {
@@ -106,6 +111,8 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-hairline) transparent;
 }
 
 .tracksHeading {
