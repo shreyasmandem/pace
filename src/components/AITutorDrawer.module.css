@@ -4,15 +4,15 @@
   z-index: 99999;
   display: flex;
   justify-content: flex-end;
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  animation: fadeInBackdrop 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  background: rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+  animation: fadeInBackdrop 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
   touch-action: none;
 }
 
 .backdropClosing {
-  animation: fadeOutBackdrop 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeOutBackdrop 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes fadeInBackdrop {
@@ -26,14 +26,17 @@
 }
 
 .panel {
-  width: min(540px, 100vw);
+  width: min(520px, 44vw);
+  min-width: 400px;
   height: 100%;
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   background: var(--bg-raised);
   border-left: 1px solid var(--border-strong);
-  box-shadow: -16px 0 48px rgba(0, 0, 0, 0.65);
-  animation: slideInRight 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  box-shadow: -10px 0 36px rgba(0, 0, 0, 0.55);
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
   overflow: hidden;
   position: relative;
   touch-action: auto;
@@ -725,68 +728,64 @@
   color: var(--text-tertiary);
 }
 
-/* Mobile & PWA Safe-Area Responsive Fix */
+/* Mobile & PWA Safe-Area Responsive Fix - Full Screen */
 @media (max-width: 760px) {
   .backdrop {
-    align-items: flex-end;
-    justify-content: center;
+    align-items: stretch;
+    justify-content: stretch;
+    background: var(--bg-raised);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .panel {
-    width: 100%;
-    height: 90vh;
-    height: 90dvh;
-    max-height: 90dvh;
-    border-left: none;
-    border-top: 1px solid var(--border-strong);
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.75);
-    transform: translateY(0);
-    animation: slideUpSheet 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+    width: 100vw;
+    width: 100dvw;
+    min-width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    transform: translateX(0);
+    animation: slideInMobile 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
     will-change: transform;
   }
 
   .panelClosing {
-    animation: slideDownSheet 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slideOutMobile 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  @keyframes slideUpSheet {
+  @keyframes slideInMobile {
     from {
-      transform: translateY(100%);
+      transform: translateX(100%);
     }
     to {
-      transform: translateY(0);
+      transform: translateX(0);
     }
   }
 
-  @keyframes slideDownSheet {
+  @keyframes slideOutMobile {
     from {
-      transform: translateY(0);
+      transform: translateX(0);
     }
     to {
-      transform: translateY(100%);
+      transform: translateX(100%);
     }
   }
 
   .mobileHandle {
-    display: block;
-    width: 40px;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--border-strong);
-    margin: 10px auto 2px;
-    flex: none;
-    cursor: grab;
-    touch-action: none;
+    display: none;
   }
 
   .header {
     padding: var(--space-3) var(--space-4);
-    padding-top: calc(env(safe-area-inset-top, 0px) * 0.3 + 8px);
+    padding-top: max(env(safe-area-inset-top, 0px), 12px);
   }
 
   .title {
-    font-size: 1.02rem;
+    font-size: 1.05rem;
   }
 
   .thread {
@@ -806,12 +805,12 @@
   }
 
   .messageBubble {
-    max-width: 90%;
-    font-size: 0.85rem;
+    max-width: 92%;
+    font-size: 0.88rem;
   }
 
   .inputArea {
     padding: var(--space-3) var(--space-4);
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 14px);
   }
 }

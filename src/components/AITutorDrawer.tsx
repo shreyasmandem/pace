@@ -149,14 +149,17 @@ export default function AITutorDrawer({
     };
   }, []);
 
-  // Body scroll lock
+  // Body scroll lock (mobile full-screen only)
   useEffect(() => {
     if (typeof document === 'undefined') return;
-    const origOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = origOverflow;
-    };
+    const isMobile = window.innerWidth <= 760;
+    if (isMobile) {
+      const origOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = origOverflow;
+      };
+    }
   }, []);
 
   // Escape key closes modal
