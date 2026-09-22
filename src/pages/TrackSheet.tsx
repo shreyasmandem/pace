@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useParams, useSearchParams, Navigate } from 'react-router-dom';
 import { RotateCcw, Search } from 'lucide-react';
 import { getTopicNote, getTrack, TRACK_META } from '../data';
@@ -33,6 +33,10 @@ export default function TrackSheet() {
   const [status, setStatus] = useState('All');
   const [tutorSession, setTutorSession] = useState<TutorSessionState | null>(null);
   const [confirmingReset, setConfirmingReset] = useState(false);
+
+  const handleCloseTutor = useCallback(() => {
+    setTutorSession(null);
+  }, []);
 
   const progress = usePaceStore((s) => s.progress);
   const resetTrack = usePaceStore((s) => s.resetTrack);
@@ -177,7 +181,7 @@ export default function TrackSheet() {
           trackTitle={meta.label}
           problems={tutorSession.problems}
           currentProblem={tutorSession.currentProblem}
-          onClose={() => setTutorSession(null)}
+          onClose={handleCloseTutor}
         />
       )}
 

@@ -33,6 +33,8 @@ export interface AITutorDrawerProps {
   onClose: () => void;
 }
 
+const EMPTY_MESSAGES: any[] = [];
+
 export default function AITutorDrawer({
   topicKey,
   topicTitle,
@@ -43,7 +45,6 @@ export default function AITutorDrawer({
   currentProblem,
   onClose,
 }: AITutorDrawerProps) {
-  const [mounted, setMounted] = useState(false);
   const [tab, setTab] = useState<'tutor' | 'notes'>('tutor');
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -54,6 +55,9 @@ export default function AITutorDrawer({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const notesTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   const historyPushedRef = useRef(false);
   const stateKeyRef = useRef<string>('');
@@ -71,8 +75,8 @@ export default function AITutorDrawer({
         // ignore
       }
     }
-    onClose();
-  }, [onClose]);
+    onCloseRef.current();
+  }, []);
 
   // Push history state on mount so that the mobile back swipe pops this state instead of navigating to Home
   useEffect(() => {
@@ -89,7 +93,7 @@ export default function AITutorDrawer({
       // When user swipes back on mobile or clicks browser/hardware back button
       if (historyPushedRef.current) {
         historyPushedRef.current = false;
-        onClose();
+        onCloseRef.current();
       }
     };
 
@@ -109,11 +113,11 @@ export default function AITutorDrawer({
         }
       }
     };
-  }, [onClose]);
+  }, []);
 
-  // Mount check and body scroll lock
+  // Body scroll lock
   useEffect(() => {
-    setMounted(true);
+    if (typeof document === 'undefined') return;
     const origOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
@@ -182,8 +186,8 @@ export default function AITutorDrawer({
     }
   };
 
-  // Zustand Store - safe defensive access
-  const chatMessages = usePaceStore((s) => (s.tutorChats && s.tutorChats[topicKey]) || []);
+  // Zustand Store - safe defensive access with stable EMPTY_MESSAGES fallback
+  const chatMessages = usePaceStore((s) => s.tutorChats?.[topicKey] ?? EMPTY_MESSAGES);
   const addTutorMessage = usePaceStore((s) => s.addTutorMessage);
   const clearTutorChat = usePaceStore((s) => s.clearTutorChat);
 
@@ -409,7 +413,7 @@ export default function AITutorDrawer({
     },
   ];
 
-  if (!mounted || typeof document === 'undefined') return null;
+  if (typeof document === 'undefined') return null;
 
   return createPortal(
     <div className={styles.backdrop} onClick={handleClose}>

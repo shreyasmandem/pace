@@ -16,20 +16,7 @@ export default function App() {
 
   return (
     <ErrorBoundary fallbackTitle="Pace encountered an unexpected error">
-    /*
-      THESIS: progress is shown as a filling lane/track (the Pace metaphor),
-      not another dashboard of rings and stat cards.
-      OWN-WORLD: near-black charcoal / warm paper, one orange accent, hairline
-      dividers instead of card grids, Space Grotesk display + Inter body +
-      mono only for real numeric data.
-      STORY: a learner sees exactly where they stand across all 4 tracks,
-      picks one up, and works topic by topic with real links/videos/notes.
-      FORM: Operate-mode restrained-color dashboard; sidebar "lanes" replace
-      the reference sites' card-grid track pickers.
-      FINISH: unreviewed and undocumented is unfinished; this build ends with
-      the finish review, the verdict, and DESIGN.md.
-    */
-    <HashRouter>
+      <HashRouter>
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />

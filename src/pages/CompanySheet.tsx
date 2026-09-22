@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Bookmark,
@@ -59,10 +59,14 @@ export default function CompanySheet() {
   const [companySearch, setCompanySearch] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Tutor drawer & Reset dialog
   const [tutorProblem, setTutorProblem] = useState<CompanyProblem | null>(null);
   const [companyTutorOpen, setCompanyTutorOpen] = useState(false);
   const [confirmingReset, setConfirmingReset] = useState(false);
+
+  const handleCloseTutor = useCallback(() => {
+    setTutorProblem(null);
+    setCompanyTutorOpen(false);
+  }, []);
 
   // Store
   const progress = usePaceStore((s) => s.progress);
@@ -552,10 +556,7 @@ export default function CompanySheet() {
                 }
               : null
           }
-          onClose={() => {
-            setTutorProblem(null);
-            setCompanyTutorOpen(false);
-          }}
+          onClose={handleCloseTutor}
         />
       )}
 

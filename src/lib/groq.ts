@@ -74,9 +74,14 @@ export async function askGroqTutor(
 ): Promise<string> {
   const systemPrompt = buildSystemPrompt(ctx);
 
+  // Avoid duplicate user message if already appended to history
+  const past = history[history.length - 1]?.content === userMessage && history[history.length - 1]?.role === 'user'
+    ? history.slice(0, -1)
+    : history;
+
   const messages = [
     { role: 'system', content: systemPrompt },
-    ...history.slice(-12).map((m) => ({ role: m.role, content: m.content })),
+    ...past.slice(-10).map((m) => ({ role: m.role, content: m.content })),
     { role: 'user', content: userMessage },
   ];
 
