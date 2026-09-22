@@ -185,6 +185,16 @@ async function startSyncing(user: User) {
       const remoteData = snap.data() as Partial<SyncableState & { updatedAt?: number }>;
       const remoteUpdatedAt = remoteData?.updatedAt || 0;
 
+      // Update public leaderboard entry for this user
+      const remoteProg = cleanProgressMap(remoteData?.progress);
+      const remoteLog = remoteData?.solveLog || {};
+      publishToLeaderboard(user.uid, user, {
+        solvedCount: Object.keys(remoteProg).length,
+        streak: currentStreak(remoteLog),
+        weeklyCount: calculateWeeklySolves(remoteLog),
+        activeDays: Object.keys(remoteLog).length,
+      });
+
       // If this snapshot is just the echo of our own recent write, do not revert or re-apply
       if (!isInitialLoad && remoteUpdatedAt <= lastPushedAt) {
         setStatus(snap.metadata.fromCache ? 'offline' : 'synced');

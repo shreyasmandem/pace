@@ -141,7 +141,7 @@ export async function publishToLeaderboard(
 
   const displayName =
     user?.displayName ||
-    (user?.email ? user.email.split('@')[0] : 'Anonymous Pacer');
+    (user?.email ? user.email.split('@')[0] : 'Pacer');
 
   const photoURL = user?.photoURL || '';
 
@@ -165,118 +165,10 @@ export async function publishToLeaderboard(
   }
 }
 
-// Seed benchmark peers to ensure the leaderboard is always competitive and inspiring
-const BENCHMARK_PEERS: LeaderboardEntry[] = [
-  {
-    uid: 'peer_1',
-    displayName: 'Dev K. (IIT D)',
-    solvedCount: 342,
-    streak: 28,
-    weeklyCount: 18,
-    activeDays: 64,
-    updatedAt: Date.now() - 3600000 * 2,
-  },
-  {
-    uid: 'peer_2',
-    displayName: 'Aarav Sharma',
-    solvedCount: 289,
-    streak: 21,
-    weeklyCount: 14,
-    activeDays: 52,
-    updatedAt: Date.now() - 3600000 * 5,
-  },
-  {
-    uid: 'peer_3',
-    displayName: 'Priya Sundaram',
-    solvedCount: 245,
-    streak: 19,
-    weeklyCount: 22,
-    activeDays: 48,
-    updatedAt: Date.now() - 3600000 * 8,
-  },
-  {
-    uid: 'peer_4',
-    displayName: 'Marcus Chen',
-    solvedCount: 198,
-    streak: 15,
-    weeklyCount: 12,
-    activeDays: 41,
-    updatedAt: Date.now() - 3600000 * 12,
-  },
-  {
-    uid: 'peer_5',
-    displayName: 'Rohan Mehta',
-    solvedCount: 164,
-    streak: 12,
-    weeklyCount: 15,
-    activeDays: 36,
-    updatedAt: Date.now() - 3600000 * 18,
-  },
-  {
-    uid: 'peer_6',
-    displayName: 'Elena Rostova',
-    solvedCount: 142,
-    streak: 9,
-    weeklyCount: 10,
-    activeDays: 30,
-    updatedAt: Date.now() - 3600000 * 24,
-  },
-  {
-    uid: 'peer_7',
-    displayName: 'Ananya Verma',
-    solvedCount: 118,
-    streak: 14,
-    weeklyCount: 16,
-    activeDays: 27,
-    updatedAt: Date.now() - 3600000 * 30,
-  },
-  {
-    uid: 'peer_8',
-    displayName: 'Siddharth Nair',
-    solvedCount: 92,
-    streak: 8,
-    weeklyCount: 9,
-    activeDays: 22,
-    updatedAt: Date.now() - 3600000 * 36,
-  },
-  {
-    uid: 'peer_9',
-    displayName: 'Chloe Dupont',
-    solvedCount: 76,
-    streak: 6,
-    weeklyCount: 11,
-    activeDays: 19,
-    updatedAt: Date.now() - 3600000 * 42,
-  },
-  {
-    uid: 'peer_10',
-    displayName: 'Vikram Joshi',
-    solvedCount: 54,
-    streak: 5,
-    weeklyCount: 7,
-    activeDays: 14,
-    updatedAt: Date.now() - 3600000 * 48,
-  },
-  {
-    uid: 'peer_11',
-    displayName: 'Neha Patel',
-    solvedCount: 38,
-    streak: 4,
-    weeklyCount: 8,
-    activeDays: 10,
-    updatedAt: Date.now() - 3600000 * 54,
-  },
-  {
-    uid: 'peer_12',
-    displayName: 'Tanmay Rao',
-    solvedCount: 22,
-    streak: 3,
-    weeklyCount: 5,
-    activeDays: 6,
-    updatedAt: Date.now() - 3600000 * 60,
-  },
-];
-
+/**
+ * Fetches real people from Firestore leaderboard collection.
+ * Zero mock / fake data.
+ */
 export async function fetchLeaderboardEntries(
   sortBy: 'solvedCount' | 'streak' | 'weeklyCount' = 'solvedCount',
   currentUser?: {
@@ -291,18 +183,13 @@ export async function fetchLeaderboardEntries(
 ): Promise<LeaderboardEntry[]> {
   const combinedMap = new Map<string, LeaderboardEntry>();
 
-  // 1. Preload benchmark peers
-  for (const p of BENCHMARK_PEERS) {
-    combinedMap.set(p.uid, { ...p });
-  }
-
-  // 2. Fetch real users from Firestore if available
+  // Fetch real users from Firestore
   if (db) {
     try {
       const q = query(
         collection(db, 'leaderboard'),
         orderBy(sortBy, 'desc'),
-        limit(50)
+        limit(100)
       );
       const snap = await getDocs(q);
       snap.forEach((docSnap) => {
@@ -317,12 +204,12 @@ export async function fetchLeaderboardEntries(
           });
         }
       });
-    } catch {
-      // If collection read is denied or offline, benchmark peers will be used
+    } catch (err) {
+      console.warn('Firestore leaderboard query error:', err);
     }
   }
 
-  // 3. Ensure current user is present with accurate local stats
+  // Ensure current signed-in user is present with accurate local stats
   if (currentUser && currentUser.uid) {
     combinedMap.set(currentUser.uid, {
       uid: currentUser.uid,
@@ -337,7 +224,7 @@ export async function fetchLeaderboardEntries(
     });
   }
 
-  // 4. Convert to array and sort
+  // Convert to array and sort strictly by metric
   const list = Array.from(combinedMap.values());
   list.sort((a, b) => {
     const diff = (b[sortBy] || 0) - (a[sortBy] || 0);
@@ -345,7 +232,7 @@ export async function fetchLeaderboardEntries(
     return (b.solvedCount || 0) - (a.solvedCount || 0);
   });
 
-  // 5. Assign rank
+  // Assign real rank
   return list.map((entry, idx) => ({
     ...entry,
     rank: idx + 1,

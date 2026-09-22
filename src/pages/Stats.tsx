@@ -17,9 +17,10 @@ import { TRACK_META, TRACK_ORDER, ALL_TRACKS } from '../data';
 import { useAggregateStat, useTrackStats } from '../hooks/useTrackStats';
 import { usePaceStore, currentStreak } from '../state/store';
 import { useAuthUser } from '../hooks/useAuth';
-import { signInWithGoogle } from '../lib/firebase';
+import { signInWithGoogle, db } from '../lib/firebase';
 import {
   fetchLeaderboardEntries,
+  publishToLeaderboard,
   longestStreak,
   calculateWeeklySolves,
   calculateTier,
@@ -123,6 +124,18 @@ export default function Stats() {
     };
   }, [user, aggregate.solved, streak, weeklySolves, activeDaysCount]);
 
+  // Auto-sync signed-in user's live score to Firestore leaderboard
+  useEffect(() => {
+    if (user && db) {
+      publishToLeaderboard(user.uid, user, {
+        solvedCount: aggregate.solved,
+        streak,
+        weeklyCount: weeklySolves,
+        activeDays: activeDaysCount,
+      });
+    }
+  }, [user, aggregate.solved, streak, weeklySolves, activeDaysCount]);
+
   // Load leaderboard entries
   useEffect(() => {
     let active = true;
@@ -153,9 +166,9 @@ export default function Stats() {
     }
   };
 
-  // Podium top 3
-  const podiumTop3 = leaderboard.slice(0, 3);
-  const remainingRows = leaderboard.slice(3, 25);
+  // Real podium top 3 only when 3 or more real competitors exist
+  const podiumTop3 = leaderboard.length >= 3 ? leaderboard.slice(0, 3) : [];
+  const tableRows = leaderboard.length >= 3 ? leaderboard.slice(3) : leaderboard;
 
   return (
     <div className={styles.page}>
@@ -488,23 +501,42 @@ export default function Stats() {
             </div>
           )}
 
-          {/* Table rows */}
-          <div className={styles.leaderboardTable}>
-            <div className={styles.rowHeader}>
-              <span>Rank</span>
-              <span>Solver</span>
-              <span className={styles.tierCell}>Tier</span>
-              <span className={styles.streakCell}>Streak</span>
-              <span style={{ textAlign: 'right' }}>
-                {leaderboardTab === 'streak'
-                  ? 'Streak'
-                  : leaderboardTab === 'weeklyCount'
-                  ? 'Weekly'
-                  : 'Solved'}
-              </span>
+          {leaderboard.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '40px 16px', color: 'var(--text-secondary)' }}>
+              <Crown size={32} color="var(--accent)" style={{ marginBottom: '8px' }} />
+              <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: '4px' }}>
+                No Competitors Yet
+              </h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', maxWidth: '42ch', margin: '0 auto 16px' }}>
+                Be the first to sign in with your Google account and claim Rank #1 on the Pace leaderboard!
+              </p>
+              {!user && (
+                <button className={styles.signInBtn} onClick={handleSignIn} disabled={signingIn}>
+                  <LogIn size={14} />
+                  <span>{signingIn ? 'Signing in...' : 'Sign in with Google'}</span>
+                </button>
+              )}
             </div>
+          )}
 
-            {remainingRows.map((entry) => {
+          {/* Table rows */}
+          {tableRows.length > 0 && (
+            <div className={styles.leaderboardTable}>
+              <div className={styles.rowHeader}>
+                <span>Rank</span>
+                <span>Solver</span>
+                <span className={styles.tierCell}>Tier</span>
+                <span className={styles.streakCell}>Streak</span>
+                <span style={{ textAlign: 'right' }}>
+                  {leaderboardTab === 'streak'
+                    ? 'Streak'
+                    : leaderboardTab === 'weeklyCount'
+                    ? 'Weekly'
+                    : 'Solved'}
+                </span>
+              </div>
+
+              {tableRows.map((entry) => {
               const tierMeta = calculateTier(entry.solvedCount);
               const isMe = entry.isCurrentUser;
               const primaryScore =
@@ -575,6 +607,7 @@ export default function Stats() {
               );
             })}
           </div>
+          )}
 
           {/* Personal Rank / Join Banner */}
           <div className={styles.personalBanner}>
