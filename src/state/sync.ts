@@ -1,7 +1,8 @@
 import { doc, onSnapshot, setDoc, type Unsubscribe } from 'firebase/firestore';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth, db } from '../lib/firebase';
-import { usePaceStore, type PlanItem } from './store';
+import { usePaceStore, currentStreak, type PlanItem } from './store';
+import { publishToLeaderboard, calculateWeeklySolves } from '../lib/leaderboard';
 
 export type SyncStatus = 'signed-out' | 'syncing' | 'synced' | 'offline';
 
@@ -138,7 +139,15 @@ function pushToFirestore(uid: string) {
     },
     { mergeFields: ['progress', 'notes', 'bookmarks', 'solveLog', 'planner', 'updatedAt'] }
   )
-    .then(() => setStatus('synced'))
+    .then(() => {
+      setStatus('synced');
+      publishToLeaderboard(uid, auth?.currentUser ?? null, {
+        solvedCount: Object.keys(payload.progress).length,
+        streak: currentStreak(payload.solveLog),
+        weeklyCount: calculateWeeklySolves(payload.solveLog),
+        activeDays: Object.keys(payload.solveLog).length,
+      });
+    })
     .catch(() => setStatus('offline'));
 }
 

@@ -1,54 +1,635 @@
-import { TRACK_META, TRACK_ORDER } from '../data';
+import { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  Flame,
+  Trophy,
+  Zap,
+  TrendingUp,
+  LogIn,
+  CheckCircle2,
+  Medal,
+  Crown,
+} from 'lucide-react';
+import { TRACK_META, TRACK_ORDER, ALL_TRACKS } from '../data';
 import { useAggregateStat, useTrackStats } from '../hooks/useTrackStats';
 import { usePaceStore, currentStreak } from '../state/store';
+import { useAuthUser } from '../hooks/useAuth';
+import { signInWithGoogle } from '../lib/firebase';
+import {
+  fetchLeaderboardEntries,
+  longestStreak,
+  calculateWeeklySolves,
+  calculateTier,
+  type LeaderboardEntry,
+} from '../lib/leaderboard';
 import Lane from '../components/Lane';
-import StreakHeatmap from '../components/StreakHeatmap';
+import InteractiveHeatmap from '../components/InteractiveHeatmap';
+import AchievementBadges from '../components/AchievementBadges';
 import styles from './Stats.module.css';
 
 export default function Stats() {
+  const { user } = useAuthUser();
   const aggregate = useAggregateStat();
   const trackStats = useTrackStats();
-  const solveLog = usePaceStore((s) => s.solveLog);
+
+  const progress = usePaceStore((s) => s.progress || {});
+  const solveLog = usePaceStore((s) => s.solveLog || {});
   const streak = currentStreak(solveLog);
+  const maxStreak = longestStreak(solveLog);
+  const weeklySolves = calculateWeeklySolves(solveLog);
+  const activeDaysCount = Object.keys(solveLog).filter((k) => (solveLog[k] || 0) > 0).length;
+
+  // Leaderboard tab state: 'solvedCount' | 'streak' | 'weeklyCount'
+  const [leaderboardTab, setLeaderboardTab] = useState<
+    'solvedCount' | 'streak' | 'weeklyCount'
+  >('solvedCount');
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [signingIn, setSigningIn] = useState(false);
+
+  // Difficulty breakdown across all tracks
+  const diffBreakdown = useMemo(() => {
+    let easySolved = 0,
+      easyTotal = 0;
+    let medSolved = 0,
+      medTotal = 0;
+    let hardSolved = 0,
+      hardTotal = 0;
+
+    for (const trackId of TRACK_ORDER) {
+      const track = ALL_TRACKS[trackId];
+      if (!track) continue;
+      for (const group of track.groups) {
+        for (const p of group.problems) {
+          const diff = p.difficulty?.toLowerCase();
+          const isSolved = progress[p.id];
+          if (diff === 'easy') {
+            easyTotal++;
+            if (isSolved) easySolved++;
+          } else if (diff === 'medium') {
+            medTotal++;
+            if (isSolved) medSolved++;
+          } else if (diff === 'hard') {
+            hardTotal++;
+            if (isSolved) hardSolved++;
+          }
+        }
+      }
+    }
+
+    return {
+      easy: {
+        solved: easySolved,
+        total: easyTotal,
+        pct: easyTotal ? Math.round((easySolved / easyTotal) * 100) : 0,
+      },
+      medium: {
+        solved: medSolved,
+        total: medTotal,
+        pct: medTotal ? Math.round((medSolved / medTotal) * 100) : 0,
+      },
+      hard: {
+        solved: hardSolved,
+        total: hardTotal,
+        pct: hardTotal ? Math.round((hardSolved / hardTotal) * 100) : 0,
+      },
+    };
+  }, [progress]);
+
+  // Current user object for leaderboard
+  const currentUserObj = useMemo(() => {
+    if (!user) return undefined;
+    return {
+      uid: user.uid,
+      displayName:
+        user.displayName || (user.email ? user.email.split('@')[0] : 'You'),
+      photoURL: user.photoURL || undefined,
+      solvedCount: aggregate.solved,
+      streak,
+      weeklyCount: weeklySolves,
+      activeDays: activeDaysCount,
+    };
+  }, [user, aggregate.solved, streak, weeklySolves, activeDaysCount]);
+
+  // Load leaderboard entries
+  useEffect(() => {
+    let active = true;
+    fetchLeaderboardEntries(leaderboardTab, currentUserObj).then((data) => {
+      if (active) setLeaderboard(data);
+    });
+    return () => {
+      active = false;
+    };
+  }, [leaderboardTab, currentUserObj]);
+
+  const currentUserEntry = leaderboard.find((e) => e.isCurrentUser);
+  const userRank = currentUserEntry?.rank ?? null;
+
+  // Next user to overtake for motivation
+  const nextTargetEntry =
+    userRank && userRank > 1 ? leaderboard[userRank - 2] : null;
+
+  const handleSignIn = async () => {
+    setSigningIn(true);
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      console.warn('Google sign-in error:', err);
+    } finally {
+      setSigningIn(false);
+    }
+  };
+
+  // Podium top 3
+  const podiumTop3 = leaderboard.slice(0, 3);
+  const remainingRows = leaderboard.slice(3, 25);
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.heading}>Progress &amp; streaks</h1>
+      <header className={styles.hero}>
+        <h1 className={styles.heading}>Progress, Streaks &amp; Leaderboard</h1>
+        <p className={styles.sub}>
+          Real-time performance analytics, solve consistency, and global community
+          rankings. Compete with everyone who joins Pace.
+        </p>
+      </header>
 
-      <section className={styles.summary}>
-        <div>
-          <span className={`${styles.summaryValue} numeric`}>{aggregate.solved}</span>
-          <span className={styles.summaryLabel}>problems solved of {aggregate.total}</span>
+      {/* Metrics Overview Strip */}
+      <section className={styles.metricsGrid}>
+        <div className={styles.metricCard}>
+          <div className={styles.metricTop}>
+            <span>Total Solved</span>
+            <CheckCircle2 size={15} color="var(--difficulty-easy)" />
+          </div>
+          <span className={styles.metricValue}>{aggregate.solved}</span>
+          <span className={styles.metricSub}>
+            {Math.round(aggregate.percent)}% of {aggregate.total} curriculum problems
+          </span>
         </div>
-        <div>
-          <span className={`${styles.summaryValue} numeric`}>{streak}</span>
-          <span className={styles.summaryLabel}>day streak</span>
+
+        <div className={styles.metricCard}>
+          <div className={styles.metricTop}>
+            <span>Active Streak</span>
+            <Flame
+              size={15}
+              color={streak > 0 ? 'var(--accent)' : 'var(--text-tertiary)'}
+            />
+          </div>
+          <span className={styles.metricValue}>
+            {streak} <span style={{ fontSize: '1rem' }}>days</span>
+          </span>
+          <span className={styles.metricSub}>
+            {streak > 0 ? 'Keep the fire burning today!' : 'Solve a problem to start'}
+          </span>
         </div>
-        <div>
-          <span className={`${styles.summaryValue} numeric`}>{Object.keys(solveLog).length}</span>
-          <span className={styles.summaryLabel}>active days logged</span>
+
+        <div className={styles.metricCard}>
+          <div className={styles.metricTop}>
+            <span>All-Time Longest</span>
+            <Zap size={15} color="#f0b429" />
+          </div>
+          <span className={styles.metricValue}>
+            {maxStreak} <span style={{ fontSize: '1rem' }}>days</span>
+          </span>
+          <span className={styles.metricSub}>Your personal record run</span>
+        </div>
+
+        <div className={styles.metricCard}>
+          <div className={styles.metricTop}>
+            <span>Global Standing</span>
+            <Trophy size={15} color="var(--accent)" />
+          </div>
+          <span className={styles.metricValue}>
+            {userRank ? `#${userRank}` : 'Unranked'}
+          </span>
+          <span className={styles.metricSub}>
+            {user ? 'On Pace Leaderboard' : 'Sign in to claim rank'}
+          </span>
         </div>
       </section>
 
-      <section className={styles.block}>
-        <h2 className={styles.blockTitle}>Solve activity</h2>
-        <StreakHeatmap solveLog={solveLog} />
+      {/* Difficulty Breakdown */}
+      <section className={styles.diffSection}>
+        <div className={styles.diffHeader}>
+          <span className={styles.diffTitle}>Curriculum Mastery by Difficulty</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+            Across all 4 core tracks
+          </span>
+        </div>
+
+        <div className={styles.diffGrid}>
+          <div className={styles.diffCard}>
+            <div className={styles.diffCardTop}>
+              <span
+                className={styles.diffCardName}
+                style={{ color: 'var(--difficulty-easy)' }}
+              >
+                Easy
+              </span>
+              <span className={styles.diffCardValue}>
+                {diffBreakdown.easy.solved}/{diffBreakdown.easy.total}
+              </span>
+            </div>
+            <div className={styles.diffBarTrack}>
+              <div
+                className={`${styles.diffBarFill} ${styles.easyFill}`}
+                style={{ width: `${diffBreakdown.easy.pct}%` }}
+              />
+            </div>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)' }}>
+              {diffBreakdown.easy.pct}% completed
+            </span>
+          </div>
+
+          <div className={styles.diffCard}>
+            <div className={styles.diffCardTop}>
+              <span
+                className={styles.diffCardName}
+                style={{ color: 'var(--difficulty-medium)' }}
+              >
+                Medium
+              </span>
+              <span className={styles.diffCardValue}>
+                {diffBreakdown.medium.solved}/{diffBreakdown.medium.total}
+              </span>
+            </div>
+            <div className={styles.diffBarTrack}>
+              <div
+                className={`${styles.diffBarFill} ${styles.mediumFill}`}
+                style={{ width: `${diffBreakdown.medium.pct}%` }}
+              />
+            </div>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)' }}>
+              {diffBreakdown.medium.pct}% completed
+            </span>
+          </div>
+
+          <div className={styles.diffCard}>
+            <div className={styles.diffCardTop}>
+              <span
+                className={styles.diffCardName}
+                style={{ color: 'var(--difficulty-hard)' }}
+              >
+                Hard
+              </span>
+              <span className={styles.diffCardValue}>
+                {diffBreakdown.hard.solved}/{diffBreakdown.hard.total}
+              </span>
+            </div>
+            <div className={styles.diffBarTrack}>
+              <div
+                className={`${styles.diffBarFill} ${styles.hardFill}`}
+                style={{ width: `${diffBreakdown.hard.pct}%` }}
+              />
+            </div>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)' }}>
+              {diffBreakdown.hard.pct}% completed
+            </span>
+          </div>
+        </div>
       </section>
 
-      <section className={styles.block}>
-        <h2 className={styles.blockTitle}>By track</h2>
+      {/* Global Community Leaderboard */}
+      <section className={styles.leaderboardSection}>
+        <div className={styles.leaderboardHeader}>
+          <div className={styles.leaderboardTitleGroup}>
+            <span className={styles.livePulseDot} />
+            <h2 className={styles.leaderboardTitle}>Global Leaderboard</h2>
+          </div>
+
+          <div className={styles.tabs}>
+            <button
+              className={`${styles.tabBtn} ${
+                leaderboardTab === 'solvedCount' ? styles.tabBtnActive : ''
+              }`}
+              onClick={() => setLeaderboardTab('solvedCount')}
+            >
+              <Trophy size={13} />
+              <span>Top Solvers</span>
+            </button>
+
+            <button
+              className={`${styles.tabBtn} ${
+                leaderboardTab === 'streak' ? styles.tabBtnActive : ''
+              }`}
+              onClick={() => setLeaderboardTab('streak')}
+            >
+              <Flame size={13} />
+              <span>Streak Masters</span>
+            </button>
+
+            <button
+              className={`${styles.tabBtn} ${
+                leaderboardTab === 'weeklyCount' ? styles.tabBtnActive : ''
+              }`}
+              onClick={() => setLeaderboardTab('weeklyCount')}
+            >
+              <Zap size={13} />
+              <span>Weekly Sprint</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Top 3 Podium */}
+        {podiumTop3.length >= 3 && (
+          <div className={styles.podiumGrid}>
+            {/* Rank 2 - Silver */}
+            <div className={`${styles.podiumCard} ${styles.podium2}`}>
+              <div className={styles.podiumCrown}>🥈</div>
+              <div className={styles.avatarWrap}>
+                {podiumTop3[1].photoURL ? (
+                  <img
+                    src={podiumTop3[1].photoURL}
+                    alt=""
+                    className={styles.avatarImg}
+                  />
+                ) : (
+                  <span>{podiumTop3[1].displayName[0]?.toUpperCase() || '?'}</span>
+                )}
+              </div>
+              <span className={styles.podiumName}>
+                {podiumTop3[1].displayName}
+                {podiumTop3[1].isCurrentUser && ' (You)'}
+              </span>
+              <span className={styles.podiumScore}>
+                {leaderboardTab === 'streak'
+                  ? `${podiumTop3[1].streak}d`
+                  : leaderboardTab === 'weeklyCount'
+                  ? podiumTop3[1].weeklyCount
+                  : podiumTop3[1].solvedCount}
+              </span>
+              <span className={styles.podiumScoreLabel}>
+                {leaderboardTab === 'streak'
+                  ? 'Active Streak'
+                  : leaderboardTab === 'weeklyCount'
+                  ? 'Solved this week'
+                  : 'Problems Solved'}
+              </span>
+              <div className={styles.podiumStreak}>
+                <Flame size={12} />
+                <span>{podiumTop3[1].streak} day streak</span>
+              </div>
+            </div>
+
+            {/* Rank 1 - Gold */}
+            <div className={`${styles.podiumCard} ${styles.podium1}`}>
+              <div className={styles.podiumCrown}>👑</div>
+              <div className={styles.avatarWrap}>
+                {podiumTop3[0].photoURL ? (
+                  <img
+                    src={podiumTop3[0].photoURL}
+                    alt=""
+                    className={styles.avatarImg}
+                  />
+                ) : (
+                  <span>{podiumTop3[0].displayName[0]?.toUpperCase() || '?'}</span>
+                )}
+              </div>
+              <span className={styles.podiumName}>
+                {podiumTop3[0].displayName}
+                {podiumTop3[0].isCurrentUser && ' (You)'}
+              </span>
+              <span className={styles.podiumScore}>
+                {leaderboardTab === 'streak'
+                  ? `${podiumTop3[0].streak}d`
+                  : leaderboardTab === 'weeklyCount'
+                  ? podiumTop3[0].weeklyCount
+                  : podiumTop3[0].solvedCount}
+              </span>
+              <span className={styles.podiumScoreLabel}>
+                {leaderboardTab === 'streak'
+                  ? 'Active Streak'
+                  : leaderboardTab === 'weeklyCount'
+                  ? 'Solved this week'
+                  : 'Problems Solved'}
+              </span>
+              <div className={styles.podiumStreak}>
+                <Flame size={12} />
+                <span>{podiumTop3[0].streak} day streak</span>
+              </div>
+            </div>
+
+            {/* Rank 3 - Bronze */}
+            <div className={`${styles.podiumCard} ${styles.podium3}`}>
+              <div className={styles.podiumCrown}>🥉</div>
+              <div className={styles.avatarWrap}>
+                {podiumTop3[2].photoURL ? (
+                  <img
+                    src={podiumTop3[2].photoURL}
+                    alt=""
+                    className={styles.avatarImg}
+                  />
+                ) : (
+                  <span>{podiumTop3[2].displayName[0]?.toUpperCase() || '?'}</span>
+                )}
+              </div>
+              <span className={styles.podiumName}>
+                {podiumTop3[2].displayName}
+                {podiumTop3[2].isCurrentUser && ' (You)'}
+              </span>
+              <span className={styles.podiumScore}>
+                {leaderboardTab === 'streak'
+                  ? `${podiumTop3[2].streak}d`
+                  : leaderboardTab === 'weeklyCount'
+                  ? podiumTop3[2].weeklyCount
+                  : podiumTop3[2].solvedCount}
+              </span>
+              <span className={styles.podiumScoreLabel}>
+                {leaderboardTab === 'streak'
+                  ? 'Active Streak'
+                  : leaderboardTab === 'weeklyCount'
+                  ? 'Solved this week'
+                  : 'Problems Solved'}
+              </span>
+              <div className={styles.podiumStreak}>
+                <Flame size={12} />
+                <span>{podiumTop3[2].streak} day streak</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Table rows */}
+        <div className={styles.leaderboardTable}>
+          <div className={styles.rowHeader}>
+            <span>Rank</span>
+            <span>Solver</span>
+            <span className={styles.tierCell}>Tier</span>
+            <span className={styles.streakCell}>Streak</span>
+            <span style={{ textAlign: 'right' }}>
+              {leaderboardTab === 'streak'
+                ? 'Streak'
+                : leaderboardTab === 'weeklyCount'
+                ? 'Weekly'
+                : 'Solved'}
+            </span>
+          </div>
+
+          {remainingRows.map((entry) => {
+            const tierMeta = calculateTier(entry.solvedCount);
+            const isMe = entry.isCurrentUser;
+            const primaryScore =
+              leaderboardTab === 'streak'
+                ? `${entry.streak}d`
+                : leaderboardTab === 'weeklyCount'
+                ? entry.weeklyCount
+                : entry.solvedCount;
+
+            return (
+              <div
+                key={entry.uid}
+                className={`${styles.leaderboardRow} ${
+                  isMe ? styles.rowCurrentUser : ''
+                }`}
+              >
+                <span className={styles.rankBadge}>
+                  {entry.rank && entry.rank <= 3 ? (
+                    entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : '🥉'
+                  ) : (
+                    `#${entry.rank}`
+                  )}
+                </span>
+
+                <div className={styles.solverCell}>
+                  <div className={styles.userAvatarSm}>
+                    {entry.photoURL ? (
+                      <img
+                        src={entry.photoURL}
+                        alt=""
+                        className={styles.avatarImg}
+                      />
+                    ) : (
+                      <span>{entry.displayName[0]?.toUpperCase() || '?'}</span>
+                    )}
+                  </div>
+                  <div className={styles.solverInfo}>
+                    <span className={styles.solverName}>
+                      {entry.displayName}
+                    </span>
+                    {isMe && <span className={styles.youBadge}>You</span>}
+                  </div>
+                </div>
+
+                <div className={styles.tierCell}>
+                  <span
+                    className={styles.tierPill}
+                    style={{ color: tierMeta.color, background: tierMeta.bg }}
+                  >
+                    {tierMeta.tier}
+                  </span>
+                </div>
+
+                <div className={styles.streakCell}>
+                  <Flame
+                    size={13}
+                    color={
+                      entry.streak > 0 ? 'var(--accent)' : 'var(--text-tertiary)'
+                    }
+                  />
+                  <span>{entry.streak}d</span>
+                </div>
+
+                <span className={styles.scoreCell}>{primaryScore}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Personal Rank / Join Banner */}
+        <div className={styles.personalBanner}>
+          <div className={styles.personalLeft}>
+            <div className={styles.personalRankIcon}>
+              {user ? (
+                userRank && userRank <= 3 ? (
+                  userRank === 1 ? '👑' : userRank === 2 ? '🥈' : '🥉'
+                ) : (
+                  <Medal size={20} color="var(--accent)" />
+                )
+              ) : (
+                <Crown size={20} color="var(--accent)" />
+              )}
+            </div>
+            <div className={styles.personalText}>
+              <span className={styles.personalTitle}>
+                {user
+                  ? userRank
+                    ? `You are ranked #${userRank} globally!`
+                    : 'Your rank is calculating...'
+                  : 'Compete with everyone on Pace'}
+              </span>
+              <span className={styles.personalSub}>
+                {user ? (
+                  nextTargetEntry ? (
+                    <span>
+                      🔥 Solve{' '}
+                      <strong>
+                        {leaderboardTab === 'streak'
+                          ? nextTargetEntry.streak - streak + 1
+                          : nextTargetEntry.solvedCount - aggregate.solved + 1}{' '}
+                        more{' '}
+                        {leaderboardTab === 'streak' ? 'consecutive days' : 'problems'}
+                      </strong>{' '}
+                      to overtake {nextTargetEntry.displayName} (#{nextTargetEntry.rank})!
+                    </span>
+                  ) : (
+                    '🎉 You are at the very top of the leaderboard! Defend your throne.'
+                  )
+                ) : (
+                  'Sign in with Google in 1-click to publish your solves, climb the leaderboard, and unlock competitive badges.'
+                )}
+              </span>
+            </div>
+          </div>
+
+          {!user && (
+            <button
+              className={styles.signInBtn}
+              onClick={handleSignIn}
+              disabled={signingIn}
+            >
+              <LogIn size={14} />
+              <span>{signingIn ? 'Signing in...' : 'Sign in with Google'}</span>
+            </button>
+          )}
+        </div>
+      </section>
+
+      {/* Interactive Heatmap */}
+      <InteractiveHeatmap solveLog={solveLog} />
+
+      {/* Achievement & Milestones Badges */}
+      <AchievementBadges
+        solvedCount={aggregate.solved}
+        streak={streak}
+        maxStreak={maxStreak}
+        solveLog={solveLog}
+        userRank={userRank}
+      />
+
+      {/* By Track Progress Breakdown */}
+      <section className={styles.trackBlock}>
+        <h2 className={styles.blockTitle}>Track Completion Breakdown</h2>
         <div className={styles.trackList}>
           {TRACK_ORDER.map((id) => {
             const meta = TRACK_META[id];
             const stat = trackStats[id];
             return (
-              <div key={id} className={styles.trackRow}>
+              <Link
+                key={id}
+                to={`/track/${id}`}
+                className={styles.trackRow}
+                title={`Open ${meta.label}`}
+              >
                 <span className={styles.trackName}>{meta.shortLabel}</span>
-                <Lane percent={stat.percent} color={meta.accent} />
+                <div className={styles.trackLaneWrap}>
+                  <Lane percent={stat.percent} color={meta.accent} />
+                </div>
                 <span className={`${styles.trackFraction} mono`}>
                   {stat.solved}/{stat.total}
                 </span>
-              </div>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+                  {Math.round(stat.percent)}%
+                </span>
+              </Link>
             );
           })}
         </div>
