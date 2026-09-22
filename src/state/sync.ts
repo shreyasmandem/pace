@@ -1,7 +1,7 @@
 import { doc, onSnapshot, setDoc, type Unsubscribe } from 'firebase/firestore';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth, db } from '../lib/firebase';
-import { usePaceStore } from './store';
+import { usePaceStore, type PlanItem } from './store';
 
 export type SyncStatus = 'signed-out' | 'syncing' | 'synced' | 'offline';
 
@@ -10,9 +10,10 @@ type SyncableState = {
   notes: Record<string, string>;
   bookmarks: Record<string, boolean>;
   solveLog: Record<string, number>;
+  planner: Record<string, PlanItem[]>;
 };
 
-const SYNC_FIELDS: (keyof SyncableState)[] = ['progress', 'notes', 'bookmarks', 'solveLog'];
+const SYNC_FIELDS: (keyof SyncableState)[] = ['progress', 'notes', 'bookmarks', 'solveLog', 'planner'];
 
 function cleanProgressMap(map: Record<string, boolean> | undefined): Record<string, boolean> {
   const clean: Record<string, boolean> = {};
@@ -41,12 +42,22 @@ function cleanBookmarksMap(map: Record<string, boolean> | undefined): Record<str
   return clean;
 }
 
+function cleanPlannerMap(map: Record<string, PlanItem[]> | undefined): Record<string, PlanItem[]> {
+  const clean: Record<string, PlanItem[]> = {};
+  if (!map) return clean;
+  for (const [k, v] of Object.entries(map)) {
+    if (Array.isArray(v) && v.length > 0) clean[k] = v;
+  }
+  return clean;
+}
+
 function pickSyncable(state: ReturnType<typeof usePaceStore.getState>): SyncableState {
   return {
     progress: cleanProgressMap(state.progress),
     notes: cleanNotesMap(state.notes),
     bookmarks: cleanBookmarksMap(state.bookmarks),
     solveLog: state.solveLog || {},
+    planner: cleanPlannerMap(state.planner),
   };
 }
 
@@ -64,7 +75,12 @@ function mapsEqual(a: Record<string, unknown> | undefined, b: Record<string, unk
   const aKeys = Object.keys(a);
   const bKeys = Object.keys(b);
   if (aKeys.length !== bKeys.length) return false;
-  return aKeys.every((k) => a[k] === b[k]);
+  return aKeys.every((k) => {
+    if (typeof a[k] === 'object' && a[k] !== null && typeof b[k] === 'object' && b[k] !== null) {
+      return JSON.stringify(a[k]) === JSON.stringify(b[k]);
+    }
+    return a[k] === b[k];
+  });
 }
 
 let unsubscribeSnapshot: Unsubscribe | null = null;
@@ -117,9 +133,10 @@ function pushToFirestore(uid: string) {
       notes: payload.notes,
       bookmarks: payload.bookmarks,
       solveLog: payload.solveLog,
+      planner: payload.planner,
       updatedAt: now,
     },
-    { mergeFields: ['progress', 'notes', 'bookmarks', 'solveLog', 'updatedAt'] }
+    { mergeFields: ['progress', 'notes', 'bookmarks', 'solveLog', 'planner', 'updatedAt'] }
   )
     .then(() => setStatus('synced'))
     .catch(() => setStatus('offline'));
@@ -172,7 +189,8 @@ async function startSyncing(user: User) {
         const hasLocalProgress =
           Object.keys(local.progress).length > 0 ||
           Object.keys(local.bookmarks).length > 0 ||
-          Object.keys(local.notes).length > 0;
+          Object.keys(local.notes).length > 0 ||
+          Object.keys(local.planner).length > 0;
 
         // One-time merge on initial sign-in if this device had offline solves before logging in
         if (hasLocalProgress && remoteUpdatedAt > 0) {
@@ -190,6 +208,10 @@ async function startSyncing(user: User) {
               ...local.bookmarks,
             },
             solveLog: mergeSolveLog(local.solveLog, remoteData.solveLog),
+            planner: {
+              ...cleanPlannerMap(remoteData.planner),
+              ...local.planner,
+            },
           };
 
           applyingRemoteUpdate = true;
@@ -211,6 +233,7 @@ async function startSyncing(user: User) {
         notes: cleanNotesMap(remoteData.notes),
         bookmarks: cleanBookmarksMap(remoteData.bookmarks),
         solveLog: remoteData.solveLog || {},
+        planner: cleanPlannerMap(remoteData.planner),
       };
 
       const hasDiff = SYNC_FIELDS.some((k) => !mapsEqual(local[k], cleanRemote[k]));

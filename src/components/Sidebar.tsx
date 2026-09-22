@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Flame, Search, Settings, BarChart3, Building2 } from 'lucide-react';
+import { Flame, Search, Settings, BarChart3, Building2, CalendarDays } from 'lucide-react';
 import { TRACK_META, TRACK_ORDER } from '../data';
 import { useTrackStats } from '../hooks/useTrackStats';
 import { usePaceStore } from '../state/store';
@@ -31,6 +31,13 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
       </button>
 
       <nav className={styles.nav}>
+        <NavLink
+          to="/planner"
+          className={({ isActive }) => `${styles.utilityLink} ${isActive ? styles.active : ''}`}
+        >
+          <CalendarDays size={15} />
+          <span>Roadmap &amp; Planner</span>
+        </NavLink>
         <NavLink
           to="/companies"
           className={`${styles.utilityLink} ${isCompanyActive ? styles.active : ''}`}

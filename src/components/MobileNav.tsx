@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Search, BarChart3, Settings, Building2 } from 'lucide-react';
+import { Home, Search, BarChart3, Settings, Building2, CalendarDays } from 'lucide-react';
 import styles from './MobileNav.module.css';
 
 export default function MobileNav({ onOpenSearch }: { onOpenSearch: () => void }) {
@@ -13,6 +13,16 @@ export default function MobileNav({ onOpenSearch }: { onOpenSearch: () => void }
           <Home size={18} />
         </div>
         <span className={styles.label}>Home</span>
+      </NavLink>
+
+      <NavLink
+        to="/planner"
+        className={({ isActive }) => (isActive ? styles.active : styles.item)}
+      >
+        <div className={styles.iconWrapper}>
+          <CalendarDays size={18} />
+        </div>
+        <span className={styles.label}>Planner</span>
       </NavLink>
 
       <NavLink

@@ -272,6 +272,172 @@
   text-decoration: underline;
 }
 
+/* Planner Quick Section */
+.plannerCard {
+  background: var(--surface);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6);
+  transition: all 0.15s ease;
+}
+
+.plannerCard:hover {
+  border-color: var(--border-strong);
+}
+
+.plannerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.plannerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plannerTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.plannerBadge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 122, 41, 0.12);
+  color: var(--accent);
+}
+
+.plannerLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.plannerLink:hover {
+  text-decoration: underline;
+}
+
+.plannerProblemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.plannerProblemItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-sm);
+}
+
+.plannerItemLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.plannerCheckBtn {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--border-strong);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: #0b0c0f;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.plannerCheckBtnCompleted {
+  background: var(--difficulty-easy);
+  border-color: var(--difficulty-easy);
+}
+
+.plannerItemTitle {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.plannerItemCompleted {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+}
+
+.plannerItemMeta {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.plannerEmptyPrompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.plannerEmptyText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.plannerEmptyTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.plannerEmptySub {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.plannerCtaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.plannerCtaBtn:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 @media (max-width: 760px) {
   .page {
     padding: var(--space-3) var(--space-4) var(--space-6);

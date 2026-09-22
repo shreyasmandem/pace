@@ -1,5 +1,15 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Bookmark, Flame, NotebookPen, Building2 } from 'lucide-react';
+import {
+  ArrowRight,
+  Bookmark,
+  Flame,
+  NotebookPen,
+  Building2,
+  CalendarDays,
+  Check,
+  Sparkles,
+} from 'lucide-react';
 import { TRACK_META, TRACK_ORDER, getFeaturedCompanies } from '../data';
 import { useAggregateStat, useTrackStats } from '../hooks/useTrackStats';
 import { usePaceStore, currentStreak } from '../state/store';
@@ -13,11 +23,27 @@ export default function Home() {
   const notes = usePaceStore((s) => s.notes);
   const bookmarks = usePaceStore((s) => s.bookmarks);
   const solveLog = usePaceStore((s) => s.solveLog);
+  const progress = usePaceStore((s) => s.progress);
+  const planner = usePaceStore((s) => s.planner || {});
+  const togglePlanItem = usePaceStore((s) => s.togglePlanItem);
   const streak = currentStreak(solveLog);
 
   const noteCount = Object.keys(notes).length;
   const bookmarkCount = Object.keys(bookmarks).length;
   const featuredCompanies = getFeaturedCompanies().slice(0, 12);
+
+  const todayKey = useMemo(() => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }, []);
+
+  const todayItems = planner[todayKey] || [];
+  const todaySolved = todayItems.filter((it) =>
+    it.problemId ? progress[it.problemId] : it.completed
+  ).length;
 
   return (
     <div className={styles.page}>
@@ -51,6 +77,89 @@ export default function Home() {
             </span>
           </div>
         </div>
+      </section>
+
+      {/* Today's Study Plan Section */}
+      <section className={styles.plannerCard}>
+        <div className={styles.plannerHeader}>
+          <div className={styles.plannerTitleRow}>
+            <CalendarDays size={18} color="var(--accent)" />
+            <h2 className={styles.plannerTitle}>Today's Roadmap</h2>
+            {todayItems.length > 0 && (
+              <span className={styles.plannerBadge}>
+                {todaySolved} / {todayItems.length} solved
+              </span>
+            )}
+          </div>
+          <Link to="/planner" className={styles.plannerLink}>
+            <span>{todayItems.length > 0 ? 'Full Planner' : 'Open Planner'}</span>
+            <ArrowRight size={14} />
+          </Link>
+        </div>
+
+        {todayItems.length === 0 ? (
+          <div className={styles.plannerEmptyPrompt}>
+            <div className={styles.plannerEmptyText}>
+              <span className={styles.plannerEmptyTitle}>
+                No problems scheduled for today
+              </span>
+              <span className={styles.plannerEmptySub}>
+                Plan your next topics or auto-pace questions with Google Calendar sync.
+              </span>
+            </div>
+            <Link to="/planner" className={styles.plannerCtaBtn}>
+              <Sparkles size={14} color="var(--accent)" />
+              <span>Plan Today</span>
+            </Link>
+          </div>
+        ) : (
+          <div className={styles.plannerProblemsList}>
+            {todayItems.slice(0, 4).map((item) => {
+              const isCompleted = item.problemId
+                ? !!progress[item.problemId]
+                : !!item.completed;
+              return (
+                <div key={item.id} className={styles.plannerProblemItem}>
+                  <div className={styles.plannerItemLeft}>
+                    <button
+                      className={`${styles.plannerCheckBtn} ${
+                        isCompleted ? styles.plannerCheckBtnCompleted : ''
+                      }`}
+                      onClick={() => togglePlanItem(todayKey, item.id)}
+                      aria-label="Toggle completed"
+                    >
+                      {isCompleted && <Check size={13} style={{ strokeWidth: 3 }} />}
+                    </button>
+                    <span
+                      className={`${styles.plannerItemTitle} ${
+                        isCompleted ? styles.plannerItemCompleted : ''
+                      }`}
+                    >
+                      {item.title}
+                    </span>
+                  </div>
+                  <span className={styles.plannerItemMeta}>
+                    {item.topicTitle}
+                  </span>
+                </div>
+              );
+            })}
+            {todayItems.length > 4 && (
+              <div style={{ textAlign: 'right', paddingTop: '4px' }}>
+                <Link
+                  to="/planner"
+                  style={{
+                    fontSize: '0.75rem',
+                    color: 'var(--text-tertiary)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  +{todayItems.length - 4} more problems in Planner →
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
       </section>
 
       <section className={styles.trackList}>

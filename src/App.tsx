@@ -6,6 +6,7 @@ import TrackSheet from './pages/TrackSheet';
 import Stats from './pages/Stats';
 import Settings from './pages/Settings';
 import CompanySheet from './pages/CompanySheet';
+import Planner from './pages/Planner';
 import { useThemeEffect } from './hooks/useTheme';
 import { initSync } from './state/sync';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -20,6 +21,7 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/planner" element={<Planner />} />
           <Route path="/track/:trackId" element={<TrackSheet />} />
           <Route path="/companies" element={<CompanySheet />} />
           <Route path="/company/:companyId" element={<CompanySheet />} />

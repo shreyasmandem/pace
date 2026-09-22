@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { TrackId } from '../types';
+import { getTrack } from '../data';
 
 export type Theme = 'light' | 'dark' | 'system';
 
@@ -13,6 +14,27 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+}
+
+export interface PlanItem {
+  id: string;
+  date: string; // YYYY-MM-DD
+  title: string;
+  type: 'topic' | 'problem';
+  trackId?: string;
+  topicTitle: string;
+  problemId?: string;
+  difficulty?: string;
+  links?: {
+    leetcode?: string | null;
+    gfg?: string | null;
+    codestudio?: string | null;
+    youtube?: string | null;
+    neetcode?: string | null;
+    article?: string | null;
+    practice?: string | null;
+  };
+  completed?: boolean;
 }
 
 interface PaceState {
@@ -37,6 +59,14 @@ interface PaceState {
 
   searchOpen: boolean;
   setSearchOpen: (v: boolean) => void;
+
+  planner: Record<string, PlanItem[]>;
+  addToPlan: (date: string, items: Omit<PlanItem, 'id'>[]) => void;
+  removeFromPlan: (date: string, itemId: string) => void;
+  togglePlanItem: (date: string, itemId: string) => void;
+  movePlanItem: (fromDay: string, toDay: string, itemId: string) => void;
+  clearDayPlan: (date: string) => void;
+  autoGeneratePlan: (trackId: TrackId, startDate: string, daysCount: number, problemsPerDay: number) => void;
 
   resetTrack: (problemIds: string[]) => void;
   resetAll: () => void;
@@ -128,6 +158,130 @@ export const usePaceStore = create<PaceState>()(
       searchOpen: false,
       setSearchOpen: (v) => set({ searchOpen: v }),
 
+      planner: {},
+      addToPlan: (date, items) =>
+        set((state) => {
+          const planner = { ...(state.planner || {}) };
+          const existing = planner[date] || [];
+          const newItems: PlanItem[] = items.map((it) => ({
+            ...it,
+            id: 'plan_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+            completed: it.problemId ? !!state.progress[it.problemId] : !!it.completed,
+          }));
+          planner[date] = [...existing, ...newItems];
+          return { planner };
+        }),
+
+      removeFromPlan: (date, itemId) =>
+        set((state) => {
+          const planner = { ...(state.planner || {}) };
+          if (!planner[date]) return state;
+          planner[date] = planner[date].filter((it) => it.id !== itemId);
+          if (planner[date].length === 0) delete planner[date];
+          return { planner };
+        }),
+
+      togglePlanItem: (date, itemId) =>
+        set((state) => {
+          const planner = { ...(state.planner || {}) };
+          const list = planner[date];
+          if (!list) return state;
+          const target = list.find((it) => it.id === itemId);
+          if (!target) return state;
+
+          const nextCompleted = !target.completed;
+          planner[date] = list.map((it) =>
+            it.id === itemId ? { ...it, completed: nextCompleted } : it
+          );
+
+          if (target.problemId) {
+            const progress = { ...state.progress };
+            const log = { ...state.solveLog };
+            const day = todayISO();
+
+            if (nextCompleted) {
+              progress[target.problemId] = true;
+              log[day] = (log[day] || 0) + 1;
+            } else {
+              delete progress[target.problemId];
+              log[day] = (log[day] || 0) - 1;
+              if (log[day] <= 0) delete log[day];
+            }
+            return { planner, progress, solveLog: log };
+          }
+
+          return { planner };
+        }),
+
+      movePlanItem: (fromDay, toDay, itemId) =>
+        set((state) => {
+          const planner = { ...(state.planner || {}) };
+          const sourceList = planner[fromDay] || [];
+          const item = sourceList.find((it) => it.id === itemId);
+          if (!item) return state;
+
+          planner[fromDay] = sourceList.filter((it) => it.id !== itemId);
+          if (planner[fromDay].length === 0) delete planner[fromDay];
+
+          const targetList = planner[toDay] || [];
+          planner[toDay] = [...targetList, { ...item, date: toDay }];
+          return { planner };
+        }),
+
+      clearDayPlan: (date) =>
+        set((state) => {
+          const planner = { ...(state.planner || {}) };
+          delete planner[date];
+          return { planner };
+        }),
+
+      autoGeneratePlan: (trackId, startDate, daysCount, problemsPerDay) =>
+        set((state) => {
+          const track = getTrack(trackId);
+          if (!track) return state;
+
+          const unsolved: Array<{ problem: any; topicTitle: string }> = [];
+          for (const group of track.groups) {
+            for (const p of group.problems) {
+              if (!state.progress[p.id]) {
+                unsolved.push({ problem: p, topicTitle: group.title });
+              }
+            }
+          }
+
+          const planner = { ...(state.planner || {}) };
+          const [y, m, d] = startDate.split('-').map(Number);
+          const cursor = new Date(y, m - 1, d);
+
+          let index = 0;
+          for (let dayOffset = 0; dayOffset < daysCount; dayOffset++) {
+            if (index >= unsolved.length) break;
+
+            const dayDate = new Date(cursor.getTime() + dayOffset * 86400000);
+            const dayIso = dayDate.toISOString().slice(0, 10);
+
+            const dailyBatch = unsolved.slice(index, index + problemsPerDay);
+            index += dailyBatch.length;
+
+            const items: PlanItem[] = dailyBatch.map(({ problem, topicTitle }) => ({
+              id: 'plan_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+              date: dayIso,
+              title: problem.title,
+              type: 'problem',
+              trackId,
+              topicTitle,
+              problemId: problem.id,
+              difficulty: problem.difficulty,
+              links: problem.links,
+              completed: false,
+            }));
+
+            planner[dayIso] = [...(planner[dayIso] || []), ...items];
+          }
+
+          return { planner };
+        }),
+
       resetTrack: (problemIds) =>
         set((state) => {
           const progress = { ...state.progress };
@@ -147,12 +301,21 @@ export const usePaceStore = create<PaceState>()(
           bookmarks: {},
           solveLog: {},
           tutorChats: {},
+          planner: {},
         }),
 
       exportSnapshot: () => {
-        const { progress, notes, bookmarks, solveLog, tutorChats } = get();
+        const { progress, notes, bookmarks, solveLog, tutorChats, planner } = get();
         return JSON.stringify(
-          { exportedAt: new Date().toISOString(), progress, notes, bookmarks, solveLog, tutorChats: tutorChats || {} },
+          {
+            exportedAt: new Date().toISOString(),
+            progress,
+            notes,
+            bookmarks,
+            solveLog,
+            tutorChats: tutorChats || {},
+            planner: planner || {},
+          },
           null,
           2
         );
@@ -167,6 +330,7 @@ export const usePaceStore = create<PaceState>()(
             bookmarks: parsed.bookmarks ?? {},
             solveLog: parsed.solveLog ?? {},
             tutorChats: parsed.tutorChats ?? {},
+            planner: parsed.planner ?? {},
           });
           return true;
         } catch {
@@ -183,6 +347,7 @@ export const usePaceStore = create<PaceState>()(
         tutorChats: state.tutorChats || {},
         bookmarks: state.bookmarks,
         solveLog: state.solveLog,
+        planner: state.planner || {},
       }),
       merge: (persistedState: any, currentState: PaceState) => ({
         ...currentState,
@@ -192,6 +357,7 @@ export const usePaceStore = create<PaceState>()(
         tutorChats: persistedState?.tutorChats ?? {},
         bookmarks: persistedState?.bookmarks ?? {},
         solveLog: persistedState?.solveLog ?? {},
+        planner: persistedState?.planner ?? {},
       }),
     }
   )
