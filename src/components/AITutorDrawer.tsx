@@ -483,7 +483,6 @@ export default function AITutorDrawer({
                 <Sparkles size={13} className={styles.sparkleIcon} />
                 <span>Pacer</span>
               </span>
-              <span className={styles.modelBadge}>Groq ⚡ LPU</span>
             </div>
             <h3 className={styles.title} title={topicTitle}>
               {topicTitle}
@@ -649,9 +648,6 @@ export default function AITutorDrawer({
                 >
                   <Send size={15} />
                 </button>
-              </div>
-              <div className={styles.inputFooter}>
-                <span>Powered by Groq ⚡ LPU • Pacer answers are tailored to {topicTitle}</span>
               </div>
             </div>
           </>
