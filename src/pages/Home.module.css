@@ -253,106 +253,6 @@
   }
 }
 
-.companySection {
-  margin-top: var(--space-7);
-  padding: var(--space-5) var(--space-6);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  border: 1px solid var(--border-hairline);
-}
-
-.companyHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-2);
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.companyTitleRow {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.companyTitle {
-  font-size: 1.15rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.companyBadge {
-  font-size: 0.68rem;
-  font-weight: 600;
-  font-family: var(--font-mono);
-  padding: 2px 7px;
-  border-radius: var(--radius-full);
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
-.companySub {
-  font-size: 0.88rem;
-  color: var(--text-secondary);
-  margin: 0 0 var(--space-4) 0;
-}
-
-.companyGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 8px;
-  margin-bottom: var(--space-4);
-}
-
-.companyCard {
-  display: flex;
-  flex-direction: column;
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
-  background: var(--surface-sunken);
-  border: 1px solid var(--border-hairline);
-  color: var(--text-primary);
-  text-decoration: none;
-  transition: all 0.15s var(--easing);
-}
-
-.companyCard:hover {
-  background: var(--surface-hover);
-  border-color: var(--border-strong);
-  transform: translateY(-1px);
-}
-
-.companyCardName {
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.companyCardCount {
-  font-size: 0.72rem;
-  color: var(--text-tertiary);
-}
-
-.companyCtaRow {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.companyCta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.companyCta:hover {
-  text-decoration: underline;
-}
 
 /* Planner Quick Section */
 .plannerCard {
@@ -548,10 +448,6 @@
 
   .figureValue {
     font-size: 2rem;
-  }
-
-  .companyGrid {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
 

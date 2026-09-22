@@ -5,12 +5,11 @@ import {
   Bookmark,
   Flame,
   NotebookPen,
-  Building2,
   CalendarDays,
   Check,
   Sparkles,
 } from 'lucide-react';
-import { TRACK_META, TRACK_ORDER, getFeaturedCompanies } from '../data';
+import { TRACK_META, TRACK_ORDER } from '../data';
 import { getDailyQuote, getDayOfYear } from '../data/dailyQuotes';
 import { useAggregateStat, useTrackStats } from '../hooks/useTrackStats';
 import { useAuthUser } from '../hooks/useAuth';
@@ -35,7 +34,6 @@ export default function Home() {
 
   const noteCount = Object.keys(notes).length;
   const bookmarkCount = Object.keys(bookmarks).length;
-  const featuredCompanies = getFeaturedCompanies().slice(0, 12);
 
   const todayDate = useMemo(() => new Date(), []);
   const todayKey = useMemo(() => {
@@ -347,33 +345,6 @@ export default function Home() {
           </div>
         </section>
       )}
-
-      <section className={styles.companySection}>
-        <div className={styles.companyHeader}>
-          <div className={styles.companyTitleRow}>
-            <Building2 size={18} color="var(--accent)" />
-            <h2 className={styles.companyTitle}>Company-Wise DSA Sheets</h2>
-            <span className={styles.companyBadge}>500+ Companies</span>
-          </div>
-        </div>
-        <p className={styles.companySub}>
-          Target your interview prep with real problem frequencies asked by FAANG, Tier-1 tech, and
-          top Indian startups.
-        </p>
-        <div className={styles.companyGrid}>
-          {featuredCompanies.map((comp) => (
-            <Link key={comp.id} to={`/company/${comp.id}`} className={styles.companyCard}>
-              <span className={styles.companyCardName}>{comp.name}</span>
-              <span className={`${styles.companyCardCount} mono`}>{comp.total} questions</span>
-            </Link>
-          ))}
-        </div>
-        <div className={styles.companyCtaRow}>
-          <Link to="/companies" className={styles.companyCta}>
-            Browse all 500+ companies <ArrowRight size={14} />
-          </Link>
-        </div>
-      </section>
     </div>
   );
 }
