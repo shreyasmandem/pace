@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Download, Moon, Sun, Upload, Monitor, LogOut, Cloud, CloudOff, RefreshCw, Check } from 'lucide-react';
 import { usePaceStore } from '../state/store';
 import type { Theme, TutorLanguage } from '../state/store';
+import type { TrackId } from '../types';
 import { TRACK_ORDER, TRACK_META, getTrack } from '../data';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { useAuthUser, useSyncStatus } from '../hooks/useAuth';
@@ -80,6 +81,7 @@ export default function Settings() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importMessage, setImportMessage] = useState<string | null>(null);
   const [confirmingReset, setConfirmingReset] = useState(false);
+  const [unregisteringTrackId, setUnregisteringTrackId] = useState<TrackId | null>(null);
   const { user } = useAuthUser();
   const syncStatus = useSyncStatus();
   const [signingIn, setSigningIn] = useState(false);
@@ -197,28 +199,24 @@ export default function Settings() {
       <section className={styles.block}>
         <h2 className={styles.blockTitle}>Pacer AI Tutor Language</h2>
         <p className={styles.blockText}>
-          Choose your primary programming language for Pacer AI tutor. Code walkthroughs, hints, standard library recommendations, and algorithmic idioms will be customized to your choice. Select &ldquo;Language Neutral&rdquo; for conceptual intuition and pseudocode.
+          Choose your primary programming language for Pacer AI tutor. Code walkthroughs, hints, standard library recommendations, and algorithmic idioms will be customized to your choice.
         </p>
-        <div className={styles.langGrid}>
-          {TUTOR_LANGUAGES.map((item) => {
-            const isSelected = tutorLanguage === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                className={`${styles.langCard} ${isSelected ? styles.langCardSelected : ''}`}
-                onClick={() => setTutorLanguage(item.id)}
-              >
-                <div className={styles.langCardHeader}>
-                  <span className={styles.langCardIcon}>{item.icon}</span>
-                  <span className={styles.langCardTitle}>{item.name}</span>
-                  {isSelected && <Check size={14} className={styles.langCardCheck} />}
-                </div>
-                <span className={styles.langCardDesc}>{item.desc}</span>
-              </button>
-            );
-          })}
+        <div className={styles.selectWrapper}>
+          <select
+            className={styles.languageSelect}
+            value={tutorLanguage}
+            onChange={(e) => setTutorLanguage(e.target.value as TutorLanguage)}
+          >
+            {TUTOR_LANGUAGES.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.icon} {item.name} — {item.desc}
+              </option>
+            ))}
+          </select>
         </div>
+        <p className={styles.selectHelperText}>
+          Active language: <strong>{TUTOR_LANGUAGES.find((l) => l.id === tutorLanguage)?.name || 'Python 3'}</strong>. Pacer will deliver explanations and hints tailored to this language.
+        </p>
       </section>
 
       <section className={styles.block}>
@@ -251,7 +249,7 @@ export default function Settings() {
                       </span>
                       <button
                         className={styles.unregisterTrackBtn}
-                        onClick={() => unregisterTrack(id)}
+                        onClick={() => setUnregisteringTrackId(id)}
                         title="Unregister from this track"
                       >
                         Unregister
@@ -323,6 +321,19 @@ export default function Settings() {
             setConfirmingReset(false);
           }}
           onCancel={() => setConfirmingReset(false)}
+        />
+      )}
+
+      {unregisteringTrackId && (
+        <ConfirmDialog
+          title={`Unregister from ${TRACK_META[unregisteringTrackId].label}?`}
+          body={`Warning: All your solved progress, bookmarks, and personal notes in ${TRACK_META[unregisteringTrackId].label} will be permanently deleted and reset to 0. Are you sure you want to unregister?`}
+          confirmLabel="Unregister & Delete Progress"
+          onConfirm={() => {
+            unregisterTrack(unregisteringTrackId);
+            setUnregisteringTrackId(null);
+          }}
+          onCancel={() => setUnregisteringTrackId(null)}
         />
       )}
     </div>

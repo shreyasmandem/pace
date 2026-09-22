@@ -130,7 +130,42 @@ export const usePaceStore = create<PaceState>()(
       unregisterTrack: (trackId) =>
         set((state) => {
           const current = state.registeredTracks || [];
-          return { registeredTracks: current.filter((id) => id !== trackId) };
+          const nextRegistered = current.filter((id) => id !== trackId);
+
+          const track = getTrack(trackId);
+          const trackProblemIds = new Set<string>();
+          if (track) {
+            for (const group of track.groups) {
+              for (const p of group.problems) {
+                trackProblemIds.add(p.id);
+              }
+            }
+          }
+
+          const progress = { ...state.progress };
+          const notes = { ...state.notes };
+          const bookmarks = { ...state.bookmarks };
+
+          for (const id of trackProblemIds) {
+            delete progress[id];
+            delete notes[id];
+            delete bookmarks[id];
+          }
+
+          const planner = { ...state.planner };
+          for (const [day, items] of Object.entries(planner)) {
+            planner[day] = items.filter(
+              (it) => it.trackId !== trackId && (!it.problemId || !trackProblemIds.has(it.problemId))
+            );
+          }
+
+          return {
+            registeredTracks: nextRegistered,
+            progress,
+            notes,
+            bookmarks,
+            planner,
+          };
         }),
       isRegistered: (trackId) => {
         return (get().registeredTracks || []).includes(trackId);
