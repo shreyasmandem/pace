@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useParams, useSearchParams, Navigate } from 'react-router-dom';
-import { Check, Lock, RotateCcw, Search, Sparkles } from 'lucide-react';
+import { Check, Lock, Search, Sparkles } from 'lucide-react';
 import { getTopicNote, getTrack, TRACK_META } from '../data';
 import { useDifficultyBreakdown, useTrackStats } from '../hooks/useTrackStats';
 import { usePaceStore } from '../state/store';
@@ -8,7 +8,6 @@ import type { TrackId } from '../types';
 import Lane from '../components/Lane';
 import TopicSection from '../components/TopicSection';
 import AITutorDrawer from '../components/AITutorDrawer';
-import ConfirmDialog from '../components/ConfirmDialog';
 import type { Problem } from '../types';
 import styles from './TrackSheet.module.css';
 
@@ -32,14 +31,12 @@ export default function TrackSheet() {
   const [difficulty, setDifficulty] = useState('All');
   const [status, setStatus] = useState('All');
   const [tutorSession, setTutorSession] = useState<TutorSessionState | null>(null);
-  const [confirmingReset, setConfirmingReset] = useState(false);
 
   const handleCloseTutor = useCallback(() => {
     setTutorSession(null);
   }, []);
 
   const progress = usePaceStore((s) => s.progress);
-  const resetTrack = usePaceStore((s) => s.resetTrack);
   const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
   const registerTrack = usePaceStore((s) => s.registerTrack);
   const stats = useTrackStats();
@@ -188,10 +185,6 @@ export default function TrackSheet() {
             </button>
           ))}
         </div>
-        <button className={styles.resetButton} onClick={() => setConfirmingReset(true)}>
-          <RotateCcw size={14} />
-          Reset track
-        </button>
       </div>
 
       <div className={styles.groups}>
@@ -238,19 +231,6 @@ export default function TrackSheet() {
           problems={tutorSession.problems}
           currentProblem={tutorSession.currentProblem}
           onClose={handleCloseTutor}
-        />
-      )}
-
-      {confirmingReset && (
-        <ConfirmDialog
-          title={`Reset ${meta.shortLabel}?`}
-          body="This clears progress, notes, and bookmarks for every problem in this track. This can't be undone."
-          confirmLabel="Reset track"
-          onConfirm={() => {
-            resetTrack(allProblemIds);
-            setConfirmingReset(false);
-          }}
-          onCancel={() => setConfirmingReset(false)}
         />
       )}
     </div>
