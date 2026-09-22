@@ -704,6 +704,8 @@
     background: var(--border-strong);
     margin: 10px auto 2px;
     flex: none;
+    cursor: grab;
+    touch-action: none;
   }
 
   .header {

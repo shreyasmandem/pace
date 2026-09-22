@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Bot,
@@ -55,6 +55,62 @@ export default function AITutorDrawer({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const notesTextareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const historyPushedRef = useRef(false);
+  const stateKeyRef = useRef<string>('');
+  const touchStartRef = useRef<{ x: number; y: number; isLeftEdge: boolean } | null>(null);
+
+  // Handle close action (from UI button, backdrop, Escape key, or swipe gestures)
+  const handleClose = useCallback(() => {
+    if (historyPushedRef.current) {
+      historyPushedRef.current = false;
+      try {
+        if (window.history.state?.pacerDrawer === stateKeyRef.current) {
+          window.history.back();
+        }
+      } catch {
+        // ignore
+      }
+    }
+    onClose();
+  }, [onClose]);
+
+  // Push history state on mount so that the mobile back swipe pops this state instead of navigating to Home
+  useEffect(() => {
+    const key = 'pacer_' + Date.now();
+    stateKeyRef.current = key;
+    try {
+      window.history.pushState({ pacerDrawer: key }, '', window.location.href);
+      historyPushedRef.current = true;
+    } catch {
+      // ignore
+    }
+
+    const handlePopState = () => {
+      // When user swipes back on mobile or clicks browser/hardware back button
+      if (historyPushedRef.current) {
+        historyPushedRef.current = false;
+        onClose();
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      // Clean up history entry if unmounting without a popstate (e.g. parent unmount)
+      if (historyPushedRef.current) {
+        historyPushedRef.current = false;
+        try {
+          if (window.history.state?.pacerDrawer === stateKeyRef.current) {
+            window.history.back();
+          }
+        } catch {
+          // ignore
+        }
+      }
+    };
+  }, [onClose]);
+
   // Mount check and body scroll lock
   useEffect(() => {
     setMounted(true);
@@ -69,12 +125,62 @@ export default function AITutorDrawer({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        handleClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  }, [handleClose]);
+
+  // Touch handlers for mobile swipe navigation
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      isLeftEdge: touch.clientX < 70,
+    };
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = touch.clientY - touchStartRef.current.y;
+    const isLeftEdge = touchStartRef.current.isLeftEdge;
+    touchStartRef.current = null;
+
+    // Swipe right to dismiss:
+    // Started near left edge and moved right > 45px, or generic swipe right > 90px
+    const isHorizontalSwipeRight =
+      (isLeftEdge && deltaX > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) ||
+      (deltaX > 90 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4);
+
+    if (isHorizontalSwipeRight) {
+      handleClose();
+    }
+  };
+
+  const handleHeaderTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = touch.clientY - touchStartRef.current.y;
+
+    // Swipe down on header / mobile handle > 50px
+    if (deltaY > 50 && deltaY > Math.abs(deltaX) * 1.2) {
+      touchStartRef.current = null;
+      handleClose();
+      return;
+    }
+
+    // Swipe right on header > 50px
+    if (deltaX > 50 && deltaX > Math.abs(deltaY) * 1.2) {
+      touchStartRef.current = null;
+      handleClose();
+      return;
+    }
+  };
 
   // Zustand Store - safe defensive access
   const chatMessages = usePaceStore((s) => (s.tutorChats && s.tutorChats[topicKey]) || []);
@@ -306,19 +412,21 @@ export default function AITutorDrawer({
   if (!mounted || typeof document === 'undefined') return null;
 
   return createPortal(
-    <div className={styles.backdrop} onClick={onClose}>
+    <div className={styles.backdrop} onClick={handleClose}>
       <div
         className={styles.panel}
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         role="dialog"
         aria-modal="true"
       >
-        <ErrorBoundary fallbackTitle="Pacer encountered an error" onReset={onClose}>
+        <ErrorBoundary fallbackTitle="Pacer encountered an error" onReset={handleClose}>
         {/* Mobile Drag Indicator */}
-        <div className={styles.mobileHandle} />
+        <div className={styles.mobileHandle} onTouchEnd={handleHeaderTouchEnd} />
 
         {/* Header */}
-        <div className={styles.header}>
+        <div className={styles.header} onTouchEnd={handleHeaderTouchEnd}>
           <div className={styles.headerTitleArea}>
             <div className={styles.badgeRow}>
               <span className={styles.tutorBadge}>
@@ -376,7 +484,7 @@ export default function AITutorDrawer({
             )}
 
             {/* Close Button */}
-            <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
+            <button className={styles.closeBtn} onClick={handleClose} aria-label="Close">
               <X size={17} />
             </button>
           </div>
