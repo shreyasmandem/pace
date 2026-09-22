@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useParams, useSearchParams, Navigate } from 'react-router-dom';
-import { RotateCcw, Search } from 'lucide-react';
+import { Check, Lock, RotateCcw, Search, Sparkles } from 'lucide-react';
 import { getTopicNote, getTrack, TRACK_META } from '../data';
 import { useDifficultyBreakdown, useTrackStats } from '../hooks/useTrackStats';
 import { usePaceStore } from '../state/store';
@@ -40,6 +40,8 @@ export default function TrackSheet() {
 
   const progress = usePaceStore((s) => s.progress);
   const resetTrack = usePaceStore((s) => s.resetTrack);
+  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const registerTrack = usePaceStore((s) => s.registerTrack);
   const stats = useTrackStats();
   const safeId = (trackId && trackId in TRACK_META ? trackId : 'a2z') as TrackId;
   const breakdown = useDifficultyBreakdown(safeId);
@@ -51,6 +53,7 @@ export default function TrackSheet() {
   const meta = TRACK_META[id];
   const track = getTrack(id);
   const stat = stats[id];
+  const isEnrolled = registeredTracks.includes(id);
 
   const filteredGroups = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -71,10 +74,63 @@ export default function TrackSheet() {
 
   const allProblemIds = useMemo(() => track.groups.flatMap((g) => g.problems.map((p) => p.id)), [track.groups]);
 
+  if (!isEnrolled) {
+    return (
+      <div className={styles.page}>
+        <header className={styles.hero}>
+          <div className={styles.heroText}>
+            <h1 className={styles.title}>{meta.label}</h1>
+            <p className={styles.subtitle}>{meta.subtitle}</p>
+            <a href={meta.sourceUrl} target="_blank" rel="noreferrer" className={styles.sourceLink}>
+              Source curriculum: {meta.source} ↗
+            </a>
+          </div>
+        </header>
+
+        {/* Enrollment / Registration Gate */}
+        <div className={styles.gateContainer}>
+          <div className={styles.gateIconWrapper}>
+            <Lock size={24} />
+          </div>
+          <h2 className={styles.gateTitle}>Register to Unlock {meta.shortLabel}</h2>
+          <p className={styles.gateDesc}>
+            You haven't registered for this curriculum yet. Register now to unlock problem checklists,
+            step-by-step topics, solution bookmarks, personal notes, Pacer AI mentor integration,
+            and personalized progress analytics.
+          </p>
+
+          <div className={styles.gateFeatures}>
+            <div className={styles.gateFeatureItem}>
+              <span className={styles.gateFeatureLabel}>Curated Problems</span>
+              <span className={styles.gateFeatureVal}>{stat.total} Questions</span>
+            </div>
+            <div className={styles.gateFeatureItem}>
+              <span className={styles.gateFeatureLabel}>Core Topics</span>
+              <span className={styles.gateFeatureVal}>{track.groups.length} Patterns</span>
+            </div>
+            <div className={styles.gateFeatureItem}>
+              <span className={styles.gateFeatureLabel}>Curriculum Source</span>
+              <span className={styles.gateFeatureVal}>{meta.source}</span>
+            </div>
+          </div>
+
+          <button className={styles.registerCtaBtn} onClick={() => registerTrack(id)}>
+            <Sparkles size={16} />
+            <span>Register for {meta.shortLabel}</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.page}>
       <header className={styles.hero}>
         <div className={styles.heroText}>
+          <div className={styles.registeredBadge}>
+            <Check size={12} />
+            <span>Registered Track</span>
+          </div>
           <h1 className={styles.title}>{meta.label}</h1>
           <p className={styles.subtitle}>{meta.subtitle}</p>
           <a href={meta.sourceUrl} target="_blank" rel="noreferrer" className={styles.sourceLink}>

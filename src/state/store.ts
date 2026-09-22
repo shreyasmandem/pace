@@ -68,6 +68,11 @@ interface PaceState {
   clearDayPlan: (date: string) => void;
   autoGeneratePlan: (trackId: TrackId, startDate: string, daysCount: number, problemsPerDay: number) => void;
 
+  registeredTracks: TrackId[];
+  registerTrack: (trackId: TrackId) => void;
+  unregisterTrack: (trackId: TrackId) => void;
+  isRegistered: (trackId: TrackId) => boolean;
+
   resetTrack: (problemIds: string[]) => void;
   resetAll: () => void;
 
@@ -75,11 +80,45 @@ interface PaceState {
   importSnapshot: (json: string) => boolean;
 }
 
+const RESET_PROGRESS_V2_KEY = 'pace_progress_reset_v2_registration';
+
+function checkAndPerformGlobalReset(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const done = localStorage.getItem(RESET_PROGRESS_V2_KEY);
+    if (!done) {
+      localStorage.setItem(RESET_PROGRESS_V2_KEY, 'true');
+      return true;
+    }
+  } catch {
+    // ignore
+  }
+  return false;
+}
+
+const shouldResetProgressOnLoad = checkAndPerformGlobalReset();
+
 export const usePaceStore = create<PaceState>()(
   persist(
     (set, get) => ({
       theme: 'system',
       setTheme: (theme) => set({ theme }),
+
+      registeredTracks: [],
+      registerTrack: (trackId) =>
+        set((state) => {
+          const current = state.registeredTracks || [];
+          if (current.includes(trackId)) return state;
+          return { registeredTracks: [...current, trackId] };
+        }),
+      unregisterTrack: (trackId) =>
+        set((state) => {
+          const current = state.registeredTracks || [];
+          return { registeredTracks: current.filter((id) => id !== trackId) };
+        }),
+      isRegistered: (trackId) => {
+        return (get().registeredTracks || []).includes(trackId);
+      },
 
       progress: {},
       toggleProblem: (id) =>
@@ -302,10 +341,11 @@ export const usePaceStore = create<PaceState>()(
           solveLog: {},
           tutorChats: {},
           planner: {},
+          registeredTracks: [],
         }),
 
       exportSnapshot: () => {
-        const { progress, notes, bookmarks, solveLog, tutorChats, planner } = get();
+        const { progress, notes, bookmarks, solveLog, tutorChats, planner, registeredTracks } = get();
         return JSON.stringify(
           {
             exportedAt: new Date().toISOString(),
@@ -315,6 +355,7 @@ export const usePaceStore = create<PaceState>()(
             solveLog,
             tutorChats: tutorChats || {},
             planner: planner || {},
+            registeredTracks: registeredTracks || [],
           },
           null,
           2
@@ -331,6 +372,7 @@ export const usePaceStore = create<PaceState>()(
             solveLog: parsed.solveLog ?? {},
             tutorChats: parsed.tutorChats ?? {},
             planner: parsed.planner ?? {},
+            registeredTracks: Array.isArray(parsed.registeredTracks) ? parsed.registeredTracks : [],
           });
           return true;
         } catch {
@@ -348,17 +390,36 @@ export const usePaceStore = create<PaceState>()(
         bookmarks: state.bookmarks,
         solveLog: state.solveLog,
         planner: state.planner || {},
+        registeredTracks: state.registeredTracks || [],
       }),
-      merge: (persistedState: any, currentState: PaceState) => ({
-        ...currentState,
-        ...(persistedState || {}),
-        progress: persistedState?.progress ?? {},
-        notes: persistedState?.notes ?? {},
-        tutorChats: persistedState?.tutorChats ?? {},
-        bookmarks: persistedState?.bookmarks ?? {},
-        solveLog: persistedState?.solveLog ?? {},
-        planner: persistedState?.planner ?? {},
-      }),
+      merge: (persistedState: any, currentState: PaceState) => {
+        if (shouldResetProgressOnLoad) {
+          return {
+            ...currentState,
+            theme: persistedState?.theme ?? currentState.theme,
+            progress: {},
+            notes: persistedState?.notes ?? {},
+            tutorChats: persistedState?.tutorChats ?? {},
+            bookmarks: persistedState?.bookmarks ?? {},
+            solveLog: {},
+            planner: persistedState?.planner ?? {},
+            registeredTracks: [],
+          };
+        }
+        return {
+          ...currentState,
+          ...(persistedState || {}),
+          progress: persistedState?.progress ?? {},
+          notes: persistedState?.notes ?? {},
+          tutorChats: persistedState?.tutorChats ?? {},
+          bookmarks: persistedState?.bookmarks ?? {},
+          solveLog: persistedState?.solveLog ?? {},
+          planner: persistedState?.planner ?? {},
+          registeredTracks: Array.isArray(persistedState?.registeredTracks)
+            ? persistedState.registeredTracks
+            : [],
+        };
+      },
     }
   )
 );

@@ -29,6 +29,7 @@ export default function SearchPalette({ onClose }: { onClose: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const progress = usePaceStore((s) => s.progress);
+  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -36,8 +37,9 @@ export default function SearchPalette({ onClose }: { onClose: () => void }) {
 
   const allHits = useMemo<ProblemHit[]>(() => {
     const hits: ProblemHit[] = [];
-    for (const trackId of TRACK_ORDER) {
+    for (const trackId of registeredTracks) {
       const track = getTrack(trackId);
+      if (!track) continue;
       for (const group of track.groups) {
         for (const p of group.problems) {
           hits.push({
@@ -52,13 +54,13 @@ export default function SearchPalette({ onClose }: { onClose: () => void }) {
       }
     }
     return hits;
-  }, []);
+  }, [registeredTracks]);
 
   const results = useMemo<Hit[]>(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
 
-    // Check company matches
+    // Check company matches (companies remain universal)
     const matchedCompanies: CompanyHit[] = COMPANIES.filter(
       (c) => c.name.toLowerCase().includes(q) || c.id.includes(q)
     )
@@ -111,7 +113,11 @@ export default function SearchPalette({ onClose }: { onClose: () => void }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="Search across every track..."
+            placeholder={
+              registeredTracks.length === 0
+                ? 'Search companies (register for a track to search problems)...'
+                : 'Search across registered tracks & companies...'
+            }
             className={styles.input}
           />
           <button className={styles.closeButton} onClick={onClose} aria-label="Close search">
@@ -120,7 +126,12 @@ export default function SearchPalette({ onClose }: { onClose: () => void }) {
         </div>
         {query.trim() && (
           <ul className={styles.results}>
-            {results.length === 0 && <li className={styles.empty}>No problems match "{query}".</li>}
+            {results.length === 0 && (
+              <li className={styles.empty}>
+                No matches for "{query}".
+                {registeredTracks.length === 0 && ' (No tracks currently enrolled)'}
+              </li>
+            )}
             {results.map((hit, i) => {
               const key = hit.type === 'company' ? `company-${hit.id}` : `${hit.trackId}-${hit.id}`;
               return (

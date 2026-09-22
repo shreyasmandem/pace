@@ -20,6 +20,8 @@ import styles from './Home.module.css';
 export default function Home() {
   const aggregate = useAggregateStat();
   const trackStats = useTrackStats();
+  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const registerTrack = usePaceStore((s) => s.registerTrack);
   const notes = usePaceStore((s) => s.notes);
   const bookmarks = usePaceStore((s) => s.bookmarks);
   const solveLog = usePaceStore((s) => s.solveLog);
@@ -56,11 +58,23 @@ export default function Home() {
       </header>
 
       <section className={styles.momentum}>
-        <PaceRing percent={aggregate.percent} value={`${Math.round(aggregate.percent)}%`} label="of every track" />
+        <PaceRing
+          percent={registeredTracks.length > 0 ? aggregate.percent : 0}
+          value={registeredTracks.length > 0 ? `${Math.round(aggregate.percent)}%` : '0%'}
+          label={registeredTracks.length > 0 ? 'enrolled tracks' : 'no tracks'}
+        />
         <div className={styles.momentumStats}>
           <div className={styles.momentumFigure}>
-            <span className={`${styles.figureValue} numeric`}>{aggregate.solved}</span>
-            <span className={styles.figureLabel}>problems solved of {aggregate.total}</span>
+            <span className={`${styles.figureValue} numeric`}>
+              {registeredTracks.length > 0 ? aggregate.solved : 0}
+            </span>
+            <span className={styles.figureLabel}>
+              {registeredTracks.length > 0
+                ? `problems solved of ${aggregate.total} (${registeredTracks.length} track${
+                    registeredTracks.length > 1 ? 's' : ''
+                  })`
+                : 'problems solved (register a track below to begin)'}
+            </span>
           </div>
           <div className={styles.momentumRow}>
             <span className={styles.chip}>
@@ -162,32 +176,106 @@ export default function Home() {
         )}
       </section>
 
-      <section className={styles.trackList}>
-        {TRACK_ORDER.map((id) => {
-          const meta = TRACK_META[id];
-          const stat = trackStats[id];
-          const started = stat.solved > 0;
-          return (
-            <Link key={id} to={`/track/${id}`} className={styles.trackRow}>
-              <div className={styles.trackInfo}>
-                <h2 className={styles.trackName}>{meta.label}</h2>
-                <p className={styles.trackSubtitle}>{meta.subtitle}</p>
-                <span className={styles.trackSource}>Source curriculum: {meta.source}</span>
-              </div>
-              <div className={styles.trackProgress}>
-                <span className={`${styles.trackFraction} mono`}>
-                  {stat.solved}/{stat.total}
-                </span>
-                <Lane percent={stat.percent} color={meta.accent} />
-              </div>
-              <span className={styles.trackCta}>
-                {started ? 'Continue' : 'Start'}
-                <ArrowRight size={15} />
+      {/* Enrolled Curriculums Section */}
+      {registeredTracks.length > 0 && (
+        <section className={styles.curriculumSection}>
+          <div className={styles.sectionHeader}>
+            <div className={styles.sectionTitleRow}>
+              <h2 className={styles.sectionTitle}>Enrolled Curriculums</h2>
+              <span className={styles.sectionCountBadge}>
+                {registeredTracks.length} of {TRACK_ORDER.length}
               </span>
-            </Link>
-          );
-        })}
-      </section>
+            </div>
+          </div>
+          <div className={styles.trackList}>
+            {registeredTracks.map((id) => {
+              const meta = TRACK_META[id];
+              const stat = trackStats[id];
+              const started = stat.solved > 0;
+              return (
+                <Link key={id} to={`/track/${id}`} className={styles.trackRow}>
+                  <div className={styles.trackInfo}>
+                    <h2 className={styles.trackName}>{meta.label}</h2>
+                    <p className={styles.trackSubtitle}>{meta.subtitle}</p>
+                    <span className={styles.trackSource}>Source curriculum: {meta.source}</span>
+                  </div>
+                  <div className={styles.trackProgress}>
+                    <span className={`${styles.trackFraction} mono`}>
+                      {stat.solved}/{stat.total}
+                    </span>
+                    <Lane percent={stat.percent} color={meta.accent} />
+                  </div>
+                  <span className={styles.trackCta}>
+                    {started ? 'Continue' : 'Start'}
+                    <ArrowRight size={15} />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Available Curriculums Section */}
+      {TRACK_ORDER.some((id) => !registeredTracks.includes(id)) && (
+        <section className={styles.curriculumSection}>
+          <div className={styles.sectionHeader}>
+            <div className={styles.sectionTitleRow}>
+              <h2 className={styles.sectionTitle}>
+                {registeredTracks.length === 0 ? 'Choose Your Curriculum' : 'Available Curriculums'}
+              </h2>
+              <span className={styles.sectionCountBadge}>
+                {TRACK_ORDER.length - registeredTracks.length} available
+              </span>
+            </div>
+          </div>
+          <p className={styles.sectionDesc}>
+            Register for a track to unlock its problem list, video solutions, AI tutoring, and personal analytics.
+          </p>
+
+          {registeredTracks.length === 0 && (
+            <div className={styles.emptyCurriculumBanner}>
+              <div className={styles.emptyCurriculumIcon}>
+                <Sparkles size={20} />
+              </div>
+              <div className={styles.emptyCurriculumText}>
+                <div className={styles.emptyCurriculumTitle}>Get Started with a Track</div>
+                <div className={styles.emptyCurriculumSub}>
+                  Select one or more tracks below to curate your daily questions, roadmap, and analytics.
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div>
+            {TRACK_ORDER.filter((id) => !registeredTracks.includes(id)).map((id) => {
+              const meta = TRACK_META[id];
+              const stat = trackStats[id];
+              return (
+                <div key={id} className={styles.unregisteredCard}>
+                  <div className={styles.unregisteredInfo}>
+                    <div className={styles.unregisteredTitleRow}>
+                      <span className={styles.unregisteredTitle}>{meta.label}</span>
+                      <span className={styles.unregisteredTotal}>{stat.total} problems</span>
+                    </div>
+                    <p className={styles.unregisteredDesc}>{meta.subtitle}</p>
+                    <span className={styles.unregisteredSource}>Source: {meta.source}</span>
+                  </div>
+                  <button
+                    className={styles.registerActionBtn}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      registerTrack(id);
+                    }}
+                  >
+                    + Register
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section className={styles.companySection}>
         <div className={styles.companyHeader}>

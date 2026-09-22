@@ -35,6 +35,7 @@ export default function Stats() {
   const { user } = useAuthUser();
   const aggregate = useAggregateStat();
   const trackStats = useTrackStats();
+  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
 
   const progress = usePaceStore((s) => s.progress || {});
   const solveLog = usePaceStore((s) => s.solveLog || {});
@@ -60,7 +61,7 @@ export default function Stats() {
   // Inspect competitor modal state
   const [inspectEntry, setInspectEntry] = useState<LeaderboardEntry | null>(null);
 
-  // Difficulty breakdown across all tracks
+  // Difficulty breakdown across registered tracks
   const diffBreakdown = useMemo(() => {
     let easySolved = 0,
       easyTotal = 0;
@@ -69,7 +70,7 @@ export default function Stats() {
     let hardSolved = 0,
       hardTotal = 0;
 
-    for (const trackId of TRACK_ORDER) {
+    for (const trackId of registeredTracks) {
       const track = ALL_TRACKS[trackId];
       if (!track) continue;
       for (const group of track.groups) {
@@ -107,7 +108,7 @@ export default function Stats() {
         pct: hardTotal ? Math.round((hardSolved / hardTotal) * 100) : 0,
       },
     };
-  }, [progress]);
+  }, [progress, registeredTracks]);
 
   // Current user object for leaderboard
   const currentUserObj = useMemo(() => {
@@ -675,7 +676,9 @@ export default function Stats() {
           <div className={styles.diffHeader}>
             <span className={styles.diffTitle}>Curriculum Mastery by Difficulty</span>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
-              Across all 4 core tracks
+              {registeredTracks.length > 0
+                ? `Across your ${registeredTracks.length} registered track${registeredTracks.length > 1 ? 's' : ''}`
+                : 'No tracks registered'}
             </span>
           </div>
 
@@ -771,34 +774,50 @@ export default function Stats() {
       {/* By Track Progress Breakdown */}
       {(viewMode === 'progress' || viewMode === 'both') && (
         <section className={styles.trackBlock}>
-          <h2 className={styles.blockTitle}>Track Completion Breakdown</h2>
-          <div className={styles.trackList}>
-            {TRACK_ORDER.map((id) => {
-              const meta = TRACK_META[id];
-              const stat = trackStats[id];
-              return (
-                <Link
-                  key={id}
-                  to={`/track/${id}`}
-                  className={styles.trackRow}
-                  title={`Open ${meta.label}`}
-                >
-                  <span className={styles.trackName}>{meta.shortLabel}</span>
-                  <div className={styles.trackLaneWrap}>
-                    <Lane percent={stat.percent} color={meta.accent} />
-                  </div>
-                  <span className={`${styles.trackFraction} mono`}>
-                    {stat.solved}/{stat.total}
-                  </span>
-                  <span
-                    style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}
-                  >
-                    {Math.round(stat.percent)}%
-                  </span>
-                </Link>
-              );
-            })}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-3)' }}>
+            <h2 className={styles.blockTitle} style={{ margin: 0 }}>Registered Track Completion</h2>
+            <Link to="/settings" style={{ fontSize: '0.78rem', color: 'var(--accent)', textDecoration: 'none' }}>
+              Manage Tracks →
+            </Link>
           </div>
+          {registeredTracks.length === 0 ? (
+            <div style={{ padding: '24px', textAlign: 'center', background: 'var(--surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-hairline)' }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                You have not registered for any tracks yet. Register for a track to unlock your completion breakdown and progress analytics.
+              </p>
+              <Link to="/settings" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--accent)', textDecoration: 'none' }}>
+                Register for Tracks <ArrowRight size={14} />
+              </Link>
+            </div>
+          ) : (
+            <div className={styles.trackList}>
+              {registeredTracks.map((id) => {
+                const meta = TRACK_META[id];
+                const stat = trackStats[id];
+                return (
+                  <Link
+                    key={id}
+                    to={`/track/${id}`}
+                    className={styles.trackRow}
+                    title={`Open ${meta.label}`}
+                  >
+                    <span className={styles.trackName}>{meta.shortLabel}</span>
+                    <div className={styles.trackLaneWrap}>
+                      <Lane percent={stat.percent} color={meta.accent} />
+                    </div>
+                    <span className={`${styles.trackFraction} mono`}>
+                      {stat.solved}/{stat.total}
+                    </span>
+                    <span
+                      style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}
+                    >
+                      {Math.round(stat.percent)}%
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </section>
       )}
 

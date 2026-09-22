@@ -57,10 +57,15 @@ export function useDifficultyBreakdown(trackId: TrackId): DifficultyBreakdown {
 
 export function useAggregateStat() {
   const stats = useTrackStats();
+  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+
   return useMemo(() => {
-    const values = Object.values(stats);
+    if (registeredTracks.length === 0) {
+      return { total: 0, solved: 0, percent: 0 };
+    }
+    const values = registeredTracks.map((id) => stats[id]).filter(Boolean);
     const total = values.reduce((n, s) => n + s.total, 0);
     const solved = values.reduce((n, s) => n + s.solved, 0);
     return { total, solved, percent: total ? (solved / total) * 100 : 0 };
-  }, [stats]);
+  }, [stats, registeredTracks]);
 }

@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
-import { Download, Moon, Sun, Upload, Monitor, LogOut, Cloud, CloudOff, RefreshCw } from 'lucide-react';
+import { Download, Moon, Sun, Upload, Monitor, LogOut, Cloud, CloudOff, RefreshCw, Check } from 'lucide-react';
 import { usePaceStore } from '../state/store';
 import type { Theme } from '../state/store';
+import { TRACK_ORDER, TRACK_META, getTrack } from '../data';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { useAuthUser, useSyncStatus } from '../hooks/useAuth';
 import { signInWithGoogle, signOut, firebaseEnabled } from '../lib/firebase';
@@ -16,6 +17,9 @@ const THEME_OPTIONS: { value: Theme; label: string; icon: typeof Sun }[] = [
 export default function Settings() {
   const theme = usePaceStore((s) => s.theme);
   const setTheme = usePaceStore((s) => s.setTheme);
+  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const registerTrack = usePaceStore((s) => s.registerTrack);
+  const unregisterTrack = usePaceStore((s) => s.unregisterTrack);
   const exportSnapshot = usePaceStore((s) => s.exportSnapshot);
   const importSnapshot = usePaceStore((s) => s.importSnapshot);
   const resetAll = usePaceStore((s) => s.resetAll);
@@ -134,6 +138,61 @@ export default function Settings() {
               {label}
             </button>
           ))}
+        </div>
+      </section>
+
+      <section className={styles.block}>
+        <h2 className={styles.blockTitle}>Curriculums & Tracks</h2>
+        <p className={styles.blockText}>
+          Manage your enrolled tracks. Only problems, personal stats, and search results for registered tracks are active across your workspace. You can register or unregister at any time.
+        </p>
+        <div className={styles.trackEnrollmentList}>
+          {TRACK_ORDER.map((id) => {
+            const meta = TRACK_META[id];
+            const track = getTrack(id);
+            const total = track.groups.reduce((acc, g) => acc + g.problems.length, 0);
+            const enrolled = registeredTracks.includes(id);
+
+            return (
+              <div key={id} className={styles.trackEnrollmentRow}>
+                <div className={styles.trackEnrollmentInfo}>
+                  <div className={styles.trackEnrollmentName}>
+                    {meta.label}
+                  </div>
+                  <span className={styles.trackEnrollmentCount}>
+                    {total} problems • {meta.source}
+                  </span>
+                </div>
+                <div className={styles.trackEnrollmentRight}>
+                  {enrolled ? (
+                    <>
+                      <span className={styles.enrolledBadge}>
+                        <Check size={12} style={{ strokeWidth: 3 }} /> Enrolled
+                      </span>
+                      <button
+                        className={styles.unregisterTrackBtn}
+                        onClick={() => unregisterTrack(id)}
+                        title="Unregister from this track"
+                      >
+                        Unregister
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <span className={styles.notEnrolledBadge}>Not Enrolled</span>
+                      <button
+                        className={styles.registerTrackBtn}
+                        onClick={() => registerTrack(id)}
+                        title="Register for this track"
+                      >
+                        + Register
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 

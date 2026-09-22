@@ -213,3 +213,119 @@
     margin-left: 0;
   }
 }
+
+/* Registration Gate */
+.gateContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  background: linear-gradient(180deg, var(--surface) 0%, var(--bg-surface) 100%);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  margin-top: var(--space-4);
+  gap: var(--space-5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.gateIconWrapper {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  margin-bottom: var(--space-2);
+}
+
+.gateTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.gateDesc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  max-width: 540px;
+  line-height: 1.6;
+}
+
+.gateFeatures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 600px;
+  margin: var(--space-2) 0;
+}
+
+.gateFeatureItem {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.gateFeatureLabel {
+  font-size: 0.74rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.gateFeatureVal {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.registerCtaBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: all 0.15s ease;
+}
+
+.registerCtaBtn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.registerCtaBtn:active {
+  transform: translateY(1px);
+}
+
+.registeredBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--difficulty-easy) 15%, transparent);
+  color: var(--difficulty-easy);
+  border: 1px solid color-mix(in srgb, var(--difficulty-easy) 30%, transparent);
+  margin-bottom: 6px;
+}

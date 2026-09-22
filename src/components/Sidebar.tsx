@@ -13,6 +13,7 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
   const location = useLocation();
   const stats = useTrackStats();
   const solveLog = usePaceStore((s) => s.solveLog);
+  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
   const streak = currentStreak(solveLog);
 
   const isCompanyActive = location.pathname.startsWith('/compan');
@@ -56,29 +57,67 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
       </nav>
 
       <div className={styles.tracks}>
-        <span className={styles.tracksHeading}>Tracks</span>
-        <ul>
-          {TRACK_ORDER.map((id) => {
-            const meta = TRACK_META[id];
-            const stat = stats[id];
-            return (
-              <li key={id}>
-                <NavLink
-                  to={`/track/${id}`}
-                  className={({ isActive }) => `${styles.trackRow} ${isActive ? styles.active : ''}`}
-                >
-                  <span className={styles.trackTop}>
-                    <span className={styles.trackName}>{meta.shortLabel}</span>
-                    <span className={`${styles.trackFraction} mono`}>
-                      {stat.solved}/{stat.total}
+        <span className={styles.tracksHeading}>Enrolled Tracks</span>
+        {registeredTracks.length === 0 ? (
+          <div style={{ padding: '8px 12px', fontSize: '0.78rem', color: 'var(--text-tertiary)' }}>
+            <span>No tracks enrolled.</span>
+            <NavLink
+              to="/settings"
+              style={{
+                display: 'block',
+                marginTop: '4px',
+                color: 'var(--accent)',
+                textDecoration: 'none',
+                fontWeight: 500,
+              }}
+            >
+              + Register tracks →
+            </NavLink>
+          </div>
+        ) : (
+          <ul>
+            {registeredTracks.map((id) => {
+              const meta = TRACK_META[id];
+              const stat = stats[id];
+              return (
+                <li key={id}>
+                  <NavLink
+                    to={`/track/${id}`}
+                    className={({ isActive }) => `${styles.trackRow} ${isActive ? styles.active : ''}`}
+                  >
+                    <span className={styles.trackTop}>
+                      <span className={styles.trackName}>{meta.shortLabel}</span>
+                      <span className={`${styles.trackFraction} mono`}>
+                        {stat.solved}/{stat.total}
+                      </span>
                     </span>
-                  </span>
-                  <Lane percent={stat.percent} color={meta.accent} size="sm" />
+                    <Lane percent={stat.percent} color={meta.accent} size="sm" />
+                  </NavLink>
+                </li>
+              );
+            })}
+            {registeredTracks.length < TRACK_ORDER.length && (
+              <li>
+                <NavLink
+                  to="/settings"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 12px',
+                    fontSize: '0.75rem',
+                    color: 'var(--text-tertiary)',
+                    textDecoration: 'none',
+                    borderRadius: 'var(--radius-sm)',
+                    marginTop: '4px',
+                  }}
+                >
+                  <span>+ Explore more tracks</span>
                 </NavLink>
               </li>
-            );
-          })}
-        </ul>
+            )}
+          </ul>
+        )}
       </div>
 
       <div className={styles.footer}>

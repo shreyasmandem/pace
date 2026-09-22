@@ -1,7 +1,7 @@
 import { doc, onSnapshot, setDoc, type Unsubscribe } from 'firebase/firestore';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth, db } from '../lib/firebase';
-import { usePaceStore, currentStreak, type PlanItem } from './store';
+import { usePaceStore, currentStreak, type PlanItem, type TrackId } from './store';
 import { publishToLeaderboard, calculateWeeklySolves } from '../lib/leaderboard';
 
 export type SyncStatus = 'signed-out' | 'syncing' | 'synced' | 'offline';
@@ -12,9 +12,17 @@ type SyncableState = {
   bookmarks: Record<string, boolean>;
   solveLog: Record<string, number>;
   planner: Record<string, PlanItem[]>;
+  registeredTracks: TrackId[];
 };
 
-const SYNC_FIELDS: (keyof SyncableState)[] = ['progress', 'notes', 'bookmarks', 'solveLog', 'planner'];
+const SYNC_FIELDS: (keyof SyncableState)[] = [
+  'progress',
+  'notes',
+  'bookmarks',
+  'solveLog',
+  'planner',
+  'registeredTracks',
+];
 
 function cleanProgressMap(map: Record<string, boolean> | undefined): Record<string, boolean> {
   const clean: Record<string, boolean> = {};
@@ -52,6 +60,12 @@ function cleanPlannerMap(map: Record<string, PlanItem[]> | undefined): Record<st
   return clean;
 }
 
+function cleanRegisteredTracks(list: any): TrackId[] {
+  if (!Array.isArray(list)) return [];
+  const valid: TrackId[] = ['a2z', 'nc150', 'nc250', 'blind75'];
+  return list.filter((id) => valid.includes(id));
+}
+
 function pickSyncable(state: ReturnType<typeof usePaceStore.getState>): SyncableState {
   return {
     progress: cleanProgressMap(state.progress),
@@ -59,6 +73,7 @@ function pickSyncable(state: ReturnType<typeof usePaceStore.getState>): Syncable
     bookmarks: cleanBookmarksMap(state.bookmarks),
     solveLog: state.solveLog || {},
     planner: cleanPlannerMap(state.planner),
+    registeredTracks: cleanRegisteredTracks(state.registeredTracks),
   };
 }
 
@@ -135,9 +150,11 @@ function pushToFirestore(uid: string) {
       bookmarks: payload.bookmarks,
       solveLog: payload.solveLog,
       planner: payload.planner,
+      registeredTracks: payload.registeredTracks,
+      resetVersion: 2,
       updatedAt: now,
     },
-    { mergeFields: ['progress', 'notes', 'bookmarks', 'solveLog', 'planner', 'updatedAt'] }
+    { mergeFields: ['progress', 'notes', 'bookmarks', 'solveLog', 'planner', 'registeredTracks', 'resetVersion', 'updatedAt'] }
   )
     .then(() => {
       setStatus('synced');
@@ -182,8 +199,26 @@ async function startSyncing(user: User) {
         return;
       }
 
-      const remoteData = snap.data() as Partial<SyncableState & { updatedAt?: number }>;
+      const remoteData = snap.data() as Partial<SyncableState & { updatedAt?: number; resetVersion?: number }>;
       const remoteUpdatedAt = remoteData?.updatedAt || 0;
+
+      // Check if remote data needs the global v2 reset
+      if (!remoteData?.resetVersion || remoteData.resetVersion < 2) {
+        isInitialLoad = false;
+        const cleanReset: SyncableState = {
+          progress: {},
+          notes: cleanNotesMap(remoteData.notes),
+          bookmarks: cleanBookmarksMap(remoteData.bookmarks),
+          solveLog: {},
+          planner: cleanPlannerMap(remoteData.planner),
+          registeredTracks: [],
+        };
+        applyingRemoteUpdate = true;
+        usePaceStore.setState(cleanReset);
+        applyingRemoteUpdate = false;
+        pushToFirestore(user.uid);
+        return;
+      }
 
       // Update public leaderboard entry for this user
       const remoteProg = cleanProgressMap(remoteData?.progress);
@@ -231,6 +266,7 @@ async function startSyncing(user: User) {
               ...cleanPlannerMap(remoteData.planner),
               ...local.planner,
             },
+            registeredTracks: cleanRegisteredTracks(remoteData.registeredTracks || local.registeredTracks),
           };
 
           applyingRemoteUpdate = true;
@@ -253,9 +289,10 @@ async function startSyncing(user: User) {
         bookmarks: cleanBookmarksMap(remoteData.bookmarks),
         solveLog: remoteData.solveLog || {},
         planner: cleanPlannerMap(remoteData.planner),
+        registeredTracks: cleanRegisteredTracks(remoteData.registeredTracks),
       };
 
-      const hasDiff = SYNC_FIELDS.some((k) => !mapsEqual(local[k], cleanRemote[k]));
+      const hasDiff = SYNC_FIELDS.some((k) => !mapsEqual(local[k] as any, cleanRemote[k] as any));
       if (hasDiff) {
         applyingRemoteUpdate = true;
         usePaceStore.setState(cleanRemote);

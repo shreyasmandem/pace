@@ -82,8 +82,15 @@ export default function Planner() {
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
 
+  // Store data & actions
+  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const planner = usePaceStore((s) => s.planner || {});
+  const progress = usePaceStore((s) => s.progress || {});
+  const solveLog = usePaceStore((s) => s.solveLog || {});
+  const streak = currentStreak(solveLog);
+
   // Add problem & subtopic modal state
-  const [modalTrack, setModalTrack] = useState<TrackId>('a2z');
+  const [modalTrack, setModalTrack] = useState<TrackId>(registeredTracks[0] || 'a2z');
   const [modalStepId, setModalStepId] = useState<string>('a2z-step-1');
   const [modalSubtopicId, setModalSubtopicId] = useState<string>('');
   const [problemSearch, setProblemSearch] = useState<string>('');
@@ -96,11 +103,11 @@ export default function Planner() {
     item: PlanItem;
   } | null>(null);
 
-  // Store data & actions
-  const planner = usePaceStore((s) => s.planner || {});
-  const progress = usePaceStore((s) => s.progress || {});
-  const solveLog = usePaceStore((s) => s.solveLog || {});
-  const streak = currentStreak(solveLog);
+  useEffect(() => {
+    if (registeredTracks.length > 0 && !registeredTracks.includes(modalTrack)) {
+      setModalTrack(registeredTracks[0]);
+    }
+  }, [registeredTracks, modalTrack]);
 
   const togglePlanItem = usePaceStore((s) => s.togglePlanItem);
   const removeFromPlan = usePaceStore((s) => s.removeFromPlan);
@@ -815,29 +822,43 @@ export default function Planner() {
                   <Layers size={13} color="var(--accent)" />
                   <span>Choose Track / Sheet</span>
                 </label>
-                <div className={styles.radioRow}>
-                  {TRACK_ORDER.map((id) => {
-                    const active = modalTrack === id;
-                    return (
-                      <button
-                        key={id}
-                        type="button"
-                        className={`${styles.radioBtn} ${
-                          active ? styles.radioBtnActive : ''
-                        }`}
-                        onClick={() => {
-                          setModalTrack(id);
-                          if (id === 'a2z') {
-                            setModalStepId('a2z-step-1');
-                          }
-                          setProblemSearch('');
-                        }}
-                      >
-                        {TRACK_META[id].shortLabel}
-                      </button>
-                    );
-                  })}
-                </div>
+                {registeredTracks.length === 0 ? (
+                  <div style={{ padding: '14px', background: 'var(--surface-sunken)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-hairline)' }}>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                      You haven't registered for any tracks yet. Register for a track to plan problems from its curriculum.
+                    </p>
+                    <a
+                      href="/settings"
+                      style={{ fontSize: '0.82rem', color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}
+                    >
+                      Go to Settings to Register Tracks →
+                    </a>
+                  </div>
+                ) : (
+                  <div className={styles.radioRow}>
+                    {registeredTracks.map((id) => {
+                      const active = modalTrack === id;
+                      return (
+                        <button
+                          key={id}
+                          type="button"
+                          className={`${styles.radioBtn} ${
+                            active ? styles.radioBtnActive : ''
+                          }`}
+                          onClick={() => {
+                            setModalTrack(id);
+                            if (id === 'a2z') {
+                              setModalStepId('a2z-step-1');
+                            }
+                            setProblemSearch('');
+                          }}
+                        >
+                          {TRACK_META[id].shortLabel}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Main Topic (Step) Dropdown for A2Z only */}
