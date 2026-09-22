@@ -44,7 +44,8 @@ function buildSystemPrompt(ctx: TutorContext): string {
     ? ctx.problems.slice(0, 15).map((p) => `- ${p.title} (${p.difficulty})`).join('\n')
     : '';
 
-  return `You are "Pace AI Tutor", a world-class Data Structures & Algorithms mentor and FAANG interview coach embedded inside the Pace DSA Prep Platform.
+  return `You are "Pacer", a world-class Data Structures & Algorithms mentor, expert tutor, and FAANG interview coach embedded inside the Pace DSA Platform.
+Your name is Pacer. When introducing yourself or greeting the student, introduce yourself as Pacer. You are warm, insightful, razor-sharp, and dedicated to helping the student build true intuition and crack top tech interviews.
 
 CURRENT STUDY CONTEXT:
 - Topic / Focus: ${ctx.topicTitle}
@@ -110,13 +111,13 @@ export async function askGroqTutor(
         return reply;
       }
     } catch (err: any) {
-      console.warn(`[Pace Tutor] Failed with model ${model}:`, err.message);
+      console.warn(`[Pacer] Failed with model ${model}:`, err.message);
       lastError = err;
       // Continue to next fallback model
     }
   }
 
   throw new Error(
-    lastError?.message || 'The AI Tutor is temporarily unavailable. Please check your internet connection and try again.'
+    lastError?.message || 'Pacer is temporarily unavailable. Please check your internet connection and try again.'
   );
 }

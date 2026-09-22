@@ -313,7 +313,7 @@ export default function AITutorDrawer({
         role="dialog"
         aria-modal="true"
       >
-        <ErrorBoundary fallbackTitle="AI Tutor encountered an error" onReset={onClose}>
+        <ErrorBoundary fallbackTitle="Pacer encountered an error" onReset={onClose}>
         {/* Mobile Drag Indicator */}
         <div className={styles.mobileHandle} />
 
@@ -323,7 +323,7 @@ export default function AITutorDrawer({
             <div className={styles.badgeRow}>
               <span className={styles.tutorBadge}>
                 <Sparkles size={13} className={styles.sparkleIcon} />
-                <span>AI Tutor</span>
+                <span>Pacer</span>
               </span>
               <span className={styles.modelBadge}>Groq ⚡ LPU</span>
             </div>
@@ -343,7 +343,7 @@ export default function AITutorDrawer({
               <button
                 className={`${styles.tabBtn} ${tab === 'tutor' ? styles.tabActive : ''}`}
                 onClick={() => setTab('tutor')}
-                title="AI Tutor"
+                title="Pacer AI Tutor"
               >
                 <Bot size={14} />
               </button>
@@ -391,11 +391,11 @@ export default function AITutorDrawer({
                   <div className={styles.welcomeIconWrapper}>
                     <GraduationCap size={28} />
                   </div>
-                  <h4 className={styles.welcomeTitle}>Interactive DSA Tutor</h4>
+                  <h4 className={styles.welcomeTitle}>Meet Pacer</h4>
                   <p className={styles.welcomeDesc}>
-                    Tailored specifically to <strong>{topicTitle}</strong>. Ask for intuition,
-                    hints, complexity analysis, or debugging advice. Conversations are saved for
-                    this topic.
+                    Your dedicated DSA mentor tailored to <strong>{topicTitle}</strong>. Ask
+                    for intuition, step-by-step hints, complexity trade-offs, or debugging.
+                    Conversations are automatically saved.
                   </p>
 
                   <div className={styles.starterPromptGrid}>
@@ -422,7 +422,7 @@ export default function AITutorDrawer({
                           isUser ? styles.messageUser : styles.messageAssistant
                         }`}
                       >
-                        <div className={styles.messageAvatar}>
+                        <div className={styles.messageAvatar} title={isUser ? 'You' : 'Pacer'}>
                           {isUser ? <span>You</span> : <Sparkles size={13} />}
                         </div>
                         <div className={styles.messageBubble}>
@@ -438,14 +438,14 @@ export default function AITutorDrawer({
 
                   {loading && (
                     <div className={`${styles.messageWrapper} ${styles.messageAssistant}`}>
-                      <div className={styles.messageAvatar}>
+                      <div className={styles.messageAvatar} title="Pacer">
                         <Sparkles size={13} className={styles.pulsingIcon} />
                       </div>
                       <div className={styles.thinkingBubble}>
                         <span className={styles.dot} />
                         <span className={styles.dot} />
                         <span className={styles.dot} />
-                        <span className={styles.thinkingText}>Pace Tutor is thinking...</span>
+                        <span className={styles.thinkingText}>Pacer is thinking...</span>
                       </div>
                     </div>
                   )}
@@ -477,7 +477,7 @@ export default function AITutorDrawer({
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={`Ask anything about ${topicTitle}... (Enter to send)`}
+                  placeholder={`Ask Pacer anything about ${topicTitle}... (Enter to send)`}
                 />
                 <button
                   className={`${styles.sendBtn} ${input.trim() && !loading ? styles.sendBtnActive : ''}`}
@@ -489,7 +489,7 @@ export default function AITutorDrawer({
                 </button>
               </div>
               <div className={styles.inputFooter}>
-                <span>Powered by Groq LPU • Answers tailored to {topicTitle}</span>
+                <span>Powered by Groq ⚡ LPU • Pacer answers are tailored to {topicTitle}</span>
               </div>
             </div>
           </>

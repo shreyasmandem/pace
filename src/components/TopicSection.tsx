@@ -90,11 +90,11 @@ export default function TopicSection({
         <button
           className={styles.tutorBtn}
           onClick={handleOpenTutorForTopic}
-          title={`Ask AI Tutor about ${group.title}`}
-          aria-label={`Ask AI Tutor about ${group.title}`}
+          title={`Ask Pacer about ${group.title}`}
+          aria-label={`Ask Pacer about ${group.title}`}
         >
           <Sparkles size={13} className={styles.tutorSparkle} />
-          <span>AI Tutor</span>
+          <span>Pacer</span>
         </button>
         {group.videoUrl && (
           <a

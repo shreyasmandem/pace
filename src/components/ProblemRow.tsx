@@ -63,8 +63,8 @@ const ProblemRow = forwardRef<HTMLDivElement, ProblemRowProps>(function ProblemR
       <button
         className={`${styles.iconButton} ${styles.tutorBtn} ${hasChat || hasNote ? styles.tutorActive : ''}`}
         onClick={handleTutorClick}
-        aria-label="Ask AI Tutor"
-        title="Ask AI Tutor"
+        aria-label="Ask Pacer"
+        title="Ask Pacer"
       >
         <Sparkles size={13} />
       </button>

@@ -274,10 +274,10 @@ export default function CompanySheet() {
             <button
               className={styles.companyTutorBtn}
               onClick={() => setCompanyTutorOpen(true)}
-              title={`Ask AI Coach about ${companyMeta.name} interview questions`}
+              title={`Ask Pacer about ${companyMeta.name} interview questions`}
             >
               <Sparkles size={13} />
-              <span>Ask AI Coach</span>
+              <span>Ask Pacer</span>
             </button>
           </div>
           <p className={styles.subtitle}>
@@ -479,8 +479,8 @@ export default function CompanySheet() {
                         : ''
                     }`}
                     onClick={() => setTutorProblem(p)}
-                    aria-label="Ask AI Tutor"
-                    title="Ask AI Tutor"
+                    aria-label="Ask Pacer"
+                    title="Ask Pacer"
                   >
                     <Sparkles size={13} />
                   </button>
@@ -536,7 +536,7 @@ export default function CompanySheet() {
           topicTitle={
             tutorProblem
               ? `${companyMeta.name} — ${tutorProblem.title}`
-              : `${companyMeta.name} Interview Preparation`
+              : `${companyMeta.name} Interview Prep with Pacer`
           }
           companyName={companyMeta.name}
           patternTip={companyMeta.interviewTip || undefined}
