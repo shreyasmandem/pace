@@ -5,6 +5,8 @@ import {
   Check,
   Copy,
   GraduationCap,
+  Maximize2,
+  Minimize2,
   NotebookPen,
   RotateCcw,
   Send,
@@ -52,6 +54,7 @@ export default function AITutorDrawer({
   const [confirmClear, setConfirmClear] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [isClosing, setIsClosing] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
   const [thinkingStep, setThinkingStep] = useState(0);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -162,16 +165,20 @@ export default function AITutorDrawer({
     }
   }, []);
 
-  // Escape key closes modal
+  // Escape key closes modal or exits fullscreen first
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        handleClose();
+        if (isFullScreen) {
+          setIsFullScreen(false);
+        } else {
+          handleClose();
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleClose]);
+  }, [handleClose, isFullScreen]);
 
   // Touch handlers for mobile swipe navigation
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -427,32 +434,32 @@ export default function AITutorDrawer({
     });
   };
 
-  // Starter prompts tailored for Python DSA
+  // Starter prompts tailored for intuitive, human-like Python DSA learning
   const starterPrompts = [
     {
-      title: '🐍 Python Intuition & Pattern',
-      prompt: `What are the core mental models and algorithmic patterns I need to master for "${topicTitle}" in Python 3?`,
+      title: '💡 Intuition & Real-World Analogy',
+      prompt: `Explain the core intuition and a real-world analogy for "${topicTitle}" in simple terms. How should I naturally think about it before writing any code?`,
     },
     ...(currentProblem
       ? [
           {
-            title: `💡 Hint for "${currentProblem.title}"`,
-            prompt: `Give me a conceptual hint for solving "${currentProblem.title}" in Python without giving away the full solution code yet.`,
+            title: `🪜 Step-by-Step Hint (No Spoilers)`,
+            prompt: `Give me a nudge or guiding question for solving "${currentProblem.title}" in Python. Don't give me the full code yet, just help my brain see the pattern!`,
           },
           {
-            title: '⚡ Python 3 Complexity & Tools',
-            prompt: `What is the optimal time & space complexity for "${currentProblem.title}", and what Python data structures make it optimal?`,
+            title: '⚡ Python 3 Optimal Approach',
+            prompt: `Walk me through the optimal approach for "${currentProblem.title}" like a master teacher. Include small number examples and clean, idiomatic Python 3.`,
           },
         ]
       : [
           {
-            title: '🪜 Step-by-Step Python Walkthrough',
-            prompt: `Walk me through a classic problem in "${topicTitle}" with a clear step-by-step example trace in Python.`,
+            title: '🪜 Step-by-Step Master Walkthrough',
+            prompt: `Walk me through a classic problem in "${topicTitle}" like a friendly, world-class teacher. Use small numbers to trace it, then show idiomatic Python 3.`,
           },
         ]),
     {
-      title: '⚠️ Python Gotchas & Traps',
-      prompt: `What are the most frequent edge cases, index traps, and Python-specific gotchas candidates fall into when solving "${topicTitle}" questions?`,
+      title: '⚠️ Gotchas & Hidden Traps',
+      prompt: `What common traps, off-by-one errors, and tricky edge cases do candidates usually stumble on in "${topicTitle}"? Explain why they happen and how to avoid them easily.`,
     },
   ];
 
@@ -464,7 +471,7 @@ export default function AITutorDrawer({
       onClick={handleClose}
     >
       <div
-        className={`${styles.panel} ${isClosing ? styles.panelClosing : ''}`}
+        className={`${styles.panel} ${isClosing ? styles.panelClosing : ''} ${isFullScreen ? styles.panelFullScreen : ''}`}
         onClick={(e) => e.stopPropagation()}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -531,6 +538,16 @@ export default function AITutorDrawer({
                 <RotateCcw size={14} className={confirmClear ? styles.clearConfirmIcon : ''} />
               </button>
             )}
+
+            {/* Fullscreen Toggle for PC/Tablet */}
+            <button
+              className={`${styles.iconBtn} ${styles.fullscreenBtn}`}
+              onClick={() => setIsFullScreen((prev) => !prev)}
+              title={isFullScreen ? 'Exit Full Screen' : 'Full Screen Focus Studio'}
+              aria-label={isFullScreen ? 'Exit Full Screen' : 'Enter Full Screen'}
+            >
+              {isFullScreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+            </button>
 
             {/* Close Button */}
             <button className={styles.closeBtn} onClick={handleClose} aria-label="Close">

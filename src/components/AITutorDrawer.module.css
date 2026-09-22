@@ -41,6 +41,34 @@
   position: relative;
   touch-action: auto;
   will-change: transform, opacity;
+  transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panelFullScreen {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  min-width: 100vw !important;
+  border-left: none !important;
+}
+
+.panelFullScreen .header {
+  padding-left: max(var(--space-5), calc((100vw - 920px) / 2));
+  padding-right: max(var(--space-5), calc((100vw - 920px) / 2));
+}
+
+.panelFullScreen .thread,
+.panelFullScreen .notesContainer {
+  max-width: 920px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.panelFullScreen .inputContainer {
+  max-width: 920px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 .panelClosing {
@@ -776,6 +804,10 @@
   }
 
   .mobileHandle {
+    display: none;
+  }
+
+  .fullscreenBtn {
     display: none;
   }
 
