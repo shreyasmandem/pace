@@ -51,10 +51,13 @@ export default function AITutorDrawer({
   const [error, setError] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+  const [thinkingStep, setThinkingStep] = useState(0);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const notesTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const closingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
@@ -63,8 +66,30 @@ export default function AITutorDrawer({
   const stateKeyRef = useRef<string>('');
   const touchStartRef = useRef<{ x: number; y: number; isLeftEdge: boolean } | null>(null);
 
+  const THINKING_MESSAGES = [
+    'Pacer is analyzing problem context...',
+    'Synthesizing optimal Python approach...',
+    'Checking edge cases & complexity...',
+    'Drafting step-by-step guidance...',
+  ];
+
+  // Dynamic thinking step rotation
+  useEffect(() => {
+    if (!loading) {
+      setThinkingStep(0);
+      return;
+    }
+    const interval = setInterval(() => {
+      setThinkingStep((prev) => (prev + 1) % THINKING_MESSAGES.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [loading]);
+
   // Handle close action (from UI button, backdrop, Escape key, or swipe gestures)
   const handleClose = useCallback(() => {
+    if (isClosing) return;
+    setIsClosing(true);
+
     if (historyPushedRef.current) {
       historyPushedRef.current = false;
       try {
@@ -75,8 +100,11 @@ export default function AITutorDrawer({
         // ignore
       }
     }
-    onCloseRef.current();
-  }, []);
+
+    closingTimeoutRef.current = setTimeout(() => {
+      onCloseRef.current();
+    }, 240);
+  }, [isClosing]);
 
   // Push history state on mount so that the mobile back swipe pops this state instead of navigating to Home
   useEffect(() => {
@@ -93,7 +121,10 @@ export default function AITutorDrawer({
       // When user swipes back on mobile or clicks browser/hardware back button
       if (historyPushedRef.current) {
         historyPushedRef.current = false;
-        onCloseRef.current();
+        setIsClosing(true);
+        closingTimeoutRef.current = setTimeout(() => {
+          onCloseRef.current();
+        }, 240);
       }
     };
 
@@ -101,6 +132,9 @@ export default function AITutorDrawer({
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
+      if (closingTimeoutRef.current) {
+        clearTimeout(closingTimeoutRef.current);
+      }
       // Clean up history entry if unmounting without a popstate (e.g. parent unmount)
       if (historyPushedRef.current) {
         historyPushedRef.current = false;
@@ -204,6 +238,12 @@ export default function AITutorDrawer({
   useEffect(() => {
     scrollToBottom(false);
   }, [chatMessages.length, tab]);
+
+  useEffect(() => {
+    if (loading) {
+      scrollToBottom(true);
+    }
+  }, [loading, thinkingStep]);
 
   useEffect(() => {
     if (tab === 'tutor') {
@@ -384,41 +424,44 @@ export default function AITutorDrawer({
     });
   };
 
-  // Starter prompts
+  // Starter prompts tailored for Python DSA
   const starterPrompts = [
     {
-      title: '💡 Core Intuition & Patterns',
-      prompt: `What are the core mental models and algorithmic patterns I need to master for "${topicTitle}"?`,
+      title: '🐍 Python Intuition & Pattern',
+      prompt: `What are the core mental models and algorithmic patterns I need to master for "${topicTitle}" in Python 3?`,
     },
     ...(currentProblem
       ? [
           {
-            title: `🎯 Hint for "${currentProblem.title}"`,
-            prompt: `Give me a conceptual hint for solving "${currentProblem.title}" without giving away the full solution code.`,
+            title: `💡 Hint for "${currentProblem.title}"`,
+            prompt: `Give me a conceptual hint for solving "${currentProblem.title}" in Python without giving away the full solution code yet.`,
           },
           {
-            title: '⚡ Optimal Complexity',
-            prompt: `What is the brute force vs optimal time & space complexity for "${currentProblem.title}", and what makes the optimal approach fast?`,
+            title: '⚡ Python 3 Complexity & Tools',
+            prompt: `What is the optimal time & space complexity for "${currentProblem.title}", and what Python data structures make it optimal?`,
           },
         ]
       : [
           {
-            title: '🪜 Step-by-Step Example Walkthrough',
-            prompt: `Walk me through a classic problem in "${topicTitle}" with a clear step-by-step example trace.`,
+            title: '🪜 Step-by-Step Python Walkthrough',
+            prompt: `Walk me through a classic problem in "${topicTitle}" with a clear step-by-step example trace in Python.`,
           },
         ]),
     {
-      title: '⚠️ Common Edge Cases & Traps',
-      prompt: `What are the most frequent edge cases, bugs, or traps candidates fall into when solving "${topicTitle}" questions?`,
+      title: '⚠️ Python Gotchas & Traps',
+      prompt: `What are the most frequent edge cases, index traps, and Python-specific gotchas candidates fall into when solving "${topicTitle}" questions?`,
     },
   ];
 
   if (typeof document === 'undefined') return null;
 
   return createPortal(
-    <div className={styles.backdrop} onClick={handleClose}>
+    <div
+      className={`${styles.backdrop} ${isClosing ? styles.backdropClosing : ''}`}
+      onClick={handleClose}
+    >
       <div
-        className={styles.panel}
+        className={`${styles.panel} ${isClosing ? styles.panelClosing : ''}`}
         onClick={(e) => e.stopPropagation()}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
@@ -551,13 +594,17 @@ export default function AITutorDrawer({
                   {loading && (
                     <div className={`${styles.messageWrapper} ${styles.messageAssistant}`}>
                       <div className={styles.messageAvatar} title="Pacer">
-                        <Sparkles size={13} className={styles.pulsingIcon} />
+                        <Sparkles size={14} className={styles.pulsingIcon} />
                       </div>
                       <div className={styles.thinkingBubble}>
-                        <span className={styles.dot} />
-                        <span className={styles.dot} />
-                        <span className={styles.dot} />
-                        <span className={styles.thinkingText}>Pacer is thinking...</span>
+                        <div className={styles.dotsWave}>
+                          <span className={styles.dot} />
+                          <span className={styles.dot} />
+                          <span className={styles.dot} />
+                        </div>
+                        <span className={styles.thinkingText}>
+                          {THINKING_MESSAGES[thinkingStep]}
+                        </span>
                       </div>
                     </div>
                   )}

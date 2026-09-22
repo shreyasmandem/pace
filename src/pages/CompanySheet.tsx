@@ -9,6 +9,7 @@ import {
   Search,
   Sparkles,
   ExternalLink,
+  X,
 } from 'lucide-react';
 import { COMPANIES, fetchCompanyProblems, getCompanyMeta } from '../data';
 import { usePaceStore } from '../state/store';
@@ -75,6 +76,7 @@ export default function CompanySheet() {
   const bookmarks = usePaceStore((s) => s.bookmarks);
   const toggleBookmark = usePaceStore((s) => s.toggleBookmark);
   const resetTrack = usePaceStore((s) => s.resetTrack);
+  const tutorChats = usePaceStore((s) => s.tutorChats);
 
   // Fetch company problems when currentCompanyId changes
   useEffect(() => {
@@ -222,34 +224,62 @@ export default function CompanySheet() {
             </button>
 
             {dropdownOpen && (
-              <div className={styles.comboboxDropdown}>
-                <div className={styles.dropdownSearch}>
-                  <input
-                    type="text"
-                    autoFocus
-                    placeholder="Search 500+ companies..."
-                    value={companySearch}
-                    onChange={(e) => setCompanySearch(e.target.value)}
-                  />
-                </div>
-                <div className={styles.dropdownList}>
-                  {dropdownCompanies.map((c) => (
+              <>
+                <div
+                  className={styles.dropdownBackdrop}
+                  onClick={() => setDropdownOpen(false)}
+                />
+                <div className={styles.comboboxDropdown} onClick={(e) => e.stopPropagation()}>
+                  <div className={styles.mobileHandle} />
+                  <div className={styles.dropdownHeader}>
+                    <div className={styles.dropdownSearch}>
+                      <Search size={14} className={styles.dropdownSearchIcon} />
+                      <input
+                        type="text"
+                        autoFocus
+                        placeholder="Search 500+ companies..."
+                        value={companySearch}
+                        onChange={(e) => setCompanySearch(e.target.value)}
+                      />
+                      {companySearch && (
+                        <button
+                          type="button"
+                          className={styles.dropdownClearBtn}
+                          onClick={() => setCompanySearch('')}
+                          aria-label="Clear company search"
+                        >
+                          <X size={13} />
+                        </button>
+                      )}
+                    </div>
                     <button
-                      key={c.id}
-                      className={`${styles.dropdownItem} ${
-                        c.id === currentCompanyId ? styles.dropdownItemActive : ''
-                      }`}
-                      onClick={() => selectCompany(c.id)}
+                      type="button"
+                      className={styles.dropdownCloseBtn}
+                      onClick={() => setDropdownOpen(false)}
+                      aria-label="Close company list"
                     >
-                      <span>{c.name}</span>
-                      <span className={`${styles.dropdownItemTotal} mono`}>{c.total} q</span>
+                      <X size={16} />
                     </button>
-                  ))}
-                  {dropdownCompanies.length === 0 && (
-                    <div className={styles.empty}>No matching companies found</div>
-                  )}
+                  </div>
+                  <div className={styles.dropdownList}>
+                    {dropdownCompanies.map((c) => (
+                      <button
+                        key={c.id}
+                        className={`${styles.dropdownItem} ${
+                          c.id === currentCompanyId ? styles.dropdownItemActive : ''
+                        }`}
+                        onClick={() => selectCompany(c.id)}
+                      >
+                        <span>{c.name}</span>
+                        <span className={`${styles.dropdownItemTotal} mono`}>{c.total} q</span>
+                      </button>
+                    ))}
+                    {dropdownCompanies.length === 0 && (
+                      <div className={styles.empty}>No matching companies found</div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>
@@ -478,7 +508,7 @@ export default function CompanySheet() {
 
                   <button
                     className={`${styles.iconButton} ${styles.tutorBtn} ${
-                      usePaceStore.getState().tutorChats?.[`company_${currentCompanyId}_${p.id}`]?.length || hasNote
+                      tutorChats?.[`company_${currentCompanyId}_${p.id}`]?.length || hasNote
                         ? styles.tutorActive
                         : ''
                     }`}

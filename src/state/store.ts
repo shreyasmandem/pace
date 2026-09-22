@@ -140,7 +140,14 @@ export const usePaceStore = create<PaceState>()(
           }
           return { progress, notes, bookmarks };
         }),
-      resetAll: () => set({ progress: {}, notes: {}, bookmarks: {}, solveLog: {} }),
+      resetAll: () =>
+        set({
+          progress: {},
+          notes: {},
+          bookmarks: {},
+          solveLog: {},
+          tutorChats: {},
+        }),
 
       exportSnapshot: () => {
         const { progress, notes, bookmarks, solveLog, tutorChats } = get();

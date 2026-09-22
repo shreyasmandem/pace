@@ -167,7 +167,7 @@ export default function Settings() {
       <section className={styles.block}>
         <h2 className={styles.blockTitle}>Danger zone</h2>
         <p className={styles.blockText}>
-          Clear every track's progress, notes, and bookmarks. Export a backup first if you might want it back.
+          Clear all solved progress, bookmarks, personal notes, and Pacer AI tutor chat history across every track and company. Export a backup first if you might want it back.
         </p>
         <button className={styles.dangerButton} onClick={() => setConfirmingReset(true)}>
           Reset all progress
@@ -177,7 +177,7 @@ export default function Settings() {
       {confirmingReset && (
         <ConfirmDialog
           title="Reset all progress?"
-          body="This clears progress, notes, and bookmarks across every track. This can't be undone."
+          body="This will permanently delete all your solved progress, bookmarks, personal notes, and Pacer AI tutor chat history across every track and company. This cannot be undone."
           confirmLabel="Reset everything"
           onConfirm={() => {
             resetAll();
