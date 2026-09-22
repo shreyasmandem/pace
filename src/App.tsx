@@ -7,6 +7,7 @@ import Stats from './pages/Stats';
 import Settings from './pages/Settings';
 import CompanySheet from './pages/CompanySheet';
 import Planner from './pages/Planner';
+import AuthPage from './pages/AuthPage';
 import { useThemeEffect } from './hooks/useTheme';
 import { initSync } from './state/sync';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -27,6 +28,8 @@ export default function App() {
           <Route path="/company/:companyId" element={<CompanySheet />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/login" element={<AuthPage initialMode="login" />} />
+          <Route path="/signup" element={<AuthPage initialMode="signup" />} />
         </Route>
       </Routes>
     </HashRouter>

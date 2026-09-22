@@ -9,6 +9,11 @@ export default function Layout() {
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
 
+  // Close search palette whenever the route changes
+  useEffect(() => {
+    setSearchOpen(false);
+  }, [location.pathname]);
+
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {

@@ -9,7 +9,7 @@ export default function AccountButton() {
 
   if (!user) {
     return (
-      <NavLink to="/settings" className={styles.button} aria-label="Sign in to sync your progress">
+      <NavLink to="/login" className={styles.button} aria-label="Log in or Sign up" title="Log in / Sign up">
         <LogIn size={16} />
       </NavLink>
     );

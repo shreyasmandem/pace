@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { Download, Moon, Sun, Upload, Monitor, LogOut, Cloud, CloudOff, RefreshCw, Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Download, Moon, Sun, Upload, Monitor, LogOut, Cloud, CloudOff, RefreshCw, Check, LogIn } from 'lucide-react';
 import { usePaceStore } from '../state/store';
 import type { Theme, TutorLanguage } from '../state/store';
 import type { TrackId } from '../types';
@@ -170,10 +171,16 @@ export default function Settings() {
                 Sign in with Google to sync progress, notes, and bookmarks across every device — sign in
                 on your phone and pick up exactly where you left off.
               </p>
-              <button className={styles.actionButton} onClick={handleSignIn} disabled={signingIn}>
-                <Cloud size={15} />
-                {signingIn ? 'Signing in…' : 'Sign in with Google'}
-              </button>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <Link to="/login" className={styles.actionButton} style={{ textDecoration: 'none' }}>
+                  <LogIn size={15} />
+                  Log In / Sign Up
+                </Link>
+                <button className={styles.actionButton} onClick={handleSignIn} disabled={signingIn}>
+                  <Cloud size={15} />
+                  {signingIn ? 'Signing in…' : 'Quick Google Sign In'}
+                </button>
+              </div>
               {authError && <p className={styles.importMessage}>{authError}</p>}
             </>
           )}

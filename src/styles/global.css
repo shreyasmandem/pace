@@ -8,10 +8,14 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  /* Prevent elastic scroll from showing blank areas */
+  overscroll-behavior-y: none;
 }
 
 body {
   margin: 0;
+  overflow-x: hidden;
   background: var(--bg);
   color: var(--text-primary);
   font-family: var(--font-body);

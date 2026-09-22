@@ -11,13 +11,16 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { TRACK_META, TRACK_ORDER, getFeaturedCompanies } from '../data';
+import { getDailyQuote, getDayOfYear } from '../data/dailyQuotes';
 import { useAggregateStat, useTrackStats } from '../hooks/useTrackStats';
+import { useAuthUser } from '../hooks/useAuth';
 import { usePaceStore, currentStreak } from '../state/store';
 import PaceRing from '../components/PaceRing';
 import Lane from '../components/Lane';
 import styles from './Home.module.css';
 
 export default function Home() {
+  const { user } = useAuthUser();
   const aggregate = useAggregateStat();
   const trackStats = useTrackStats();
   const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
@@ -34,27 +37,95 @@ export default function Home() {
   const bookmarkCount = Object.keys(bookmarks).length;
   const featuredCompanies = getFeaturedCompanies().slice(0, 12);
 
+  const todayDate = useMemo(() => new Date(), []);
   const todayKey = useMemo(() => {
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
+    const y = todayDate.getFullYear();
+    const m = String(todayDate.getMonth() + 1).padStart(2, '0');
+    const day = String(todayDate.getDate()).padStart(2, '0');
     return `${y}-${m}-${day}`;
-  }, []);
+  }, [todayDate]);
+
+  const dayOfYear = useMemo(() => getDayOfYear(todayDate), [todayDate]);
+  const dailyQuote = useMemo(() => getDailyQuote(todayDate), [todayDate]);
+  const dateFormatted = useMemo(() => {
+    return todayDate.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric',
+    });
+  }, [todayDate]);
 
   const todayItems = planner[todayKey] || [];
   const todaySolved = todayItems.filter((it) =>
     it.problemId ? progress[it.problemId] : it.completed
   ).length;
 
+  const firstName = user?.displayName
+    ? user.displayName.trim().split(/\s+/)[0]
+    : user?.email
+    ? user.email.split('@')[0]
+    : null;
+
+  const timeGreeting = useMemo(() => {
+    const hour = todayDate.getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  }, [todayDate]);
+
+  const headingText = firstName
+    ? `${timeGreeting}, ${firstName}.`
+    : user
+    ? `${timeGreeting}, Engineer.`
+    : `${timeGreeting}. Welcome to Pace.`;
+
+  const curatedMotivation = useMemo(() => {
+    if (registeredTracks.length === 0) {
+      return "You're at the starting line. Select your first curriculum below — Striver's A2Z, NeetCode 150, or Blind 75 — to build your roadmap, unlock personalized analytics, and start compounding your daily problem solving.";
+    }
+
+    const trackCountLabel = `${registeredTracks.length} track${registeredTracks.length === 1 ? '' : 's'}`;
+    const solvedCount = aggregate.solved;
+    const percentLabel = `${Math.round(aggregate.percent)}%`;
+
+    if (todaySolved > 0) {
+      return `Great momentum today — you've completed ${todaySolved} problem${todaySolved === 1 ? '' : 's'} today with an active ${streak}-day streak! You are at ${solvedCount} of ${aggregate.total} (${percentLabel}) across ${trackCountLabel}. Keep the compounding rhythm going.`;
+    }
+
+    if (streak > 0) {
+      return `Your ${streak}-day streak is waiting on you today. You've solved ${solvedCount} problem${solvedCount === 1 ? '' : 's'} (${percentLabel}) across ${trackCountLabel}. Tackle a problem from your queue to keep the flame burning strong.`;
+    }
+
+    if (solvedCount > 0) {
+      return `Welcome back! You've mastered ${solvedCount} problem${solvedCount === 1 ? '' : 's'} (${percentLabel}) across ${trackCountLabel}. Today is day 1 of your new streak — pick an algorithm and make it count.`;
+    }
+
+    return `Your curriculum is locked in with ${aggregate.total} curated problems across ${trackCountLabel}. Consistency beats intensity — pick your first problem below to ignite your Day 1 streak!`;
+  }, [registeredTracks.length, aggregate.solved, aggregate.total, aggregate.percent, todaySolved, streak]);
+
   return (
     <div className={styles.page}>
       <header className={styles.intro}>
-        <h1 className={styles.heading}>Every DSA sheet worth doing, in one place.</h1>
-        <p className={styles.sub}>
-          Striver's A2Z, NeetCode 150, NeetCode 250, Blind 75, and 500+ Company Question Sets — real
-          links, real lecture videos, your own notes, tracked for free.
-        </p>
+        <div className={styles.headerTop}>
+          <span className={styles.dateBadge}>
+            <CalendarDays size={13} />
+            <span>{dateFormatted}</span>
+            <span className={styles.badgeDot}>•</span>
+            <span className={styles.badgeDay}>Day {dayOfYear} of 365</span>
+          </span>
+        </div>
+        <h1 className={styles.heading}>{headingText}</h1>
+        <p className={styles.sub}>{curatedMotivation}</p>
+        <div className={styles.dailyInsightCard}>
+          <div className={styles.insightHeader}>
+            <Sparkles size={13} className={styles.insightIcon} />
+            <span>Daily Focus</span>
+            <span className={styles.badgeDot}>•</span>
+            <span className={styles.insightTag}>{dailyQuote.tag}</span>
+          </div>
+          <p className={styles.insightQuote}>“{dailyQuote.quote}”</p>
+          <span className={styles.insightAuthor}>— {dailyQuote.author}</span>
+        </div>
       </header>
 
       <section className={styles.momentum}>

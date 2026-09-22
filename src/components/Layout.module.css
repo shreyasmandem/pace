@@ -1,34 +1,38 @@
 .shell {
   display: flex;
   min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
 }
 
 .main {
   flex: 1;
   min-width: 0;
+  overflow-x: hidden;
 }
 
 @media (max-width: 760px) {
   .main {
+    /* Use dvh so height stays stable when browser chrome appears/hides */
+    min-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     padding-top: calc(env(safe-area-inset-top, 0px) + 14px);
-    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
     padding-left: env(safe-area-inset-left, 0px);
     padding-right: env(safe-area-inset-right, 0px);
   }
 }
 
 .pageTransition {
-  animation: pageFadeIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
-  will-change: opacity, transform;
+  animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity;
 }
 
 @keyframes pageFadeIn {
   0% {
     opacity: 0;
-    transform: translateY(7px);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
   }
 }
+
