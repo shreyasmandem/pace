@@ -972,10 +972,143 @@
   transition: all 0.15s ease;
 }
 
-.addBtnSmall:hover {
+.addBtnSmall:hover:not(:disabled) {
   background: var(--accent);
   color: var(--accent-ink);
   border-color: var(--accent);
+}
+
+.addBtnSmall:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Subtopic Picker & Dropdowns */
+.modalControlRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.modalSelectGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.modalSelectLabel {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.modalSelect {
+  width: 100%;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.modalSelect:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.modalSelect optgroup {
+  background: #181926;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.modalSelect option {
+  background: #181926;
+  color: var(--text-primary);
+  font-weight: 400;
+  padding: 6px 8px;
+}
+
+.subtopicBanner {
+  background: linear-gradient(135deg, rgba(255, 107, 0, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.subtopicHeaderRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.subtopicTitle {
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.subtopicMeta {
+  font-size: 0.73rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.subtopicActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.batchBtn {
+  background: var(--surface);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+  padding: 5px 11px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.batchBtn:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.batchBtnPrimary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.batchBtnPrimary:hover {
+  filter: brightness(1.1);
 }
 
 .toastBanner {

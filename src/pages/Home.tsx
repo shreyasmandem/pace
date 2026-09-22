@@ -104,7 +104,7 @@ export default function Home() {
                 No problems scheduled for today
               </span>
               <span className={styles.plannerEmptySub}>
-                Plan your next topics or auto-pace questions with Google Calendar sync.
+                Plan your next topics or questions with Google Calendar sync.
               </span>
             </div>
             <Link to="/planner" className={styles.plannerCtaBtn}>

@@ -16,10 +16,10 @@ import {
   ArrowRight,
   X,
   Search,
-  BookOpen,
+  Layers,
 } from 'lucide-react';
 import { usePaceStore, currentStreak, type PlanItem } from '../state/store';
-import { ALL_TRACKS, TRACK_META, TRACK_ORDER } from '../data';
+import { ALL_TRACKS, TRACK_META, TRACK_ORDER, getA2ZSteps, getTrack } from '../data';
 import type { TrackId, ProblemLinks } from '../types';
 import {
   createGoogleCalendarUrl,
@@ -80,19 +80,13 @@ export default function Planner() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Modals state
-  const [showAutoModal, setShowAutoModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Auto-pace form state
-  const [autoTrack, setAutoTrack] = useState<TrackId>('a2z');
-  const [autoDays, setAutoDays] = useState<number>(7);
-  const [autoPerDay, setAutoPerDay] = useState<number>(3);
-  const [autoStartOffset, setAutoStartOffset] = useState<'today' | 'tomorrow'>('today');
-
-  // Add problem modal search state
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterTrack, setFilterTrack] = useState<string>('all');
-  const [filterDiff, setFilterDiff] = useState<string>('all');
+  // Add problem & subtopic modal state
+  const [modalTrack, setModalTrack] = useState<TrackId>('a2z');
+  const [modalStepId, setModalStepId] = useState<string>('a2z-step-1');
+  const [modalSubtopicId, setModalSubtopicId] = useState<string>('');
+  const [problemSearch, setProblemSearch] = useState<string>('');
 
   // AI Tutor Drawer session
   const [tutorSession, setTutorSession] = useState<{
@@ -112,7 +106,6 @@ export default function Planner() {
   const removeFromPlan = usePaceStore((s) => s.removeFromPlan);
   const movePlanItem = usePaceStore((s) => s.movePlanItem);
   const clearDayPlan = usePaceStore((s) => s.clearDayPlan);
-  const autoGeneratePlan = usePaceStore((s) => s.autoGeneratePlan);
   const addToPlan = usePaceStore((s) => s.addToPlan);
 
   const showToast = (msg: string) => {
@@ -156,64 +149,68 @@ export default function Planner() {
     return days;
   }, [weekOffset, todayStr]);
 
-  // Flatten all track problems for manual search/picker
-  const allProblems = useMemo(() => {
-    const list: Array<{
-      id: string;
-      title: string;
-      difficulty: string;
-      trackId: TrackId;
-      trackLabel: string;
-      topicTitle: string;
-      links: ProblemLinks;
-    }> = [];
+  // A2Z Steps
+  const a2zSteps = useMemo(() => getA2ZSteps(), []);
 
-    for (const trackId of TRACK_ORDER) {
-      const track = ALL_TRACKS[trackId];
-      if (!track) continue;
-      const meta = TRACK_META[trackId];
-      for (const group of track.groups) {
-        for (const prob of group.problems) {
-          list.push({
-            id: prob.id,
-            title: prob.title,
-            difficulty: prob.difficulty,
-            trackId,
-            trackLabel: meta.shortLabel,
-            topicTitle: group.title,
-            links: prob.links,
-          });
-        }
+  // Compute available subtopics based on modalTrack and modalStepId
+  const availableSubtopics = useMemo(() => {
+    if (modalTrack === 'a2z') {
+      if (modalStepId === 'all') {
+        return a2zSteps.flatMap((step) =>
+          step.subSteps.map((sub) => ({
+            id: sub.id,
+            title: sub.title,
+            stepTitle: step.title,
+            problems: sub.problems,
+          }))
+        );
       }
-    }
-    return list;
-  }, []);
-
-  // Filtered problems for Add Problem modal
-  const filteredProblems = useMemo(() => {
-    let result = allProblems;
-
-    if (filterTrack !== 'all') {
-      result = result.filter((p) => p.trackId === filterTrack);
-    }
-
-    if (filterDiff !== 'all') {
-      result = result.filter(
-        (p) => p.difficulty.toLowerCase() === filterDiff.toLowerCase()
+      const step = a2zSteps.find((s) => s.id === modalStepId) || a2zSteps[0];
+      return (
+        step?.subSteps.map((sub) => ({
+          id: sub.id,
+          title: sub.title,
+          stepTitle: step.title,
+          problems: sub.problems,
+        })) || []
       );
     }
 
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase().trim();
-      result = result.filter(
-        (p) =>
-          p.title.toLowerCase().includes(q) ||
-          p.topicTitle.toLowerCase().includes(q)
-      );
-    }
+    const trackData = getTrack(modalTrack);
+    return (
+      trackData?.groups.map((g) => ({
+        id: g.id,
+        title: g.title,
+        stepTitle: TRACK_META[modalTrack].shortLabel,
+        problems: g.problems,
+      })) || []
+    );
+  }, [modalTrack, modalStepId, a2zSteps]);
 
-    return result.slice(0, 40);
-  }, [allProblems, filterTrack, filterDiff, searchQuery]);
+  // Synchronize modalSubtopicId whenever availableSubtopics change
+  useEffect(() => {
+    if (availableSubtopics.length > 0) {
+      const exists = availableSubtopics.some((s) => s.id === modalSubtopicId);
+      if (!exists) {
+        setModalSubtopicId(availableSubtopics[0].id);
+      }
+    } else {
+      setModalSubtopicId('');
+    }
+  }, [availableSubtopics, modalSubtopicId]);
+
+  // Currently active subtopic
+  const currentSubtopic = useMemo(() => {
+    return availableSubtopics.find((s) => s.id === modalSubtopicId) || availableSubtopics[0] || null;
+  }, [availableSubtopics, modalSubtopicId]);
+
+  // Filtered problems inside the selected subtopic
+  const displayedSubtopicProblems = useMemo(() => {
+    if (!currentSubtopic) return [];
+    if (!problemSearch.trim()) return currentSubtopic.problems;
+    const q = problemSearch.toLowerCase().trim();
+    return currentSubtopic.problems.filter((p) => p.title.toLowerCase().includes(q));
+  }, [currentSubtopic, problemSearch]);
 
   // Day items & stats
   const activeDayItems = planner[selectedDate] || [];
@@ -224,14 +221,6 @@ export default function Planner() {
     activeDayItems.length > 0
       ? Math.round((solvedCount / activeDayItems.length) * 100)
       : 0;
-
-  // Total problems across all days in planner
-  const totalPlannedProblems = useMemo(() => {
-    return Object.values(planner).reduce(
-      (acc, items) => acc + (items?.length || 0),
-      0
-    );
-  }, [planner]);
 
   // Push item to tomorrow helper
   const handlePushToTomorrow = (item: PlanItem) => {
@@ -295,31 +284,18 @@ export default function Planner() {
     showToast('Copied study checklist to clipboard for Notion/Obsidian!');
   };
 
-  // Execute Auto-Pace
-  const handleExecuteAutoPace = () => {
-    const base = new Date();
-    if (autoStartOffset === 'tomorrow') {
-      base.setDate(base.getDate() + 1);
-    }
-    const startDate = toDateKey(base);
-
-    autoGeneratePlan(autoTrack, startDate, autoDays, autoPerDay);
-    setShowAutoModal(false);
-    setSelectedDate(startDate);
-    showToast(
-      `Auto-scheduled ${autoDays * autoPerDay} problems from ${TRACK_META[autoTrack].shortLabel}!`
-    );
-  };
-
   // Add individual problem to current day
-  const handleAddProblemToDay = (prob: (typeof allProblems)[0]) => {
+  const handleAddProblemToDay = (
+    prob: { id: string; title: string; difficulty: string; links: ProblemLinks },
+    topicTitle: string
+  ) => {
     addToPlan(selectedDate, [
       {
         date: selectedDate,
         title: prob.title,
         type: 'problem',
-        trackId: prob.trackId,
-        topicTitle: prob.topicTitle,
+        trackId: modalTrack,
+        topicTitle,
         problemId: prob.id,
         difficulty: prob.difficulty,
         links: prob.links,
@@ -327,6 +303,40 @@ export default function Planner() {
       },
     ]);
     showToast(`Added "${prob.title}" to ${selectedDate}`);
+  };
+
+  // Add subtopic milestone goal
+  const handleAddSubtopicGoal = () => {
+    if (!currentSubtopic) return;
+    addToPlan(selectedDate, [
+      {
+        date: selectedDate,
+        title: currentSubtopic.title,
+        type: 'topic',
+        trackId: modalTrack,
+        topicTitle: currentSubtopic.stepTitle || currentSubtopic.title,
+        completed: false,
+      },
+    ]);
+    showToast(`Added subtopic goal "${currentSubtopic.title}" to ${selectedDate}`);
+  };
+
+  // Add all problems in current subtopic
+  const handleAddAllSubtopicProblems = () => {
+    if (!currentSubtopic || currentSubtopic.problems.length === 0) return;
+    const items = currentSubtopic.problems.map((prob) => ({
+      date: selectedDate,
+      title: prob.title,
+      type: 'problem' as const,
+      trackId: modalTrack,
+      topicTitle: currentSubtopic.title,
+      problemId: prob.id,
+      difficulty: prob.difficulty,
+      links: prob.links,
+      completed: !!progress[prob.id],
+    }));
+    addToPlan(selectedDate, items);
+    showToast(`Added all ${items.length} problems from "${currentSubtopic.title}" to ${selectedDate}`);
   };
 
   const headerDetails = formatDayHeader(selectedDate);
@@ -358,14 +368,6 @@ export default function Planner() {
         <div className={styles.heroActions}>
           <button
             className={styles.primaryBtn}
-            onClick={() => setShowAutoModal(true)}
-          >
-            <Sparkles size={16} />
-            <span>Auto-Pace Routine</span>
-          </button>
-
-          <button
-            className={styles.secondaryBtn}
             onClick={() => setShowAddModal(true)}
           >
             <Plus size={16} />
@@ -401,15 +403,6 @@ export default function Planner() {
             {streak} <span style={{ fontSize: '1rem' }}>days</span>
           </span>
           <span className={styles.metricSub}>Consecutive solve activity</span>
-        </div>
-
-        <div className={styles.metricCard}>
-          <div className={styles.metricTop}>
-            <span>Total Roadmap Items</span>
-            <BookOpen size={15} />
-          </div>
-          <span className={styles.metricValue}>{totalPlannedProblems}</span>
-          <span className={styles.metricSub}>Across all scheduled days</span>
         </div>
       </section>
 
@@ -569,23 +562,16 @@ export default function Planner() {
             </div>
             <h3 className={styles.emptyTitle}>No problems scheduled</h3>
             <p className={styles.emptySub}>
-              Keep your momentum going. Auto-generate the next questions from
-              your roadmap or handpick problems to tackle.
+              Keep your momentum going. Choose a sheet, select a subtopic or
+              handpick problems to tackle for today.
             </p>
             <div className={styles.emptyActions}>
               <button
                 className={styles.primaryBtn}
-                onClick={() => setShowAutoModal(true)}
-              >
-                <Sparkles size={15} />
-                <span>Auto-Pace My Day</span>
-              </button>
-              <button
-                className={styles.secondaryBtn}
                 onClick={() => setShowAddModal(true)}
               >
                 <Plus size={15} />
-                <span>Choose Problems</span>
+                <span>Add Problems &amp; Subtopics</span>
               </button>
             </div>
           </div>
@@ -794,152 +780,7 @@ export default function Planner() {
         </div>
       </section>
 
-      {/* Auto-Pace Modal */}
-      {showAutoModal && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setShowAutoModal(false)}
-        >
-          <div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className={styles.modalHeader}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                }}
-              >
-                <Sparkles size={18} color="var(--accent)" />
-                <h3 className={styles.modalTitle}>Auto-Pace My DSA Routine</h3>
-              </div>
-              <button
-                className={styles.modalCloseBtn}
-                onClick={() => setShowAutoModal(false)}
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className={styles.modalBody}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Select Track</label>
-                <div className={styles.trackSelectGrid}>
-                  {TRACK_ORDER.map((id) => {
-                    const meta = TRACK_META[id];
-                    const active = autoTrack === id;
-                    return (
-                      <div
-                        key={id}
-                        className={`${styles.trackOption} ${
-                          active ? styles.trackOptionActive : ''
-                        }`}
-                        onClick={() => setAutoTrack(id)}
-                      >
-                        <span className={styles.trackOptName}>
-                          {meta.shortLabel}
-                        </span>
-                        <span className={styles.trackOptSub}>
-                          {meta.label}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Daily Target (problems/day)</label>
-                <div className={styles.radioRow}>
-                  {[1, 2, 3, 4, 5].map((num) => (
-                    <button
-                      key={num}
-                      type="button"
-                      className={`${styles.radioBtn} ${
-                        autoPerDay === num ? styles.radioBtnActive : ''
-                      }`}
-                      onClick={() => setAutoPerDay(num)}
-                    >
-                      {num}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Schedule Duration</label>
-                <div className={styles.radioRow}>
-                  {[3, 5, 7, 14].map((days) => (
-                    <button
-                      key={days}
-                      type="button"
-                      className={`${styles.radioBtn} ${
-                        autoDays === days ? styles.radioBtnActive : ''
-                      }`}
-                      onClick={() => setAutoDays(days)}
-                    >
-                      {days} days
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Start From</label>
-                <div className={styles.radioRow}>
-                  <button
-                    type="button"
-                    className={`${styles.radioBtn} ${
-                      autoStartOffset === 'today' ? styles.radioBtnActive : ''
-                    }`}
-                    onClick={() => setAutoStartOffset('today')}
-                  >
-                    Today
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.radioBtn} ${
-                      autoStartOffset === 'tomorrow' ? styles.radioBtnActive : ''
-                    }`}
-                    onClick={() => setAutoStartOffset('tomorrow')}
-                  >
-                    Tomorrow
-                  </button>
-                </div>
-              </div>
-
-              <div className={styles.summaryBox}>
-                ✨ Pace will curate{' '}
-                <strong>{autoDays * autoPerDay} unsolved problems</strong> in
-                sequential order from{' '}
-                <strong>{TRACK_META[autoTrack].label}</strong>, evenly
-                distributing {autoPerDay} problems each day across {autoDays}{' '}
-                days starting {autoStartOffset}.
-              </div>
-            </div>
-
-            <div className={styles.modalFooter}>
-              <button
-                className={styles.secondaryBtn}
-                onClick={() => setShowAutoModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className={styles.primaryBtn}
-                onClick={handleExecuteAutoPace}
-              >
-                <Sparkles size={15} />
-                <span>Generate Schedule</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Add Problem Modal */}
+      {/* Add Problem & Subtopic Modal */}
       {showAddModal && (
         <div
           className={styles.modalOverlay}
@@ -948,12 +789,17 @@ export default function Planner() {
           <div
             className={styles.modalContent}
             onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: '620px' }}
+            style={{ maxWidth: '640px' }}
           >
             <div className={styles.modalHeader}>
-              <h3 className={styles.modalTitle}>
-                Add Problem to {headerDetails.title}
-              </h3>
+              <div>
+                <h3 className={styles.modalTitle}>
+                  Add to {headerDetails.title}
+                </h3>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+                  Pick a sheet track, select its subtopic, and add problems or goals
+                </span>
+              </div>
               <button
                 className={styles.modalCloseBtn}
                 onClick={() => setShowAddModal(false)}
@@ -963,18 +809,148 @@ export default function Planner() {
             </div>
 
             <div className={styles.modalBody}>
+              {/* Track / Sheet Selection */}
+              <div className={styles.modalSelectGroup}>
+                <label className={styles.modalSelectLabel}>
+                  <Layers size={13} color="var(--accent)" />
+                  <span>Choose Track / Sheet</span>
+                </label>
+                <div className={styles.radioRow}>
+                  {TRACK_ORDER.map((id) => {
+                    const active = modalTrack === id;
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        className={`${styles.radioBtn} ${
+                          active ? styles.radioBtnActive : ''
+                        }`}
+                        onClick={() => {
+                          setModalTrack(id);
+                          if (id === 'a2z') {
+                            setModalStepId('a2z-step-1');
+                          }
+                          setProblemSearch('');
+                        }}
+                      >
+                        {TRACK_META[id].shortLabel}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Main Topic (Step) Dropdown for A2Z only */}
+              {modalTrack === 'a2z' && (
+                <div className={styles.modalSelectGroup}>
+                  <label className={styles.modalSelectLabel}>
+                    <span>Main Topic (Step)</span>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-tertiary)' }}>
+                      (Filters subtopics below)
+                    </span>
+                  </label>
+                  <select
+                    className={styles.modalSelect}
+                    value={modalStepId}
+                    onChange={(e) => {
+                      setModalStepId(e.target.value);
+                      setProblemSearch('');
+                    }}
+                  >
+                    <option value="all">All Steps (Show all subtopics)</option>
+                    {a2zSteps.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Subtopic Dropdown (What the user explicitly requested!) */}
+              <div className={styles.modalSelectGroup}>
+                <label className={styles.modalSelectLabel}>
+                  <span>Select Subtopic</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--accent)' }}>
+                    • Choose subtopic to plan
+                  </span>
+                </label>
+                <select
+                  className={styles.modalSelect}
+                  value={modalSubtopicId}
+                  onChange={(e) => {
+                    setModalSubtopicId(e.target.value);
+                    setProblemSearch('');
+                  }}
+                >
+                  {modalTrack === 'a2z' && modalStepId === 'all'
+                    ? a2zSteps.map((step) => (
+                        <optgroup key={step.id} label={step.title}>
+                          {step.subSteps.map((sub) => (
+                            <option key={sub.id} value={sub.id}>
+                              {sub.title} ({sub.problems.length} problems)
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))
+                    : availableSubtopics.map((sub) => (
+                        <option key={sub.id} value={sub.id}>
+                          {sub.title} ({sub.problems.length} problems)
+                        </option>
+                      ))}
+                </select>
+              </div>
+
+              {/* Active Subtopic Card & Actions */}
+              {currentSubtopic && (
+                <div className={styles.subtopicBanner}>
+                  <div className={styles.subtopicHeaderRow}>
+                    <div>
+                      <div className={styles.subtopicTitle}>
+                        <Sparkles size={14} color="var(--accent)" />
+                        <span>{currentSubtopic.title}</span>
+                      </div>
+                      <div className={styles.subtopicMeta}>
+                        <span>{currentSubtopic.stepTitle}</span>
+                        <span>·</span>
+                        <span>{currentSubtopic.problems.length} problems</span>
+                      </div>
+                    </div>
+
+                    <div className={styles.subtopicActions}>
+                      <button
+                        className={styles.batchBtn}
+                        onClick={handleAddSubtopicGoal}
+                        title="Add this subtopic as a study topic goal"
+                      >
+                        <Plus size={13} />
+                        <span>Add Subtopic Goal</span>
+                      </button>
+                      <button
+                        className={`${styles.batchBtn} ${styles.batchBtnPrimary}`}
+                        onClick={handleAddAllSubtopicProblems}
+                        title="Add all problems in this subtopic to selected day"
+                      >
+                        <Plus size={13} />
+                        <span>Add All ({currentSubtopic.problems.length})</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Search within this subtopic */}
               <div className={styles.modalSearchInput}>
-                <Search size={16} color="var(--text-tertiary)" />
+                <Search size={15} color="var(--text-tertiary)" />
                 <input
                   type="text"
-                  placeholder="Search 800+ problems by name or topic..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  autoFocus
+                  placeholder={`Search in ${currentSubtopic ? currentSubtopic.title : 'subtopic'}...`}
+                  value={problemSearch}
+                  onChange={(e) => setProblemSearch(e.target.value)}
                 />
-                {searchQuery && (
+                {problemSearch && (
                   <button
-                    onClick={() => setSearchQuery('')}
+                    onClick={() => setProblemSearch('')}
                     style={{
                       background: 'none',
                       border: 'none',
@@ -987,46 +963,9 @@ export default function Planner() {
                 )}
               </div>
 
-              {/* Filters */}
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '6px',
-                  flexWrap: 'wrap',
-                }}
-              >
-                <button
-                  type="button"
-                  className={`${styles.radioBtn} ${
-                    filterTrack === 'all' ? styles.radioBtnActive : ''
-                  }`}
-                  onClick={() => setFilterTrack('all')}
-                  style={{ flex: 'none', padding: '4px 10px', fontSize: '0.75rem' }}
-                >
-                  All Sheets
-                </button>
-                {TRACK_ORDER.map((id) => (
-                  <button
-                    key={id}
-                    type="button"
-                    className={`${styles.radioBtn} ${
-                      filterTrack === id ? styles.radioBtnActive : ''
-                    }`}
-                    onClick={() => setFilterTrack(id)}
-                    style={{
-                      flex: 'none',
-                      padding: '4px 10px',
-                      fontSize: '0.75rem',
-                    }}
-                  >
-                    {TRACK_META[id].shortLabel}
-                  </button>
-                ))}
-              </div>
-
-              {/* Problem search list */}
+              {/* Problem list inside selected subtopic */}
               <div className={styles.searchResultsList}>
-                {filteredProblems.length === 0 ? (
+                {displayedSubtopicProblems.length === 0 ? (
                   <div
                     style={{
                       padding: '24px',
@@ -1035,10 +974,10 @@ export default function Planner() {
                       fontSize: '0.85rem',
                     }}
                   >
-                    No matching problems found.
+                    No problems found in this subtopic.
                   </div>
                 ) : (
-                  filteredProblems.map((prob) => {
+                  displayedSubtopicProblems.map((prob) => {
                     const isAlreadyScheduled = activeDayItems.some(
                       (it) => it.problemId === prob.id
                     );
@@ -1051,10 +990,6 @@ export default function Planner() {
                             {prob.title}
                           </span>
                           <div className={styles.resultMeta}>
-                            <span>{prob.trackLabel}</span>
-                            <span>·</span>
-                            <span>{prob.topicTitle}</span>
-                            <span>·</span>
                             <span
                               className={
                                 prob.difficulty.toLowerCase() === 'easy'
@@ -1082,7 +1017,12 @@ export default function Planner() {
                         <button
                           className={styles.addBtnSmall}
                           disabled={isAlreadyScheduled}
-                          onClick={() => handleAddProblemToDay(prob)}
+                          onClick={() =>
+                            handleAddProblemToDay(
+                              prob,
+                              currentSubtopic?.title || 'DSA'
+                            )
+                          }
                         >
                           {isAlreadyScheduled ? 'Added' : '+ Add'}
                         </button>
