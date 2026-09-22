@@ -3,7 +3,7 @@ import {
   doc,
   getDocs,
   limit,
-  orderBy,
+  onSnapshot,
   query,
   setDoc,
 } from 'firebase/firestore';
@@ -127,6 +127,21 @@ export function longestStreak(solveLog: Record<string, number> = {}): number {
   return maxStreak;
 }
 
+export interface CurrentLeaderboardUser {
+  uid: string;
+  displayName: string;
+  photoURL?: string;
+  solvedCount: number;
+  streak: number;
+  weeklyCount: number;
+  activeDays: number;
+}
+
+export interface LeaderboardError {
+  code: string;
+  message: string;
+}
+
 export async function publishToLeaderboard(
   uid: string,
   user: User | null,
@@ -136,8 +151,8 @@ export async function publishToLeaderboard(
     weeklyCount: number;
     activeDays: number;
   }
-): Promise<void> {
-  if (!db || !uid) return;
+): Promise<{ success: boolean; error?: LeaderboardError }> {
+  if (!db || !uid) return { success: false };
 
   const displayName =
     user?.displayName ||
@@ -152,69 +167,56 @@ export async function publishToLeaderboard(
         uid,
         displayName,
         photoURL,
-        solvedCount: stats.solvedCount,
-        streak: stats.streak,
-        weeklyCount: stats.weeklyCount,
-        activeDays: stats.activeDays,
+        email: user?.email || '',
+        solvedCount: Number(stats.solvedCount) || 0,
+        streak: Number(stats.streak) || 0,
+        weeklyCount: Number(stats.weeklyCount) || 0,
+        activeDays: Number(stats.activeDays) || 0,
         updatedAt: Date.now(),
       },
       { merge: true }
     );
-  } catch (err) {
+    return { success: true };
+  } catch (err: any) {
     console.warn('Could not sync to leaderboard collection:', err);
+    return {
+      success: false,
+      error: { code: err?.code || 'unknown', message: err?.message || 'Failed to publish' },
+    };
   }
 }
 
-/**
- * Fetches real people from Firestore leaderboard collection.
- * Zero mock / fake data.
- */
-export async function fetchLeaderboardEntries(
-  sortBy: 'solvedCount' | 'streak' | 'weeklyCount' = 'solvedCount',
-  currentUser?: {
-    uid: string;
-    displayName: string;
-    photoURL?: string;
-    solvedCount: number;
-    streak: number;
-    weeklyCount: number;
-    activeDays: number;
-  }
-): Promise<LeaderboardEntry[]> {
+function processLeaderboardSnap(
+  snapDocs: { id: string; data: () => Record<string, any> }[],
+  sortBy: 'solvedCount' | 'streak' | 'weeklyCount',
+  currentUser?: CurrentLeaderboardUser
+): LeaderboardEntry[] {
   const combinedMap = new Map<string, LeaderboardEntry>();
 
-  // Fetch real users from Firestore
-  if (db) {
-    try {
-      const q = query(
-        collection(db, 'leaderboard'),
-        orderBy(sortBy, 'desc'),
-        limit(100)
-      );
-      const snap = await getDocs(q);
-      snap.forEach((docSnap) => {
-        const data = docSnap.data() as LeaderboardEntry;
-        if (data.uid) {
-          combinedMap.set(data.uid, {
-            ...data,
-            solvedCount: data.solvedCount || 0,
-            streak: data.streak || 0,
-            weeklyCount: data.weeklyCount || 0,
-            activeDays: data.activeDays || 0,
-          });
-        }
+  snapDocs.forEach((docSnap) => {
+    const data = docSnap.data();
+    const uid = data.uid || docSnap.id;
+    if (uid) {
+      combinedMap.set(uid, {
+        uid,
+        displayName: data.displayName || 'Pacer',
+        photoURL: data.photoURL || '',
+        solvedCount: Number(data.solvedCount) || 0,
+        streak: Number(data.streak) || 0,
+        weeklyCount: Number(data.weeklyCount) || 0,
+        activeDays: Number(data.activeDays) || 0,
+        updatedAt: Number(data.updatedAt) || Date.now(),
       });
-    } catch (err) {
-      console.warn('Firestore leaderboard query error:', err);
     }
-  }
+  });
 
-  // Ensure current signed-in user is present with accurate local stats
+  // Always ensure current signed-in user is present with accurate local stats
   if (currentUser && currentUser.uid) {
+    const existing = combinedMap.get(currentUser.uid);
     combinedMap.set(currentUser.uid, {
       uid: currentUser.uid,
-      displayName: currentUser.displayName || 'You',
-      photoURL: currentUser.photoURL,
+      displayName: currentUser.displayName || existing?.displayName || 'You',
+      photoURL: currentUser.photoURL || existing?.photoURL || '',
       solvedCount: currentUser.solvedCount,
       streak: currentUser.streak,
       weeklyCount: currentUser.weeklyCount,
@@ -238,4 +240,97 @@ export async function fetchLeaderboardEntries(
     rank: idx + 1,
     isCurrentUser: currentUser ? entry.uid === currentUser.uid : false,
   }));
+}
+
+/**
+ * Subscribes to real-time updates from the Firestore leaderboard collection.
+ * Triggers callback immediately and on every new user registration or solve update.
+ */
+export function subscribeLeaderboard(
+  sortBy: 'solvedCount' | 'streak' | 'weeklyCount' = 'solvedCount',
+  currentUser?: CurrentLeaderboardUser,
+  onUpdate?: (entries: LeaderboardEntry[], error: LeaderboardError | null) => void
+): () => void {
+  if (!db) {
+    if (onUpdate) {
+      const fallbackList: LeaderboardEntry[] = currentUser && currentUser.uid ? [{
+        uid: currentUser.uid,
+        displayName: currentUser.displayName || 'You',
+        photoURL: currentUser.photoURL,
+        solvedCount: currentUser.solvedCount,
+        streak: currentUser.streak,
+        weeklyCount: currentUser.weeklyCount,
+        activeDays: currentUser.activeDays,
+        updatedAt: Date.now(),
+        rank: 1,
+        isCurrentUser: true,
+      }] : [];
+      onUpdate(fallbackList, null);
+    }
+    return () => {};
+  }
+
+  const unsubscribe = onSnapshot(
+    collection(db, 'leaderboard'),
+    (snap) => {
+      const entries = processLeaderboardSnap(snap.docs, sortBy, currentUser);
+      if (onUpdate) onUpdate(entries, null);
+    },
+    (err: any) => {
+      console.warn('Firestore leaderboard real-time listener error:', err);
+      const fallbackList: LeaderboardEntry[] = currentUser && currentUser.uid ? [{
+        uid: currentUser.uid,
+        displayName: currentUser.displayName || 'You',
+        photoURL: currentUser.photoURL,
+        solvedCount: currentUser.solvedCount,
+        streak: currentUser.streak,
+        weeklyCount: currentUser.weeklyCount,
+        activeDays: currentUser.activeDays,
+        updatedAt: Date.now(),
+        rank: 1,
+        isCurrentUser: true,
+      }] : [];
+      if (onUpdate) {
+        onUpdate(fallbackList, {
+          code: err?.code || 'unknown',
+          message: err?.message || 'Firestore query error',
+        });
+      }
+    }
+  );
+
+  return unsubscribe;
+}
+
+/**
+ * One-time fetch for real users from Firestore leaderboard collection.
+ */
+export async function fetchLeaderboardEntries(
+  sortBy: 'solvedCount' | 'streak' | 'weeklyCount' = 'solvedCount',
+  currentUser?: CurrentLeaderboardUser
+): Promise<LeaderboardEntry[]> {
+  if (!db) {
+    return currentUser && currentUser.uid
+      ? [{
+          uid: currentUser.uid,
+          displayName: currentUser.displayName || 'You',
+          photoURL: currentUser.photoURL,
+          solvedCount: currentUser.solvedCount,
+          streak: currentUser.streak,
+          weeklyCount: currentUser.weeklyCount,
+          activeDays: currentUser.activeDays,
+          updatedAt: Date.now(),
+          rank: 1,
+          isCurrentUser: true,
+        }]
+      : [];
+  }
+
+  try {
+    const snap = await getDocs(query(collection(db, 'leaderboard'), limit(250)));
+    return processLeaderboardSnap(snap.docs, sortBy, currentUser);
+  } catch (err: any) {
+    console.warn('Firestore leaderboard query error:', err);
+    return processLeaderboardSnap([], sortBy, currentUser);
+  }
 }

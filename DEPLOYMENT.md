@@ -69,10 +69,12 @@ retroactively to old builds).
 - Console: https://console.firebase.google.com/project/pace-dsa-tracker
 - Plan: Spark (free tier)
 - Auth: Google provider only (`signInWithPopup`)
-- Firestore: Standard edition, one doc per user at `/users/{uid}`, security
-  rule restricts read/write to `request.auth.uid == userId`
+- Firestore: Standard edition.
+  - `/users/{uid}`: Private user progress, notes, planner (restricted to `request.auth.uid == userId`)
+  - `/leaderboard/{uid}`: Public community standings (read by everyone, write restricted to `request.auth.uid == userId`)
+  - Rules source is maintained in `firestore.rules` and can be deployed or pasted into Firebase Console → Firestore Database → Rules.
 - Sync logic lives in `src/state/sync.ts` — bidirectional merge on sign-in,
-  then live `onSnapshot` + debounced push on local changes
+  then live `onSnapshot` + debounced push on local changes; real-time leaderboard in `src/lib/leaderboard.ts`.
 
 ### Authorized domains (important — breaks Google Sign-In if missed)
 

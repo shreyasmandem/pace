@@ -186,6 +186,15 @@ async function startSyncing(user: User) {
   isInitialLoad = true;
   setStatus('syncing');
 
+  // Immediately broadcast user to the community leaderboard on sign-in
+  const initialStore = usePaceStore.getState();
+  publishToLeaderboard(user.uid, user, {
+    solvedCount: Object.keys(initialStore.progress || {}).length,
+    streak: currentStreak(initialStore.solveLog || {}),
+    weeklyCount: calculateWeeklySolves(initialStore.solveLog || {}),
+    activeDays: Object.keys(initialStore.solveLog || {}).length,
+  });
+
   const ref = doc(db, 'users', user.uid);
 
   unsubscribeSnapshot = onSnapshot(

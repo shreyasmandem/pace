@@ -13,6 +13,8 @@ import {
   User as UserIcon,
 } from 'lucide-react';
 import { useAuthUser } from '../hooks/useAuth';
+import { publishToLeaderboard, calculateWeeklySolves } from '../lib/leaderboard';
+import { usePaceStore, currentStreak } from '../state/store';
 import {
   signInWithGoogle,
   logInWithEmail,
@@ -129,7 +131,16 @@ export default function AuthPage({ initialMode = 'login' }: AuthPageProps) {
     setSuccessMessage(null);
     setLoading(true);
     try {
-      await signInWithGoogle();
+      const cred = await signInWithGoogle();
+      if (cred?.user) {
+        const store = usePaceStore.getState();
+        publishToLeaderboard(cred.user.uid, cred.user, {
+          solvedCount: Object.keys(store.progress || {}).length,
+          streak: currentStreak(store.solveLog || {}),
+          weeklyCount: calculateWeeklySolves(store.solveLog || {}),
+          activeDays: Object.keys(store.solveLog || {}).length,
+        });
+      }
       navigate(redirectTo);
     } catch (err: any) {
       setError(getFriendlyErrorMessage(err));
@@ -157,10 +168,28 @@ export default function AuthPage({ initialMode = 'login' }: AuthPageProps) {
     setLoading(true);
     try {
       if (mode === 'signup') {
-        await signUpWithEmail(cleanEmail, password, name.trim() || undefined);
+        const cred = await signUpWithEmail(cleanEmail, password, name.trim() || undefined);
+        if (cred?.user) {
+          const store = usePaceStore.getState();
+          publishToLeaderboard(cred.user.uid, cred.user, {
+            solvedCount: Object.keys(store.progress || {}).length,
+            streak: currentStreak(store.solveLog || {}),
+            weeklyCount: calculateWeeklySolves(store.solveLog || {}),
+            activeDays: Object.keys(store.solveLog || {}).length,
+          });
+        }
         navigate(redirectTo);
       } else {
-        await logInWithEmail(cleanEmail, password);
+        const cred = await logInWithEmail(cleanEmail, password);
+        if (cred?.user) {
+          const store = usePaceStore.getState();
+          publishToLeaderboard(cred.user.uid, cred.user, {
+            solvedCount: Object.keys(store.progress || {}).length,
+            streak: currentStreak(store.solveLog || {}),
+            weeklyCount: calculateWeeklySolves(store.solveLog || {}),
+            activeDays: Object.keys(store.solveLog || {}).length,
+          });
+        }
         navigate(redirectTo);
       }
     } catch (err: any) {

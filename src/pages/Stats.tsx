@@ -12,6 +12,9 @@ import {
   BarChart3,
   X,
   ArrowRight,
+  AlertTriangle,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { TRACK_META, TRACK_ORDER, ALL_TRACKS } from '../data';
 import { useAggregateStat, useTrackStats } from '../hooks/useTrackStats';
@@ -20,11 +23,13 @@ import { useAuthUser } from '../hooks/useAuth';
 import { signInWithGoogle, db } from '../lib/firebase';
 import {
   fetchLeaderboardEntries,
+  subscribeLeaderboard,
   publishToLeaderboard,
   longestStreak,
   calculateWeeklySolves,
   calculateTier,
   type LeaderboardEntry,
+  type LeaderboardError,
 } from '../lib/leaderboard';
 import Lane from '../components/Lane';
 import InteractiveHeatmap from '../components/InteractiveHeatmap';
@@ -56,6 +61,8 @@ export default function Stats() {
     'solvedCount' | 'streak' | 'weeklyCount'
   >('solvedCount');
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [leaderboardError, setLeaderboardError] = useState<LeaderboardError | null>(null);
+  const [copiedRules, setCopiedRules] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
 
   // Inspect competitor modal state
@@ -137,14 +144,18 @@ export default function Stats() {
     }
   }, [user, aggregate.solved, streak, weeklySolves, activeDaysCount]);
 
-  // Load leaderboard entries
+  // Subscribe to real-time leaderboard entries from Firestore
   useEffect(() => {
-    let active = true;
-    fetchLeaderboardEntries(leaderboardTab, currentUserObj).then((data) => {
-      if (active) setLeaderboard(data);
-    });
+    const unsubscribe = subscribeLeaderboard(
+      leaderboardTab,
+      currentUserObj,
+      (data, err) => {
+        setLeaderboard(data);
+        setLeaderboardError(err);
+      }
+    );
     return () => {
-      active = false;
+      unsubscribe();
     };
   }, [leaderboardTab, currentUserObj]);
 
@@ -373,6 +384,78 @@ export default function Stats() {
               </button>
             </div>
           </div>
+
+          {leaderboardError?.code === 'permission-denied' && (
+            <div className={styles.rulesNoticeCard}>
+              <div className={styles.rulesNoticeHeader}>
+                <AlertTriangle size={16} color="var(--accent)" />
+                <strong>Firestore Rules Setup Required for Community Leaderboard</strong>
+              </div>
+              <p className={styles.rulesNoticeText}>
+                Firestore security rules currently block public access to the <code>/leaderboard</code> collection. To allow all registered community members to see each other on this leaderboard:
+              </p>
+              <ol className={styles.rulesNoticeList}>
+                <li>
+                  Open your{' '}
+                  <a
+                    href="https://console.firebase.google.com/project/pace-dsa-tracker/firestore/rules"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Firebase Console → Firestore Database → Rules
+                  </a>.
+                </li>
+                <li>
+                  Paste the rules configuration below and click <strong>Publish</strong>:
+                </li>
+              </ol>
+              <pre className={styles.rulesNoticeCode}>
+{`rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    match /leaderboard/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}`}
+              </pre>
+              <button
+                className={styles.copyRulesBtn}
+                onClick={() => {
+                  navigator.clipboard.writeText(`rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    match /leaderboard/{userId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}`);
+                  setCopiedRules(true);
+                  setTimeout(() => setCopiedRules(false), 2500);
+                }}
+              >
+                {copiedRules ? (
+                  <>
+                    <Check size={14} />
+                    <span>Copied Rules to Clipboard!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy size={14} />
+                    <span>Copy Firestore Rules</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
 
           {/* Top 3 Podium */}
           {podiumTop3.length >= 3 && (
