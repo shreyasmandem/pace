@@ -5,7 +5,17 @@
 }
 
 .hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
   margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.heroText {
+  flex: 1;
+  min-width: 280px;
 }
 
 .heading {
@@ -20,6 +30,51 @@
   color: var(--text-secondary);
   line-height: 1.55;
   max-width: 58ch;
+}
+
+/* View Mode Switcher */
+.viewModeToggle {
+  display: inline-flex;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-hairline);
+  padding: 3px;
+  border-radius: var(--radius-md);
+  gap: 4px;
+}
+
+.viewModeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.viewModeBtn:hover {
+  color: var(--text-primary);
+}
+
+.viewModeBtnActive {
+  background: var(--surface);
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.modeBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 122, 41, 0.15);
+  color: var(--accent);
 }
 
 /* Metrics Overview Strip */
@@ -38,6 +93,13 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.metricCard:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
 }
 
 .metricTop {
@@ -60,6 +122,99 @@
 .metricSub {
   font-size: 0.75rem;
   color: var(--text-secondary);
+}
+
+/* Integrated Leaderboard Snapshot inside Progress view */
+.progressLeaderboardCard {
+  background: var(--surface);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.progressLeaderboardCard:hover {
+  border-color: var(--border-strong);
+}
+
+.plLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.plRankMedal {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface-sunken));
+  border: 1px solid rgba(255, 122, 41, 0.4);
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.plInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.plTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.plTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.plRankTag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.plSub {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.plActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+  border: 1px solid var(--border-hairline);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.plActionBtn:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* Difficulty Breakdown Strip */
@@ -236,11 +391,13 @@
   align-items: center;
   text-align: center;
   position: relative;
-  transition: transform 0.15s ease;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
 }
 
 .podiumCard:hover {
   transform: translateY(-2px);
+  border-color: var(--border-strong);
 }
 
 .podium1 {
@@ -361,12 +518,14 @@
   background: var(--surface-sunken);
   border: 1px solid var(--border-hairline);
   border-radius: var(--radius-md);
+  cursor: pointer;
   transition: all 0.12s ease;
 }
 
 .leaderboardRow:hover {
   background: var(--surface-hover);
   border-color: var(--border-strong);
+  transform: translateX(2px);
 }
 
 .rowCurrentUser {
@@ -535,6 +694,145 @@
   transform: translateY(-1px);
 }
 
+/* Competitor Comparison Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 150;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalContent {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.modalTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.modalCloseBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+}
+
+.modalCloseBtn:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+
+.modalBody {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.compareProfileTop {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.compareAvatar {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--accent);
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  overflow: hidden;
+  background: var(--surface-sunken);
+}
+
+.compareDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.compareName {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.compareMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compareCardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.compareCard {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-hairline);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.compareCardLabel {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+}
+
+.compareCardVal {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.compareNudgeBox {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-sunken));
+  border: 1px solid rgba(255, 122, 41, 0.3);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
 /* Track List Section */
 .trackBlock {
   margin-top: var(--space-6);
@@ -596,6 +894,15 @@
 
   .heading {
     font-size: 1.6rem;
+  }
+
+  .viewModeToggle {
+    width: 100%;
+  }
+
+  .viewModeBtn {
+    flex: 1;
+    justify-content: center;
   }
 
   .diffGrid {
