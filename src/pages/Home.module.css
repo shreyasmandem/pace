@@ -58,50 +58,6 @@
   max-width: 72ch;
 }
 
-.dailyInsightCard {
-  margin-top: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  background: var(--surface);
-  border: 1px solid var(--border-hairline);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--radius-md);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.insightHeader {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--accent);
-}
-
-.insightIcon {
-  flex-shrink: 0;
-}
-
-.insightTag {
-  color: var(--text-tertiary);
-}
-
-.insightQuote {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: var(--text-primary);
-  font-style: italic;
-  margin: 0;
-}
-
-.insightAuthor {
-  font-size: 0.78rem;
-  color: var(--text-tertiary);
-  align-self: flex-end;
-}
 
 .momentum {
   display: flex;

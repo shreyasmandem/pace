@@ -10,7 +10,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { TRACK_META, TRACK_ORDER } from '../data';
-import { getDailyQuote, getDayOfYear } from '../data/dailyQuotes';
+import { getDayOfYear } from '../data/dailyQuotes';
 import { useAggregateStat, useTrackStats } from '../hooks/useTrackStats';
 import { useAuthUser } from '../hooks/useAuth';
 import { usePaceStore, currentStreak } from '../state/store';
@@ -73,7 +73,6 @@ export default function Home() {
   }, [todayDate]);
 
   const dayOfYear = useMemo(() => getDayOfYear(todayDate), [todayDate]);
-  const dailyQuote = useMemo(() => getDailyQuote(todayDate), [todayDate]);
   const dateFormatted = useMemo(() => {
     return todayDate.toLocaleDateString('en-US', {
       weekday: 'long',
@@ -156,16 +155,6 @@ export default function Home() {
         </div>
         <h1 className={styles.heading}>{headingText}</h1>
         <p className={styles.sub}>{curatedMotivation}</p>
-        <div className={styles.dailyInsightCard}>
-          <div className={styles.insightHeader}>
-            <Sparkles size={13} className={styles.insightIcon} />
-            <span>Daily Focus</span>
-            <span className={styles.badgeDot}>•</span>
-            <span className={styles.insightTag}>{dailyQuote.tag}</span>
-          </div>
-          <p className={styles.insightQuote}>“{dailyQuote.quote}”</p>
-          <span className={styles.insightAuthor}>— {dailyQuote.author}</span>
-        </div>
       </header>
 
       {/* Quick 1-Click Google Sign-In Banner on Home page when logged out */}
