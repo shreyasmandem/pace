@@ -1209,4 +1209,226 @@
   .trackSelectGrid {
     grid-template-columns: 1fr;
   }
+
+  .strategyGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .previewStatsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Smart Planner Styles */
+.smartPlannerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: linear-gradient(135deg, var(--accent) 0%, #ff521a 100%);
+  color: var(--accent-ink);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 9px 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.smartPlannerBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent) 55%, transparent);
+  filter: brightness(1.06);
+}
+
+.smartPlannerBtn:active {
+  transform: translateY(1px);
+}
+
+.strategyGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.strategyCard {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-hairline);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.strategyCard:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
+}
+
+.strategyCardActive {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-sunken));
+  border-color: var(--accent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.strategyCardTop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.strategyCardTitle {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.strategyCardDesc {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+}
+
+/* Plan Preview Diagnostics */
+.previewStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+
+.previewStatBox {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.previewStatLabel {
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.previewStatNum {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.aiRationaleBox {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-sunken));
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-left: 3px solid var(--accent);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aiRationaleTitle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.aiRationaleText {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.coachTipText {
+  font-size: 0.76rem;
+  color: var(--text-tertiary);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+/* Day-by-Day Preview Cards */
+.dayPreviewList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.dayPreviewCard {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.dayPreviewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.dayPreviewName {
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dayPreviewTheme {
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.dayPreviewProblems {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.previewProbRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.previewProbTitle {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.previewDiffBadge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
 }

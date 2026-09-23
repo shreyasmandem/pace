@@ -17,10 +17,15 @@ import {
   X,
   Search,
   Layers,
+  Zap,
+  GraduationCap,
+  Scale,
+  Target,
 } from 'lucide-react';
 import { usePaceStore, currentStreak, type PlanItem } from '../state/store';
 import { ALL_TRACKS, TRACK_META, TRACK_ORDER, getA2ZSteps, getTrack } from '../data';
 import type { TrackId, ProblemLinks } from '../types';
+import { generateSmartPlan, type SmartPlanStrategy } from '../lib/smartPlanner';
 import {
   createGoogleCalendarUrl,
   generateIcsCalendar,
@@ -125,6 +130,86 @@ export default function Planner() {
       return () => clearTimeout(timer);
     }
   }, [toastMessage]);
+
+  // Pacer AI Smart Planner Modal state
+  const [showSmartPlannerModal, setShowSmartPlannerModal] = useState(false);
+  const [smartStrategy, setSmartStrategy] = useState<SmartPlanStrategy>('interview_fast_track');
+  const [smartDuration, setSmartDuration] = useState<number>(14);
+  const [smartProblemsPerDay, setSmartProblemsPerDay] = useState<number>(3);
+  const [smartStartOffset, setSmartStartOffset] = useState<'today' | 'tomorrow'>('today');
+  const [smartTrack, setSmartTrack] = useState<TrackId | 'all'>('all');
+  const [smartRestDays, setSmartRestDays] = useState<boolean>(false);
+  const [smartScheduleMode, setSmartScheduleMode] = useState<'replace' | 'append'>('replace');
+
+  // Compute live smart plan preview
+  const previewPlan = useMemo(() => {
+    const base = new Date();
+    if (smartStartOffset === 'tomorrow') {
+      base.setDate(base.getDate() + 1);
+    }
+    const startIso = toDateKey(base);
+    const trackIds =
+      smartTrack === 'all'
+        ? registeredTracks.length > 0
+          ? registeredTracks
+          : TRACK_ORDER
+        : [smartTrack];
+
+    return generateSmartPlan({
+      trackIds,
+      strategy: smartStrategy,
+      durationDays: smartDuration,
+      problemsPerDay: smartProblemsPerDay,
+      startDate: startIso,
+      includeRestDays: smartRestDays,
+      progress,
+    });
+  }, [
+    smartTrack,
+    smartStrategy,
+    smartDuration,
+    smartProblemsPerDay,
+    smartStartOffset,
+    smartRestDays,
+    progress,
+    registeredTracks,
+  ]);
+
+  const handleApplySmartPlan = () => {
+    if (previewPlan.totalProblems === 0) {
+      showToast('No unsolved problems available for this configuration.');
+      return;
+    }
+
+    if (smartScheduleMode === 'replace') {
+      for (const day of previewPlan.days) {
+        clearDayPlan(day.date);
+      }
+    }
+
+    for (const day of previewPlan.days) {
+      if (day.problems.length > 0) {
+        const items = day.problems.map((prob) => ({
+          date: day.date,
+          title: prob.title,
+          type: 'problem' as const,
+          trackId: prob.trackId,
+          topicTitle: prob.topicTitle,
+          problemId: prob.id,
+          difficulty: prob.difficulty,
+          links: prob.links,
+          completed: false,
+        }));
+        addToPlan(day.date, items);
+      }
+    }
+
+    setShowSmartPlannerModal(false);
+    if (previewPlan.days[0]) {
+      setSelectedDate(previewPlan.days[0].date);
+    }
+    showToast(`✨ Pacer AI scheduled ${previewPlan.totalProblems} problems across ${previewPlan.days.length} days!`);
+  };
 
   // Generate 7 days for current week scrubber
   const weekDays = useMemo(() => {
@@ -374,7 +459,14 @@ export default function Planner() {
 
         <div className={styles.heroActions}>
           <button
-            className={styles.primaryBtn}
+            className={styles.smartPlannerBtn}
+            onClick={() => setShowSmartPlannerModal(true)}
+          >
+            <Sparkles size={16} />
+            <span>Pacer AI Smart Planner</span>
+          </button>
+          <button
+            className={styles.secondaryBtn}
             onClick={() => setShowAddModal(true)}
           >
             <Plus size={16} />
@@ -574,11 +666,18 @@ export default function Planner() {
             </p>
             <div className={styles.emptyActions}>
               <button
-                className={styles.primaryBtn}
+                className={styles.smartPlannerBtn}
+                onClick={() => setShowSmartPlannerModal(true)}
+              >
+                <Sparkles size={15} />
+                <span>Pacer AI Smart Plan</span>
+              </button>
+              <button
+                className={styles.secondaryBtn}
                 onClick={() => setShowAddModal(true)}
               >
                 <Plus size={15} />
-                <span>Add Problems &amp; Subtopics</span>
+                <span>Add Manually</span>
               </button>
             </div>
           </div>
@@ -786,6 +885,356 @@ export default function Planner() {
           })}
         </div>
       </section>
+
+      {/* Pacer AI Smart Planner Modal */}
+      {showSmartPlannerModal && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setShowSmartPlannerModal(false)}
+        >
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '680px' }}
+          >
+            <div className={styles.modalHeader}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Sparkles size={18} color="var(--accent)" />
+                  <h3 className={styles.modalTitle}>Pacer AI Smart Planner</h3>
+                </div>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
+                  Intelligent algorithmic roadmap engine tailored to your timeline, curriculum &amp; target pace
+                </span>
+              </div>
+              <button
+                className={styles.modalCloseBtn}
+                onClick={() => setShowSmartPlannerModal(false)}
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className={styles.modalBody}>
+              {/* Strategy Selector */}
+              <div className={styles.formGroup}>
+                <label className={styles.label}>AI Strategy Preset</label>
+                <div className={styles.strategyGrid}>
+                  <div
+                    className={`${styles.strategyCard} ${
+                      smartStrategy === 'interview_fast_track' ? styles.strategyCardActive : ''
+                    }`}
+                    onClick={() => setSmartStrategy('interview_fast_track')}
+                  >
+                    <div className={styles.strategyCardTop}>
+                      <Zap size={14} color="var(--accent)" />
+                      <span className={styles.strategyCardTitle}>Interview Fast-Track</span>
+                    </div>
+                    <span className={styles.strategyCardDesc}>
+                      Top-frequency Blind 75 &amp; NC150 patterns for immediate interview readiness.
+                    </span>
+                  </div>
+
+                  <div
+                    className={`${styles.strategyCard} ${
+                      smartStrategy === 'curriculum_mastery' ? styles.strategyCardActive : ''
+                    }`}
+                    onClick={() => setSmartStrategy('curriculum_mastery')}
+                  >
+                    <div className={styles.strategyCardTop}>
+                      <GraduationCap size={14} color="var(--accent)" />
+                      <span className={styles.strategyCardTitle}>Curriculum Mastery</span>
+                    </div>
+                    <span className={styles.strategyCardDesc}>
+                      Step-by-step pedagogical order from foundational linear types to advanced DP.
+                    </span>
+                  </div>
+
+                  <div
+                    className={`${styles.strategyCard} ${
+                      smartStrategy === 'difficulty_balanced' ? styles.strategyCardActive : ''
+                    }`}
+                    onClick={() => setSmartStrategy('difficulty_balanced')}
+                  >
+                    <div className={styles.strategyCardTop}>
+                      <Scale size={14} color="var(--accent)" />
+                      <span className={styles.strategyCardTitle}>Difficulty Balanced</span>
+                    </div>
+                    <span className={styles.strategyCardDesc}>
+                      1 Easy warm-up + Medium core questions daily. Built to sustain streak without burnout.
+                    </span>
+                  </div>
+
+                  <div
+                    className={`${styles.strategyCard} ${
+                      smartStrategy === 'weakness_focus' ? styles.strategyCardActive : ''
+                    }`}
+                    onClick={() => setSmartStrategy('weakness_focus')}
+                  >
+                    <div className={styles.strategyCardTop}>
+                      <Target size={14} color="var(--accent)" />
+                      <span className={styles.strategyCardTitle}>Target Weak Areas</span>
+                    </div>
+                    <span className={styles.strategyCardDesc}>
+                      Front-loads your least-completed DSA topics to patch gaps before technical screens.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Curriculum Source */}
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Curriculum Source</label>
+                <div className={styles.radioRow}>
+                  <button
+                    type="button"
+                    className={`${styles.radioBtn} ${smartTrack === 'all' ? styles.radioBtnActive : ''}`}
+                    onClick={() => setSmartTrack('all')}
+                  >
+                    All Sheets
+                  </button>
+                  {TRACK_ORDER.map((id) => (
+                    <button
+                      key={id}
+                      type="button"
+                      className={`${styles.radioBtn} ${smartTrack === id ? styles.radioBtnActive : ''}`}
+                      onClick={() => setSmartTrack(id)}
+                    >
+                      {TRACK_META[id].shortLabel}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Horizon & Pace Grid */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+                  gap: '12px',
+                }}
+              >
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Timeline Horizon</label>
+                  <div className={styles.radioRow}>
+                    {[7, 14, 30, 60].map((days) => (
+                      <button
+                        key={days}
+                        type="button"
+                        className={`${styles.radioBtn} ${
+                          smartDuration === days ? styles.radioBtnActive : ''
+                        }`}
+                        onClick={() => setSmartDuration(days)}
+                      >
+                        {days}d
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Problems / Day</label>
+                  <div className={styles.radioRow}>
+                    {[1, 2, 3, 4, 5].map((cnt) => (
+                      <button
+                        key={cnt}
+                        type="button"
+                        className={`${styles.radioBtn} ${
+                          smartProblemsPerDay === cnt ? styles.radioBtnActive : ''
+                        }`}
+                        onClick={() => setSmartProblemsPerDay(cnt)}
+                      >
+                        {cnt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Start Date</label>
+                  <div className={styles.radioRow}>
+                    <button
+                      type="button"
+                      className={`${styles.radioBtn} ${
+                        smartStartOffset === 'today' ? styles.radioBtnActive : ''
+                      }`}
+                      onClick={() => setSmartStartOffset('today')}
+                    >
+                      Today
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.radioBtn} ${
+                        smartStartOffset === 'tomorrow' ? styles.radioBtnActive : ''
+                      }`}
+                      onClick={() => setSmartStartOffset('tomorrow')}
+                    >
+                      Tomorrow
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Weekly Rest / Spaced Repetition Toggle */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '4px 2px',
+                  fontSize: '0.8rem',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                <span>Include Day 7 Weekly Review &amp; Rest:</span>
+                <button
+                  type="button"
+                  className={`${styles.radioBtn} ${smartRestDays ? styles.radioBtnActive : ''}`}
+                  onClick={() => setSmartRestDays((r) => !r)}
+                  style={{ flex: 'none', padding: '4px 12px', fontSize: '0.75rem' }}
+                >
+                  {smartRestDays ? '✓ Enabled' : 'Disabled (Study Everyday)'}
+                </button>
+              </div>
+
+              {/* Live Plan Diagnostics */}
+              <div className={styles.previewStatsGrid}>
+                <div className={styles.previewStatBox}>
+                  <span className={styles.previewStatLabel}>Total Problems</span>
+                  <span className={styles.previewStatNum}>{previewPlan.totalProblems}</span>
+                </div>
+                <div className={styles.previewStatBox}>
+                  <span className={styles.previewStatLabel}>Difficulty Mix</span>
+                  <span className={styles.previewStatNum} style={{ fontSize: '0.88rem' }}>
+                    <span style={{ color: 'var(--difficulty-easy)' }}>{previewPlan.breakdown.easy}E</span> ·{' '}
+                    <span style={{ color: 'var(--difficulty-medium)' }}>{previewPlan.breakdown.medium}M</span> ·{' '}
+                    <span style={{ color: 'var(--difficulty-hard)' }}>{previewPlan.breakdown.hard}H</span>
+                  </span>
+                </div>
+                <div className={styles.previewStatBox}>
+                  <span className={styles.previewStatLabel}>Study Est.</span>
+                  <span className={styles.previewStatNum}>{previewPlan.estimatedHoursTotal} hrs</span>
+                </div>
+                <div className={styles.previewStatBox}>
+                  <span className={styles.previewStatLabel}>Domains</span>
+                  <span className={styles.previewStatNum}>{previewPlan.topicsCovered.length} Topics</span>
+                </div>
+              </div>
+
+              {/* AI Rationale & Coach Tip */}
+              <div className={styles.aiRationaleBox}>
+                <div className={styles.aiRationaleTitle}>
+                  <Sparkles size={13} />
+                  <span>AI Strategy Rationale</span>
+                </div>
+                <p className={styles.aiRationaleText}>{previewPlan.rationale}</p>
+                <p className={styles.coachTipText}>💡 <strong>Pacer Tip:</strong> {previewPlan.coachTip}</p>
+              </div>
+
+              {/* Day-by-Day Preview Accordion/List */}
+              <div className={styles.formGroup}>
+                <label className={styles.label}>
+                  <span>Curated Schedule Preview</span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginLeft: '6px' }}>
+                    ({previewPlan.days.length} days generated)
+                  </span>
+                </label>
+                <div className={styles.dayPreviewList}>
+                  {previewPlan.days.map((day) => (
+                    <div key={day.date} className={styles.dayPreviewCard}>
+                      <div className={styles.dayPreviewHeader}>
+                        <span className={styles.dayPreviewName}>
+                          <strong>Day {day.dayIndex}</strong> · {day.dayName}, {day.displayDate}
+                        </span>
+                        <span className={styles.dayPreviewTheme}>{day.theme}</span>
+                      </div>
+                      {day.isRestDay ? (
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>
+                          Rest &amp; Spaced Repetition Review
+                        </div>
+                      ) : (
+                        <div className={styles.dayPreviewProblems}>
+                          {day.problems.map((p) => (
+                            <div key={p.id} className={styles.previewProbRow}>
+                              <span className={styles.previewProbTitle}>
+                                • {p.title}
+                              </span>
+                              <span
+                                className={`${styles.previewDiffBadge} ${
+                                  p.difficulty.toLowerCase() === 'easy'
+                                    ? styles.diffEasy
+                                    : p.difficulty.toLowerCase() === 'hard'
+                                    ? styles.diffHard
+                                    : styles.diffMedium
+                                }`}
+                              >
+                                {p.difficulty}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Replace vs Append Mode */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '6px 2px',
+                  fontSize: '0.8rem',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                <span>Schedule Destination:</span>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    type="button"
+                    className={`${styles.radioBtn} ${
+                      smartScheduleMode === 'replace' ? styles.radioBtnActive : ''
+                    }`}
+                    onClick={() => setSmartScheduleMode('replace')}
+                    style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                  >
+                    Replace Dates
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.radioBtn} ${
+                      smartScheduleMode === 'append' ? styles.radioBtnActive : ''
+                    }`}
+                    onClick={() => setSmartScheduleMode('append')}
+                    style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                  >
+                    Append to Dates
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button
+                className={styles.secondaryBtn}
+                onClick={() => setShowSmartPlannerModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles.smartPlannerBtn}
+                onClick={handleApplySmartPlan}
+              >
+                <Sparkles size={15} />
+                <span>Apply Schedule to Roadmap</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add Problem & Subtopic Modal */}
       {showAddModal && (
