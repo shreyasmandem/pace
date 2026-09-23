@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import styles from './PaceRing.module.css';
 
 interface PaceRingProps {
@@ -37,6 +38,7 @@ export default function PaceRing({ percent, size = 132, label, value }: PaceRing
           strokeDashoffset={offset}
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
           className={styles.progress}
+          style={{ '--circumference': circumference } as CSSProperties}
         />
       </svg>
       <div className={styles.center}>

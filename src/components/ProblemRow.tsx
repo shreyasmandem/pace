@@ -1,4 +1,5 @@
-import { forwardRef } from 'react';
+import { forwardRef, useState, type CSSProperties } from 'react';
+import { noteUserSolveIntent } from '../lib/celebrate';
 import { Bookmark, Check, Sparkles } from 'lucide-react';
 import type { Problem } from '../types';
 import { usePaceStore } from '../state/store';
@@ -31,6 +32,16 @@ const ProblemRow = forwardRef<HTMLDivElement, ProblemRowProps>(function ProblemR
   const bookmarked = usePaceStore((s) => !!s.bookmarks[problem.id]);
   const toggleBookmark = usePaceStore((s) => s.toggleBookmark);
 
+  const [burstKey, setBurstKey] = useState(0);
+
+  const handleToggle = () => {
+    if (!solved) {
+      noteUserSolveIntent(problem.id);
+      setBurstKey((k) => k + 1);
+    }
+    toggleProblem(problem.id);
+  };
+
   const handleTutorClick = () => {
     if (onOpenTutor) {
       onOpenTutor(problem.id);
@@ -43,11 +54,18 @@ const ProblemRow = forwardRef<HTMLDivElement, ProblemRowProps>(function ProblemR
     <div ref={ref} className={`${styles.row} ${highlighted ? styles.highlighted : ''}`}>
       <button
         className={`${styles.checkbox} ${solved ? styles.checked : ''}`}
-        onClick={() => toggleProblem(problem.id)}
+        onClick={handleToggle}
         aria-pressed={solved}
         aria-label={solved ? `Mark ${problem.title} as not solved` : `Mark ${problem.title} as solved`}
       >
-        {solved && <Check size={12} strokeWidth={3} />}
+        {solved && <Check size={12} strokeWidth={3} className={burstKey > 0 ? styles.checkDraw : undefined} />}
+        {solved && burstKey > 0 && (
+          <span key={burstKey} className={styles.burst} aria-hidden="true">
+            {Array.from({ length: 8 }, (_, i) => (
+              <span key={i} style={{ '--ray': `${i * 45}deg` } as CSSProperties} />
+            ))}
+          </span>
+        )}
       </button>
 
       <span className={styles.index}>{String(index + 1).padStart(2, '0')}</span>

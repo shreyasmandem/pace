@@ -6,7 +6,6 @@ import {
   Zap,
   LogIn,
   CheckCircle2,
-  Medal,
   Crown,
   LayoutGrid,
   BarChart3,
@@ -34,6 +33,8 @@ import {
 import Lane from '../components/Lane';
 import InteractiveHeatmap from '../components/InteractiveHeatmap';
 import AchievementBadges from '../components/AchievementBadges';
+import CountUp from '../components/CountUp';
+import RankPlate from '../components/RankPlate';
 import styles from './Stats.module.css';
 
 export default function Stats() {
@@ -46,6 +47,7 @@ export default function Stats() {
   const solveLog = usePaceStore((s) => s.solveLog || {});
   const streak = currentStreak(solveLog);
   const maxStreak = longestStreak(solveLog);
+  const solvedToday = (solveLog[new Date().toISOString().slice(0, 10)] || 0) > 0;
   const weeklySolves = calculateWeeklySolves(solveLog);
   const activeDaysCount = Object.keys(solveLog).filter(
     (k) => (solveLog[k] || 0) > 0
@@ -235,7 +237,9 @@ export default function Stats() {
             <span>Total Solved</span>
             <CheckCircle2 size={15} color="var(--difficulty-easy)" />
           </div>
-          <span className={styles.metricValue}>{aggregate.solved}</span>
+          <span className={styles.metricValue}>
+            <CountUp value={aggregate.solved} />
+          </span>
           <span className={styles.metricSub}>
             {Math.round(aggregate.percent)}% of {aggregate.total} curriculum problems
           </span>
@@ -250,10 +254,14 @@ export default function Stats() {
             />
           </div>
           <span className={styles.metricValue}>
-            {streak} <span style={{ fontSize: '1rem' }}>days</span>
+            <CountUp value={streak} /> <span style={{ fontSize: '1rem' }}>{streak === 1 ? 'day' : 'days'}</span>
           </span>
           <span className={styles.metricSub}>
-            {streak > 0 ? 'Keep the fire burning today!' : 'Solve a problem to start'}
+            {solvedToday
+              ? "Today's solve is in."
+              : streak > 0
+                ? 'Solve one today to keep it going'
+                : 'Solve a problem to start one'}
           </span>
         </div>
 
@@ -263,7 +271,7 @@ export default function Stats() {
             <Zap size={15} color="#f0b429" />
           </div>
           <span className={styles.metricValue}>
-            {maxStreak} <span style={{ fontSize: '1rem' }}>days</span>
+            <CountUp value={maxStreak} /> <span style={{ fontSize: '1rem' }}>{maxStreak === 1 ? 'day' : 'days'}</span>
           </span>
           <span className={styles.metricSub}>Your personal record run</span>
         </div>
@@ -291,13 +299,7 @@ export default function Stats() {
         <section className={styles.progressLeaderboardCard}>
           <div className={styles.plLeft}>
             <div className={styles.plRankMedal}>
-              {userRank && userRank <= 3
-                ? userRank === 1
-                  ? '👑'
-                  : userRank === 2
-                  ? '🥈'
-                  : '🥉'
-                : '🏆'}
+              <RankPlate rank={userRank} size="md" />
             </div>
             <div className={styles.plInfo}>
               <div className={styles.plTitleRow}>
@@ -318,14 +320,13 @@ export default function Stats() {
               <span className={styles.plSub}>
                 {nextTargetEntry ? (
                   <span>
-                    🔥 Solve{' '}
                     <strong>
                       {nextTargetEntry.solvedCount - aggregate.solved + 1} more problems
                     </strong>{' '}
-                    to pass {nextTargetEntry.displayName} (#{nextTargetEntry.rank})!
+                    and you pass {nextTargetEntry.displayName} (#{nextTargetEntry.rank}).
                   </span>
                 ) : user ? (
-                  '🎉 Outstanding! You hold the #1 throne on the Pace leaderboard.'
+                  "You're first on the Pace leaderboard."
                 ) : (
                   'Sign in with Google to publish your score and compete with registered solvers.'
                 )}
@@ -465,7 +466,7 @@ service cloud.firestore {
                 className={`${styles.podiumCard} ${styles.podium2}`}
                 onClick={() => setInspectEntry(podiumTop3[1])}
               >
-                <div className={styles.podiumCrown}>🥈</div>
+                <div className={styles.podiumCrown}><RankPlate rank={2} size="lg" /></div>
                 <div className={styles.avatarWrap}>
                   {podiumTop3[1].photoURL ? (
                     <img
@@ -506,7 +507,7 @@ service cloud.firestore {
                 className={`${styles.podiumCard} ${styles.podium1}`}
                 onClick={() => setInspectEntry(podiumTop3[0])}
               >
-                <div className={styles.podiumCrown}>👑</div>
+                <div className={styles.podiumCrown}><RankPlate rank={1} size="lg" /></div>
                 <div className={styles.avatarWrap}>
                   {podiumTop3[0].photoURL ? (
                     <img
@@ -547,7 +548,7 @@ service cloud.firestore {
                 className={`${styles.podiumCard} ${styles.podium3}`}
                 onClick={() => setInspectEntry(podiumTop3[2])}
               >
-                <div className={styles.podiumCrown}>🥉</div>
+                <div className={styles.podiumCrown}><RankPlate rank={3} size="lg" /></div>
                 <div className={styles.avatarWrap}>
                   {podiumTop3[2].photoURL ? (
                     <img
@@ -640,11 +641,7 @@ service cloud.firestore {
                   title="Click to view solver details"
                 >
                   <span className={styles.rankBadge}>
-                    {entry.rank && entry.rank <= 3 ? (
-                      entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : '🥉'
-                    ) : (
-                      `#${entry.rank}`
-                    )}
+                    <RankPlate rank={entry.rank} size="sm" />
                   </span>
 
                   <div className={styles.solverCell}>
@@ -697,43 +694,34 @@ service cloud.firestore {
           <div className={styles.personalBanner}>
             <div className={styles.personalLeft}>
               <div className={styles.personalRankIcon}>
-                {user ? (
-                  userRank && userRank <= 3 ? (
-                    userRank === 1 ? '👑' : userRank === 2 ? '🥈' : '🥉'
-                  ) : (
-                    <Medal size={20} color="var(--accent)" />
-                  )
-                ) : (
-                  <Crown size={20} color="var(--accent)" />
-                )}
+                <RankPlate rank={user ? userRank : null} size="md" />
               </div>
               <div className={styles.personalText}>
                 <span className={styles.personalTitle}>
                   {user
                     ? userRank
-                      ? `You are ranked #${userRank} globally!`
-                      : 'Your rank is calculating...'
-                    : 'Compete with everyone on Pace'}
+                      ? `You're #${userRank} on Pace`
+                      : 'Working out your rank…'
+                    : 'See where you stand'}
                 </span>
                 <span className={styles.personalSub}>
                   {user ? (
                     nextTargetEntry ? (
                       <span>
-                        🔥 Solve{' '}
                         <strong>
                           {leaderboardTab === 'streak'
                             ? nextTargetEntry.streak - streak + 1
                             : nextTargetEntry.solvedCount - aggregate.solved + 1}{' '}
                           more{' '}
-                          {leaderboardTab === 'streak' ? 'consecutive days' : 'problems'}
+                          {leaderboardTab === 'streak' ? 'days in a row' : 'problems'}
                         </strong>{' '}
-                        to overtake {nextTargetEntry.displayName} (#{nextTargetEntry.rank})!
+                        and you pass {nextTargetEntry.displayName} (#{nextTargetEntry.rank}).
                       </span>
                     ) : (
-                      '🎉 You are at the very top of the leaderboard! Defend your throne.'
+                      "You're first. Everyone else is chasing you now."
                     )
                   ) : (
-                    'Sign in with Google in 1-click to publish your solves, climb the leaderboard, and unlock competitive badges.'
+                    'Sign in with Google to put your solves on the leaderboard.'
                   )}
                 </span>
               </div>
@@ -988,25 +976,23 @@ service cloud.firestore {
 
               <div className={styles.compareNudgeBox}>
                 {inspectEntry.isCurrentUser ? (
-                  <span>
-                    👑 This is your profile! Keep solving daily to defend and advance
-                    your global ranking.
-                  </span>
+                  <span>This is you. A solve a day keeps you climbing.</span>
                 ) : aggregate.solved >= inspectEntry.solvedCount ? (
                   <span>
-                    ✨ You lead {inspectEntry.displayName} by{' '}
+                    You're ahead of {inspectEntry.displayName} by{' '}
                     <strong>
-                      {aggregate.solved - inspectEntry.solvedCount} solved problems
+                      {aggregate.solved - inspectEntry.solvedCount}{' '}
+                      {aggregate.solved - inspectEntry.solvedCount === 1 ? 'problem' : 'problems'}
                     </strong>
-                    . Keep pushing!
+                    .
                   </span>
                 ) : (
                   <span>
-                    🎯 You need{' '}
                     <strong>
-                      {inspectEntry.solvedCount - aggregate.solved} more solves
+                      {inspectEntry.solvedCount - aggregate.solved} more{' '}
+                      {inspectEntry.solvedCount - aggregate.solved === 1 ? 'solve' : 'solves'}
                     </strong>{' '}
-                    to match {inspectEntry.displayName}&apos;s rank!
+                    and you catch {inspectEntry.displayName}.
                   </span>
                 )}
               </div>

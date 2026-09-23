@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ChevronRight, PlayCircle, Sparkles } from 'lucide-react';
+import { ChevronRight, Flag, PlayCircle, Sparkles } from 'lucide-react';
 import type { Problem, TopicGroup } from '../types';
 import { usePaceStore } from '../state/store';
 import ProblemRow from './ProblemRow';
@@ -39,6 +39,19 @@ export default function TopicSection({
   const solved = group.problems.reduce((n, p) => n + (progress[p.id] ? 1 : 0), 0);
   const percent = group.problems.length ? (solved / group.problems.length) * 100 : 0;
   const complete = solved === group.problems.length && group.problems.length > 0;
+
+  // Stamp animation only when the topic is finished while you're looking at it, not on load.
+  const [justCleared, setJustCleared] = useState(false);
+  const wasComplete = useRef(complete);
+  useEffect(() => {
+    if (complete && !wasComplete.current) {
+      setJustCleared(true);
+      const t = setTimeout(() => setJustCleared(false), 1200);
+      wasComplete.current = complete;
+      return () => clearTimeout(t);
+    }
+    wasComplete.current = complete;
+  }, [complete]);
 
   useEffect(() => {
     if (highlightId && group.problems.some((p) => p.id === highlightId)) {
@@ -108,9 +121,16 @@ export default function TopicSection({
             Lecture
           </a>
         )}
-        <span className={`${styles.fraction} mono ${complete ? styles.fractionDone : ''}`}>
-          {solved}/{group.problems.length}
-        </span>
+        {complete ? (
+          <span className={`${styles.cleared} ${justCleared ? styles.clearedStamp : ''}`}>
+            <Flag size={12} />
+            Cleared
+          </span>
+        ) : (
+          <span className={`${styles.fraction} mono`}>
+            {solved}/{group.problems.length}
+          </span>
+        )}
       </div>
       <Lane percent={percent} color={accent} size="sm" />
 

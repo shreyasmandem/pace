@@ -16,53 +16,45 @@ const THEME_OPTIONS: { value: Theme; label: string; icon: typeof Sun }[] = [
   { value: 'system', label: 'System', icon: Monitor },
 ];
 
-const TUTOR_LANGUAGES: { id: TutorLanguage; name: string; icon: string; desc: string }[] = [
+const TUTOR_LANGUAGES: { id: TutorLanguage; name: string; desc: string }[] = [
   {
     id: 'python',
     name: 'Python 3',
-    icon: '🐍',
     desc: 'PEP 8, deque, heapq, defaultdict, tuples, slices',
   },
   {
     id: 'cpp',
     name: 'C++ (C++17/20)',
-    icon: '⚡',
     desc: 'STL vectors, priority_queue, unordered_map, structured bindings',
   },
   {
     id: 'java',
     name: 'Java',
-    icon: '☕',
     desc: 'Collections, ArrayDeque, PriorityQueue, StringBuilder',
   },
   {
     id: 'javascript',
     name: 'JavaScript (ES6+)',
-    icon: '🟨',
     desc: 'ES6+, Map, Set, array methods, modern idioms',
   },
   {
     id: 'typescript',
     name: 'TypeScript',
-    icon: '🔷',
     desc: 'Typed DSA, interface TreeNode/ListNode, Map<K, V>',
   },
   {
     id: 'go',
     name: 'Go (Golang)',
-    icon: '🐹',
     desc: 'Slices, maps, container/heap, idiomatic Go',
   },
   {
     id: 'rust',
     name: 'Rust',
-    icon: '🦀',
     desc: 'Vec, VecDeque, BinaryHeap, pattern matching',
   },
   {
     id: 'neutral',
     name: 'Language Neutral',
-    icon: '🌐',
     desc: 'Conceptual, pseudocode & versatile multi-language',
   },
 ];
@@ -328,7 +320,7 @@ export default function Settings() {
           >
             {TUTOR_LANGUAGES.map((item) => (
               <option key={item.id} value={item.id}>
-                {item.icon} {item.name}
+                {item.name}
               </option>
             ))}
           </select>

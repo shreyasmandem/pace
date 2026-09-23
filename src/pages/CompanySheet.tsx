@@ -18,6 +18,7 @@ import Lane from '../components/Lane';
 import AITutorDrawer from '../components/AITutorDrawer';
 import ConfirmDialog from '../components/ConfirmDialog';
 import ResourceLinks from '../components/ResourceLinks';
+import { noteUserSolveIntent } from '../lib/celebrate';
 import styles from './CompanySheet.module.css';
 
 const TOP_TECH = [
@@ -442,7 +443,10 @@ export default function CompanySheet() {
                 {/* Checkbox */}
                 <button
                   className={`${styles.checkbox} ${solved ? styles.checked : ''}`}
-                  onClick={() => toggleProblem(p.id)}
+                  onClick={() => {
+                    if (!solved) noteUserSolveIntent(p.id);
+                    toggleProblem(p.id);
+                  }}
                   aria-pressed={solved}
                   aria-label={solved ? `Mark ${p.title} as unsolved` : `Mark ${p.title} as solved`}
                 >

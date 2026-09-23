@@ -17,6 +17,7 @@ import { usePaceStore, currentStreak } from '../state/store';
 import { signInWithGoogle, firebaseEnabled } from '../lib/firebase';
 import { publishToLeaderboard, calculateWeeklySolves } from '../lib/leaderboard';
 import PaceRing from '../components/PaceRing';
+import CountUp from '../components/CountUp';
 import Lane from '../components/Lane';
 import styles from './Home.module.css';
 
@@ -220,7 +221,7 @@ export default function Home() {
         <div className={styles.momentumStats}>
           <div className={styles.momentumFigure}>
             <span className={`${styles.figureValue} numeric`}>
-              {registeredTracks.length > 0 ? aggregate.solved : 0}
+              <CountUp value={registeredTracks.length > 0 ? aggregate.solved : 0} />
             </span>
             <span className={styles.figureLabel}>
               {registeredTracks.length > 0

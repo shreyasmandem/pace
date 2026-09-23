@@ -122,7 +122,7 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
 
       <div className={styles.footer}>
         <div className={styles.streak}>
-          <Flame size={15} className={streak > 0 ? styles.flameActive : styles.flameIdle} />
+          <Flame key={streak} size={15} className={streak > 0 ? styles.flameActive : styles.flameIdle} />
           <span>
             <span className="numeric">{streak}</span> day{streak === 1 ? '' : 's'}
           </span>

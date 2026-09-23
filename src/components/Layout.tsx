@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import MobileNav from './MobileNav';
 import SearchPalette from './SearchPalette';
+import Celebrations from './Celebrations';
 import styles from './Layout.module.css';
 
 export default function Layout() {
@@ -35,6 +36,7 @@ export default function Layout() {
       </main>
       <MobileNav onOpenSearch={() => setSearchOpen(true)} />
       {searchOpen && <SearchPalette onClose={() => setSearchOpen(false)} />}
+      <Celebrations />
     </div>
   );
 }

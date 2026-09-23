@@ -153,14 +153,8 @@
 }
 
 .plRankMedal {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--accent) 14%, var(--surface-sunken));
-  border: 1px solid rgba(255, 122, 41, 0.4);
   display: grid;
   place-items: center;
-  font-size: 1.5rem;
   flex-shrink: 0;
 }
 
@@ -378,6 +372,7 @@
 .podiumGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  align-items: end;
   gap: var(--space-3);
   margin-bottom: var(--space-2);
 }
@@ -394,6 +389,14 @@
   position: relative;
   cursor: pointer;
   transition: transform 0.15s ease, border-color 0.15s ease;
+  animation: podiumRise 0.65s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@keyframes podiumRise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
 }
 
 .podiumCard:hover {
@@ -406,12 +409,16 @@
   background: color-mix(in srgb, #f0b429 6%, var(--surface-sunken));
   order: 2;
   box-shadow: 0 4px 18px rgba(240, 180, 41, 0.12);
+  padding-top: var(--space-6);
+  animation-delay: 0.2s;
 }
 
 .podium2 {
   border-color: rgba(203, 213, 225, 0.3);
   background: color-mix(in srgb, #cbd5e1 5%, var(--surface-sunken));
   order: 1;
+  padding-top: var(--space-5);
+  animation-delay: 0.1s;
 }
 
 .podium3 {
@@ -421,8 +428,7 @@
 }
 
 .podiumCrown {
-  font-size: 1.4rem;
-  margin-bottom: 4px;
+  margin-bottom: 10px;
 }
 
 .avatarWrap {
@@ -646,14 +652,8 @@
 }
 
 .personalRankIcon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  border: 1px solid var(--accent);
   display: grid;
   place-items: center;
-  font-size: 1.25rem;
   flex-shrink: 0;
 }
 
