@@ -64,6 +64,19 @@ both `.env.local` and the values in Vercel → Settings → Environment
 Variables, then trigger a redeploy (env var changes don't apply
 retroactively to old builds).
 
+### Server-only secret: `GROQ_API_KEY`
+
+The Pacer tutor calls Groq from a Vercel function (`api/tutor.ts`), never from
+the browser. Its key is `GROQ_API_KEY`, with **no** `VITE_` prefix so it's never
+bundled into client code. Set it in Vercel → Settings → Environment Variables
+(mark it Sensitive) and in `.env.local` for local dev. Never commit it or give
+it a `VITE_` prefix.
+
+The function requires a signed-in Firebase user (it checks the ID token),
+builds the tutor prompt server-side, caps message sizes, and rate-limits each
+user (per warm instance, so it's best-effort). `npm run dev` serves `/api/tutor`
+locally through a small Vite middleware in `vite.config.ts`.
+
 ## Firebase backend
 
 - Console: https://console.firebase.google.com/project/pace-dsa-tracker

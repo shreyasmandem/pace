@@ -89,12 +89,10 @@ export default function AITutorDrawer({
       : 'Neutral';
 
   const THINKING_MESSAGES = [
-    'Pacer is analyzing problem context...',
-    tutorLanguage === 'neutral'
-      ? 'Synthesizing optimal algorithmic approach...'
-      : `Synthesizing optimal ${langDisplayName} approach...`,
-    'Checking edge cases & complexity...',
-    'Drafting step-by-step guidance...',
+    'Pacer is reading your question…',
+    'Working through a small example…',
+    'Checking the edge cases…',
+    'Writing it up…',
   ];
 
   // Dynamic thinking step rotation
@@ -467,41 +465,35 @@ export default function AITutorDrawer({
     });
   };
 
-  // Starter prompts tailored for intuitive, human-like DSA learning in chosen language
   const starterPrompts = [
     {
-      title: '💡 Intuition & Real-World Analogy',
-      prompt: `Explain the core intuition and a real-world analogy for "${topicTitle}" in simple terms. How should I naturally think about it before writing any code?`,
+      title: 'Help me get the idea',
+      prompt: `I don't really get ${topicTitle} yet. How should I think about it before I write any code?`,
     },
     ...(currentProblem
       ? [
           {
-            title: `🪜 Step-by-Step Hint (No Spoilers)`,
-            prompt: `Give me a nudge or guiding question for solving "${currentProblem.title}"${
-              tutorLanguage !== 'neutral' ? ` in ${langDisplayName}` : ''
-            }. Don't give me the full code yet, just help my brain see the pattern!`,
+            title: 'Give me a hint',
+            prompt: `I'm stuck on ${currentProblem.title}. Can you give me a small hint? Don't show me the solution yet.`,
           },
           {
-            title:
-              tutorLanguage === 'neutral'
-                ? '⚡ Optimal Algorithmic Approach'
-                : `⚡ ${langDisplayName} Optimal Approach`,
-            prompt: `Walk me through the optimal approach for "${currentProblem.title}" like a master teacher. Include small number examples and clean${
-              tutorLanguage !== 'neutral' ? `, idiomatic ${langDisplayName}` : ' code/pseudocode'
+            title: 'Walk me through the solution',
+            prompt: `Walk me through the best approach for ${currentProblem.title} with a small example, then show me the code${
+              tutorLanguage !== 'neutral' ? ` in ${langDisplayName}` : ''
             }.`,
           },
         ]
       : [
           {
-            title: '🪜 Step-by-Step Master Walkthrough',
-            prompt: `Walk me through a classic problem in "${topicTitle}" like a friendly, world-class teacher. Use small numbers to trace it, then show ${
-              tutorLanguage !== 'neutral' ? `idiomatic ${langDisplayName}` : 'the optimal solution'
+            title: 'Show me a classic problem',
+            prompt: `Pick a classic ${topicTitle} problem and walk me through it with a small example, then show me the code${
+              tutorLanguage !== 'neutral' ? ` in ${langDisplayName}` : ''
             }.`,
           },
         ]),
     {
-      title: '⚠️ Gotchas & Hidden Traps',
-      prompt: `What common traps, off-by-one errors, and tricky edge cases do candidates usually stumble on in "${topicTitle}"? Explain why they happen and how to avoid them easily.`,
+      title: 'Where do people slip up?',
+      prompt: `Where do people usually slip up with ${topicTitle}? What edge cases should I watch for?`,
     },
   ];
 
@@ -603,9 +595,8 @@ export default function AITutorDrawer({
                   </div>
                   <h4 className={styles.welcomeTitle}>Meet Pacer</h4>
                   <p className={styles.welcomeDesc}>
-                    Your dedicated DSA mentor tailored to <strong>{topicTitle}</strong>. Ask
-                    for intuition, step-by-step hints, complexity trade-offs, or debugging.
-                    Conversations are automatically saved.
+                    Ask about <strong>{topicTitle}</strong>: the idea behind it, a hint when
+                    you're stuck, or why your code isn't passing. Your chat is saved.
                   </p>
 
                   <div className={styles.starterPromptGrid}>
