@@ -439,14 +439,24 @@
   border-radius: 6px;
   border: 2px solid var(--border-strong);
   background: transparent;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--accent-ink);
   cursor: pointer;
   flex-shrink: 0;
   padding: 0;
+  margin: 0;
+  line-height: 0;
+  box-sizing: border-box;
   transition: all 0.15s ease;
   -webkit-tap-highlight-color: transparent;
+}
+
+.checkboxBtn svg {
+  display: block;
+  flex-shrink: 0;
+  margin: auto;
 }
 
 .checkboxBtn:hover {
