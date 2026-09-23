@@ -328,7 +328,7 @@ export default function Settings() {
           >
             {TUTOR_LANGUAGES.map((item) => (
               <option key={item.id} value={item.id}>
-                {item.icon} {item.name} — {item.desc}
+                {item.icon} {item.name}
               </option>
             ))}
           </select>

@@ -104,10 +104,10 @@
 /* Header */
 .header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-3) var(--space-5);
   border-bottom: 1px solid var(--border-hairline);
   background: rgba(14, 15, 19, 0.85);
   backdrop-filter: blur(12px);
@@ -118,58 +118,6 @@
 .headerTitleArea {
   flex: 1;
   min-width: 0;
-}
-
-.badgeRow {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-bottom: 6px;
-}
-
-.tutorBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-  font-size: 0.72rem;
-  font-weight: 600;
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
-  color: var(--accent);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-}
-
-.sparkleIcon {
-  animation: sparkleSpin 4s ease-in-out infinite;
-}
-
-@keyframes sparkleSpin {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.15) rotate(15deg); }
-}
-
-.modelBadge {
-  font-size: 0.68rem;
-  font-family: var(--font-mono);
-  color: var(--text-tertiary);
-  padding: 2px 6px;
-  background: var(--surface-subtle);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-hairline);
-}
-
-.langBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.68rem;
-  font-family: var(--font-mono);
-  color: var(--text-secondary);
-  padding: 2px 7px;
-  background: var(--surface-sunken);
-  border-radius: 9999px;
-  border: 1px solid var(--border-hairline);
 }
 
 .title {
@@ -662,18 +610,18 @@
 
 .inputContainer {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: var(--space-2);
-  background: var(--surface-subtle);
-  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  border: 1px solid var(--border-hairline);
   border-radius: var(--radius-lg);
-  padding: 8px 12px;
+  padding: 8px 10px 8px 14px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .inputContainer:focus-within {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
+  box-shadow: 0 0 0 1px var(--accent);
 }
 
 .textarea {
@@ -681,14 +629,32 @@
   min-height: 24px;
   max-height: 120px;
   background: transparent;
-  border: none;
-  outline: none;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
   resize: none;
   font-family: inherit;
   font-size: 0.88rem;
   color: var(--text-primary);
-  line-height: 1.4;
-  padding: 0;
+  line-height: 1.45;
+  padding: 2px 0;
+  margin: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.textarea::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.textarea:focus,
+.textarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 @media (max-width: 760px) {

@@ -300,6 +300,9 @@ export default function AITutorDrawer({
     if (!messageContent || loading) return;
 
     setInput('');
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
     setError(null);
 
     // Add user message to state
@@ -316,6 +319,14 @@ export default function AITutorDrawer({
       setError(err?.message || 'Failed to connect to AI Tutor. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
     }
   };
 
@@ -516,15 +527,6 @@ export default function AITutorDrawer({
         {/* Header */}
         <div className={styles.header} onTouchEnd={handleHeaderTouchEnd}>
           <div className={styles.headerTitleArea}>
-            <div className={styles.badgeRow}>
-              <span className={styles.tutorBadge}>
-                <Sparkles size={13} className={styles.sparkleIcon} />
-                <span>Pacer</span>
-              </span>
-              <span className={styles.langBadge} title="Pacer's coding language (configurable in Settings)">
-                {langDisplayName}
-              </span>
-            </div>
             <h3 className={styles.title} title={topicTitle}>
               {topicTitle}
             </h3>
@@ -687,9 +689,9 @@ export default function AITutorDrawer({
                   className={styles.textarea}
                   rows={1}
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                  onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
-                  placeholder={`Ask Pacer anything about ${topicTitle}... (Enter to send)`}
+                  placeholder={currentProblem ? `Ask about ${currentProblem.title}...` : `Ask about ${topicTitle}...`}
                 />
                 <button
                   className={`${styles.sendBtn} ${input.trim() && !loading ? styles.sendBtnActive : ''}`}

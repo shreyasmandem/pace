@@ -272,7 +272,7 @@
 
 .selectWrapper {
   position: relative;
-  max-width: 480px;
+  max-width: 280px;
   margin-top: var(--space-2);
   margin-bottom: var(--space-2);
 }
