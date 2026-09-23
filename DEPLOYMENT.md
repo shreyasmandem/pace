@@ -64,18 +64,18 @@ both `.env.local` and the values in Vercel → Settings → Environment
 Variables, then trigger a redeploy (env var changes don't apply
 retroactively to old builds).
 
-### Server-only secret: `GROQ_API_KEY`
+### Pacer tutor key (known tradeoff)
 
-The Pacer tutor calls Groq from a Vercel function (`api/tutor.ts`), never from
-the browser. Its key is `GROQ_API_KEY`, with **no** `VITE_` prefix so it's never
-bundled into client code. Set it in Vercel → Settings → Environment Variables
-(mark it Sensitive) and in `.env.local` for local dev. Never commit it or give
-it a `VITE_` prefix.
+The Pacer tutor calls Groq directly from the browser (`src/lib/groq.ts`). It
+uses `VITE_GROQ_API_KEY` if set, and otherwise falls back to a key embedded in
+the source with light obfuscation. The owner chose this deliberately to keep
+the tutor working without server setup. Anyone can extract that key from the
+public repo or the site bundle, so treat it as public: keep its Groq spend
+limits tight, and rotate it if abuse shows up. The safer design is a Vercel
+function that holds the key server-side. It was built once and reverted in git
+history (commit `12064fd`), so it can be restored from there.
 
-The function requires a signed-in Firebase user (it checks the ID token),
-builds the tutor prompt server-side, caps message sizes, and rate-limits each
-user (per warm instance, so it's best-effort). `npm run dev` serves `/api/tutor`
-locally through a small Vite middleware in `vite.config.ts`.
+The prompt and reply cleanup live in `src/lib/tutorPrompt.ts`.
 
 ## Firebase backend
 

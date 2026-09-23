@@ -1,52 +1,6 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose';
-
-const CANDIDATE_MODELS = ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b'];
-
-const MAX_MESSAGE_CHARS = 4000;
-const MAX_HISTORY_ENTRIES = 10;
-const MAX_HISTORY_ENTRY_CHARS = 8000;
 const MAX_CONTEXT_FIELD_CHARS = 300;
-const MAX_PROBLEMS = 15;
 
-const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
-const RATE_LIMIT_MAX_REQUESTS = 30;
-
-const firebaseJwks = createRemoteJWKSet(
-  new URL('https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com')
-);
-
-// Best-effort only: counts are per warm function instance, not global.
-const requestLog = new Map<string, number[]>();
-
-function isRateLimited(uid: string): boolean {
-  const now = Date.now();
-  const recent = (requestLog.get(uid) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-  if (recent.length >= RATE_LIMIT_MAX_REQUESTS) {
-    requestLog.set(uid, recent);
-    return true;
-  }
-  recent.push(now);
-  requestLog.set(uid, recent);
-  return false;
-}
-
-async function verifyFirebaseUser(request: Request): Promise<string | null> {
-  const projectId = process.env.VITE_FIREBASE_PROJECT_ID;
-  const token = request.headers.get('authorization')?.match(/^Bearer (.+)$/)?.[1];
-  if (!projectId || !token) return null;
-  try {
-    const { payload } = await jwtVerify(token, firebaseJwks, {
-      issuer: `https://securetoken.google.com/${projectId}`,
-      audience: projectId,
-      algorithms: ['RS256'],
-    });
-    return typeof payload.sub === 'string' && payload.sub ? payload.sub : null;
-  } catch {
-    return null;
-  }
-}
-
-interface TutorContext {
+export interface PromptContext {
   topicTitle: string;
   trackTitle?: string;
   companyName?: string;
@@ -56,54 +10,12 @@ interface TutorContext {
   preferredLanguage?: string;
 }
 
-interface ChatEntry {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
 // Context fields are interpolated into the system prompt, so newlines are collapsed
 // to stop a crafted title from faking new prompt sections.
-function contextField(value: unknown, max = MAX_CONTEXT_FIELD_CHARS): string | undefined {
+export function contextField(value: unknown, max = MAX_CONTEXT_FIELD_CHARS): string | undefined {
   if (typeof value !== 'string') return undefined;
   const clean = value.replace(/\s+/g, ' ').trim();
   return clean ? clean.slice(0, max) : undefined;
-}
-
-function parseContext(raw: unknown): TutorContext | null {
-  if (!raw || typeof raw !== 'object') return null;
-  const ctx = raw as Record<string, unknown>;
-  const topicTitle = contextField(ctx.topicTitle);
-  if (!topicTitle) return null;
-
-  const problems = Array.isArray(ctx.problems)
-    ? ctx.problems.slice(0, MAX_PROBLEMS).flatMap((p) => {
-        const entry = (p || {}) as Record<string, unknown>;
-        const title = contextField(entry.title);
-        return title ? [{ title, difficulty: contextField(entry.difficulty, 20) || 'unrated' }] : [];
-      })
-    : [];
-
-  const cp = (ctx.currentProblem || {}) as Record<string, unknown>;
-  const currentTitle = contextField(cp.title);
-
-  return {
-    topicTitle,
-    trackTitle: contextField(ctx.trackTitle),
-    companyName: contextField(ctx.companyName),
-    patternTip: contextField(ctx.patternTip, 1000),
-    problems,
-    currentProblem: currentTitle ? { title: currentTitle, difficulty: contextField(cp.difficulty, 20) } : undefined,
-    preferredLanguage: contextField(ctx.preferredLanguage, 20),
-  };
-}
-
-function parseHistory(raw: unknown): ChatEntry[] {
-  if (!Array.isArray(raw)) return [];
-  return raw.slice(-MAX_HISTORY_ENTRIES).flatMap((entry) => {
-    const e = (entry || {}) as Record<string, unknown>;
-    if ((e.role !== 'user' && e.role !== 'assistant') || typeof e.content !== 'string') return [];
-    return [{ role: e.role, content: e.content.slice(0, MAX_HISTORY_ENTRY_CHARS) }];
-  });
 }
 
 const LANGUAGE_GUIDANCE: Record<string, { name: string; notes: string }> = {
@@ -173,7 +85,7 @@ They haven't picked one. Lead with the idea. When code helps, use short readable
   };
 }
 
-function buildSystemPrompt(ctx: TutorContext): string {
+export function buildSystemPrompt(ctx: PromptContext): string {
   const { name: languageName, section: languageNotes } = languageSection(ctx.preferredLanguage);
 
   const studying = [
@@ -247,7 +159,7 @@ const LEADING_FILLER = [
 
 const TRAILING_FILLER = /^\s*(hope (this|that) helps|happy coding|feel free to|let me know if)\b.*$/i;
 
-function polishReply(raw: string, truncated: boolean): string {
+export function polishReply(raw: string, truncated: boolean): string {
   let text = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/^[\s\S]*?<\/think>/i, '').trim();
 
   let stripped = true;
@@ -273,66 +185,4 @@ function polishReply(raw: string, truncated: boolean): string {
     text += `\n\nI ran out of room there. Say "keep going" and I'll pick up where I stopped.`;
   }
   return text;
-}
-
-function jsonError(status: number, error: string): Response {
-  return Response.json({ error }, { status });
-}
-
-export async function POST(request: Request): Promise<Response> {
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) return jsonError(503, 'Pacer is not configured on this server yet.');
-
-  const uid = await verifyFirebaseUser(request);
-  if (!uid) return jsonError(401, 'Sign in to chat with Pacer.');
-
-  if (isRateLimited(uid)) {
-    return jsonError(429, "You're sending messages faster than Pacer can keep up. Give it a few minutes and try again.");
-  }
-
-  let body: Record<string, unknown>;
-  try {
-    body = await request.json();
-  } catch {
-    return jsonError(400, 'Invalid request.');
-  }
-
-  const ctx = parseContext(body.ctx);
-  const userMessage = typeof body.userMessage === 'string' ? body.userMessage.trim() : '';
-  if (!ctx || !userMessage) return jsonError(400, 'Invalid request.');
-  if (userMessage.length > MAX_MESSAGE_CHARS) {
-    return jsonError(413, `Messages are limited to ${MAX_MESSAGE_CHARS} characters.`);
-  }
-
-  const messages = [
-    { role: 'system', content: buildSystemPrompt(ctx) },
-    ...parseHistory(body.history),
-    { role: 'user', content: userMessage },
-  ];
-
-  for (const model of CANDIDATE_MODELS) {
-    try {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model, messages, temperature: 0.6, max_completion_tokens: 3000 }),
-        signal: AbortSignal.timeout(30_000),
-      });
-      if (!response.ok) {
-        console.warn(`[tutor] ${model} failed with HTTP ${response.status}`);
-        continue;
-      }
-      const data = await response.json();
-      const choice = data.choices?.[0];
-      // Never fall back to the model's reasoning field: that's its scratchpad, not an answer.
-      const content = typeof choice?.message?.content === 'string' ? choice.message.content : '';
-      const reply = polishReply(content, choice?.finish_reason === 'length');
-      if (reply) return Response.json({ reply });
-      console.warn(`[tutor] ${model} returned an empty reply`);
-    } catch (err) {
-      console.warn(`[tutor] ${model} failed:`, err instanceof Error ? err.message : err);
-    }
-  }
-
-  return jsonError(502, 'Pacer is temporarily unavailable. Please try again in a moment.');
 }
