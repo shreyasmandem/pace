@@ -18,7 +18,7 @@
 
 .highlighted {
   background: var(--accent-soft);
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
 }
 
 .checkbox {
@@ -28,7 +28,7 @@
   width: 19px;
   height: 19px;
   flex: none;
-  border-radius: 50%;
+  border-radius: 4px;
   border: 1.5px solid var(--border-strong);
   color: var(--accent-ink);
   background: transparent;
@@ -147,7 +147,7 @@
   font-weight: 600;
   padding: 3px 0;
   text-align: center;
-  border-radius: var(--radius-full);
+  border-radius: 4px;
   justify-self: center;
   transition: transform 0.15s ease;
 }
@@ -185,7 +185,7 @@
   width: 26px;
   height: 26px;
   flex: none;
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   color: var(--text-tertiary);
   cursor: pointer;
   transition: background-color 0.15s var(--easing), color 0.15s var(--easing), transform 0.1s var(--easing);
@@ -212,7 +212,7 @@
 .tutorActive {
   color: var(--accent);
   background: color-mix(in srgb, var(--accent) 14%, transparent);
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
 }
 
 @media (max-width: 768px) {
