@@ -2,15 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   bestDay,
   computeMilestones,
-  markBibsPinned,
-  readBibEarnedDates,
-  readPinnedBibs,
+  markBadgesSeen,
+  readBadgeEarnedDates,
+  readSeenBadges,
 } from '../lib/milestones';
-import RaceBib from './RaceBib';
+import Badge from './Badge';
 import styles from './AchievementBadges.module.css';
 
-const PIN_STAGGER_MS = 110;
-const MAX_PIN_STAGGER_MS = 900;
+const UNLOCK_STAGGER_MS = 110;
+const MAX_UNLOCK_STAGGER_MS = 900;
 
 export default function AchievementBadges({
   solvedCount = 0,
@@ -36,15 +36,15 @@ export default function AchievementBadges({
     [solvedCount, streak, maxStreak, solveLog, userRank]
   );
 
-  // Snapshot of what was already pinned when the wall first rendered, so bibs earned
-  // since the last visit play the pin-on animation exactly once.
-  const [pinnedAtMount] = useState(readPinnedBibs);
-  const earnedDates = readBibEarnedDates();
+  // Snapshot of badges already seen when the wall first rendered, so badges earned
+  // since the last visit play the unlock animation exactly once.
+  const [seenAtMount] = useState(readSeenBadges);
+  const earnedDates = readBadgeEarnedDates();
 
   const earnedIds = milestones.filter((m) => m.earned).map((m) => m.id);
   const earnedKey = earnedIds.join(',');
   useEffect(() => {
-    markBibsPinned(earnedIds);
+    markBadgesSeen(earnedIds);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [earnedKey]);
 
@@ -53,23 +53,21 @@ export default function AchievementBadges({
     .filter((m) => !m.earned && m.kind !== 'rank')
     .sort((a, b) => b.current / b.target - a.current / a.target)[0];
 
-  let pinOrder = 0;
+  let unlockOrder = 0;
 
   return (
-    <section className={styles.wall} aria-labelledby="bib-wall-title">
+    <section className={styles.wall} aria-labelledby="badge-wall-title">
       <header className={styles.header}>
         <div>
-          <h2 id="bib-wall-title" className={styles.title}>
-            Race bibs
+          <h2 id="badge-wall-title" className={styles.title}>
+            Badges
           </h2>
           <p className={styles.subtitle}>
-            {earnedCount === 0
-              ? 'Solve your first problem to pin your first bib.'
-              : `${earnedCount} of ${milestones.length} pinned.`}
+            {earnedCount === 0 ? 'Solve your first problem to earn your first badge.' : `${earnedCount} of ${milestones.length} earned.`}
             {nextUp && earnedCount > 0 && (
               <>
                 {' '}
-                Next up: <strong>{nextUp.name}</strong>, {nextUp.target - nextUp.current}{' '}
+                Next: <strong>{nextUp.name}</strong>, {nextUp.target - nextUp.current}{' '}
                 {nextUp.kind === 'solves' ? 'to go' : nextUp.kind === 'streak' ? 'more days' : 'more in a day'}.
               </>
             )}
@@ -81,16 +79,15 @@ export default function AchievementBadges({
       </header>
 
       <div className={styles.grid}>
-        {milestones.map((m, i) => {
-          const pinningIn = m.earned && !pinnedAtMount[m.id];
-          const delay = pinningIn ? Math.min(pinOrder++ * PIN_STAGGER_MS, MAX_PIN_STAGGER_MS) : 0;
+        {milestones.map((m) => {
+          const unlocking = m.earned && !seenAtMount[m.id];
+          const delay = unlocking ? Math.min(unlockOrder++ * UNLOCK_STAGGER_MS, MAX_UNLOCK_STAGGER_MS) : 0;
           return (
-            <RaceBib
+            <Badge
               key={m.id}
               milestone={m}
-              index={i}
-              pinningIn={pinningIn}
-              pinDelayMs={delay}
+              unlocking={unlocking}
+              unlockDelayMs={delay}
               earnedOn={earnedDates[m.id]}
             />
           );

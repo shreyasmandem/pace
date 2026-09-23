@@ -1,0 +1,205 @@
+.badge {
+  --tone: #e0601a;
+  --tone-light: #ff9b5c;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-4) var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+/* Fixed tones: the medal colors read the same in both themes. */
+.solves {
+  --tone: #e0601a;
+  --tone-light: #ff9b5c;
+}
+
+.streak {
+  --tone: #d2334f;
+  --tone-light: #ff7a8f;
+}
+
+.day {
+  --tone: #1b87b8;
+  --tone-light: #5cc6f0;
+}
+
+.rank {
+  --tone: #7349c9;
+  --tone-light: #b393ff;
+}
+
+.medal {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 6px;
+  transition: transform 0.3s var(--easing);
+}
+
+.earned:hover .medal {
+  transform: translateY(-3px) rotate(-6deg);
+}
+
+.disc {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.earned .disc {
+  background: linear-gradient(150deg, var(--tone-light), var(--tone) 62%);
+  color: #fff;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--tone) 28%, transparent),
+    inset 0 2px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.18),
+    0 10px 20px -10px var(--tone);
+}
+
+.locked .disc {
+  background: var(--surface-sunken);
+  color: var(--text-tertiary);
+}
+
+.emblem {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.unit {
+  margin-top: 1px;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.ringTrack,
+.ringFill {
+  fill: none;
+  stroke-width: 3;
+}
+
+.ringTrack {
+  stroke: var(--border-hairline);
+}
+
+.ringFill {
+  stroke: var(--tone);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s var(--easing);
+}
+
+.kindIcon {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--bg);
+}
+
+.earned .kindIcon {
+  background: var(--tone);
+  color: #fff;
+}
+
+.locked .kindIcon {
+  background: var(--surface-hover);
+  color: var(--text-tertiary);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.locked .name {
+  color: var(--text-secondary);
+}
+
+.meta {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+}
+
+/* Unlock: the medal spins in and a light sweep crosses its face once. */
+.unlocking .medal {
+  animation: medalIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) var(--unlock-delay) both;
+}
+
+.unlocking .disc::after {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.6) 50%, transparent 65%);
+  transform: translateX(-120%);
+  animation: shine 0.9s ease-out calc(var(--unlock-delay) + 0.45s) both;
+}
+
+@keyframes medalIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.45) rotate(-28deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08) rotate(4deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes shine {
+  to {
+    transform: translateX(120%);
+  }
+}
+
+/* Small medal used inside toasts. */
+.mini {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(150deg, var(--tone-light), var(--tone) 62%);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--tone) 30%, transparent),
+    inset 0 2px 0 rgba(255, 255, 255, 0.35);
+}

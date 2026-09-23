@@ -2,7 +2,7 @@
   background: var(--surface);
   border: 1px solid var(--border-hairline);
   border-radius: var(--radius-lg);
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -10,44 +10,45 @@
 
 .header {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
-.titleRow {
+.titleBlock {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
-.badge {
-  font-size: 0.72rem;
+.rangeTotal {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.rangeTotal strong {
+  color: var(--text-primary);
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  background: rgba(255, 122, 41, 0.12);
-  color: var(--accent);
 }
 
 .inspectBox {
   font-size: 0.78rem;
   color: var(--text-secondary);
   background: var(--surface-sunken);
-  padding: 4px 10px;
+  padding: 5px 10px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-hairline);
-  min-height: 26px;
+  min-height: 28px;
   display: flex;
   align-items: center;
-  gap: 6px;
 }
 
 .inspectBold {
@@ -55,108 +56,94 @@
   font-weight: 600;
 }
 
-.scrollArea {
-  overflow-x: auto;
-  padding-bottom: 6px;
-  -webkit-overflow-scrolling: touch;
-}
-
-.heatmapWrapper {
-  display: inline-flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 580px;
-}
-
-.monthRow {
-  display: flex;
-  gap: 3px;
-  height: 16px;
-  margin-left: 28px;
-  font-size: 0.65rem;
+.inspectHint {
   color: var(--text-tertiary);
-  user-select: none;
+}
+
+/* One grid for month labels, day labels, and cells, so they can never drift apart.
+   Columns are fluid: the year always fills the card, like GitHub's contribution graph. */
+.grid {
+  display: grid;
+  grid-template-columns: 28px repeat(var(--weeks), minmax(0, 1fr));
+  grid-template-rows: auto repeat(7, auto);
+  gap: 3px;
 }
 
 .monthLabel {
-  width: calc(13px * 4 + 9px);
-  text-align: left;
+  grid-row: 1;
+  padding-bottom: 4px;
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  user-select: none;
 }
 
-.gridRow {
-  display: flex;
-  gap: 6px;
-}
-
-.dayLabels {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 22px;
-  font-size: 0.62rem;
+.dayLabel {
+  grid-column: 1;
+  align-self: center;
+  font-size: 0.64rem;
+  line-height: 1;
   color: var(--text-tertiary);
   user-select: none;
-  padding: 2px 0;
 }
 
-.grid {
-  display: flex;
-  gap: 3px;
-}
-
-.col {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
+.cell,
+.futureCell {
+  aspect-ratio: 1;
+  width: 100%;
+  border-radius: 3px;
 }
 
 .cell {
-  width: 12px;
-  height: 12px;
-  border-radius: 2.5px;
-  background: var(--surface-sunken);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 0;
+  border: 0;
   cursor: pointer;
-  transition: transform 0.1s ease, border-color 0.1s ease, filter 0.1s ease;
+  outline: 1px solid rgba(255, 255, 255, 0.03);
+  outline-offset: -1px;
+  animation: cellIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) calc(var(--week) * 9ms) backwards;
+  transition: outline-color 0.1s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
-.cell:hover {
-  transform: scale(1.3);
-  z-index: 10;
-  border-color: #ffffff;
-  filter: brightness(1.2);
+.cell:hover,
+.cell:focus-visible {
+  outline: 1.5px solid var(--text-primary);
+  outline-offset: 1px;
+  box-shadow: none;
 }
 
 .cellSelected {
-  transform: scale(1.35);
-  border-color: var(--text-primary);
-  box-shadow: 0 0 6px rgba(255, 122, 41, 0.5);
-  z-index: 12;
+  outline: 1.5px solid var(--accent);
+  outline-offset: 1px;
+}
+
+@keyframes cellIn {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
 }
 
 .level0 {
-  background: var(--surface-sunken);
+  background: var(--heat-0);
 }
 
 .level1 {
-  background: #274534;
+  background: var(--heat-1);
 }
 
 .level2 {
-  background: #2e7d4a;
+  background: var(--heat-2);
 }
 
 .level3 {
-  background: #38b267;
+  background: var(--heat-3);
 }
 
 .level4 {
-  background: #4cd08a;
-  box-shadow: 0 0 4px rgba(76, 208, 138, 0.4);
+  background: var(--heat-4);
 }
 
-/* Footer / Stats bar */
 .footer {
   display: flex;
   align-items: center;
@@ -176,8 +163,8 @@
 
 .statItem {
   display: flex;
-  align-items: baseline;
-  gap: 5px;
+  align-items: center;
+  gap: 6px;
   font-size: 0.78rem;
   color: var(--text-secondary);
 }
@@ -198,7 +185,22 @@
 }
 
 .legendCell {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
+  width: 11px;
+  height: 11px;
+  border-radius: 2.5px;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: var(--space-4);
+  }
+
+  .grid {
+    grid-template-columns: 24px repeat(var(--weeks), minmax(0, 1fr));
+    gap: 2.5px;
+  }
+
+  .statsStrip {
+    gap: var(--space-3);
+  }
 }

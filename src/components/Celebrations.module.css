@@ -99,15 +99,15 @@
   }
 }
 
-.bibSlot {
+.badgeSlot {
   display: grid;
   place-items: center;
   flex: none;
   width: 44px;
-  animation: bibDrop 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+  animation: badgeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
 }
 
-@keyframes bibDrop {
+@keyframes badgeIn {
   from {
     transform: translateY(-12px) rotate(-14deg);
     opacity: 0;

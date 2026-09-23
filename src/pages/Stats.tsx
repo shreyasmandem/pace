@@ -6,6 +6,7 @@ import {
   Zap,
   LogIn,
   CheckCircle2,
+  Medal,
   Crown,
   LayoutGrid,
   BarChart3,
@@ -34,7 +35,6 @@ import Lane from '../components/Lane';
 import InteractiveHeatmap from '../components/InteractiveHeatmap';
 import AchievementBadges from '../components/AchievementBadges';
 import CountUp from '../components/CountUp';
-import RankPlate from '../components/RankPlate';
 import styles from './Stats.module.css';
 
 export default function Stats() {
@@ -299,7 +299,13 @@ export default function Stats() {
         <section className={styles.progressLeaderboardCard}>
           <div className={styles.plLeft}>
             <div className={styles.plRankMedal}>
-              <RankPlate rank={userRank} size="md" />
+              {userRank && userRank <= 3
+                ? userRank === 1
+                  ? '👑'
+                  : userRank === 2
+                  ? '🥈'
+                  : '🥉'
+                : '🏆'}
             </div>
             <div className={styles.plInfo}>
               <div className={styles.plTitleRow}>
@@ -466,7 +472,7 @@ service cloud.firestore {
                 className={`${styles.podiumCard} ${styles.podium2}`}
                 onClick={() => setInspectEntry(podiumTop3[1])}
               >
-                <div className={styles.podiumCrown}><RankPlate rank={2} size="lg" /></div>
+                <div className={styles.podiumCrown}>🥈</div>
                 <div className={styles.avatarWrap}>
                   {podiumTop3[1].photoURL ? (
                     <img
@@ -507,7 +513,7 @@ service cloud.firestore {
                 className={`${styles.podiumCard} ${styles.podium1}`}
                 onClick={() => setInspectEntry(podiumTop3[0])}
               >
-                <div className={styles.podiumCrown}><RankPlate rank={1} size="lg" /></div>
+                <div className={styles.podiumCrown}>👑</div>
                 <div className={styles.avatarWrap}>
                   {podiumTop3[0].photoURL ? (
                     <img
@@ -548,7 +554,7 @@ service cloud.firestore {
                 className={`${styles.podiumCard} ${styles.podium3}`}
                 onClick={() => setInspectEntry(podiumTop3[2])}
               >
-                <div className={styles.podiumCrown}><RankPlate rank={3} size="lg" /></div>
+                <div className={styles.podiumCrown}>🥉</div>
                 <div className={styles.avatarWrap}>
                   {podiumTop3[2].photoURL ? (
                     <img
@@ -641,7 +647,11 @@ service cloud.firestore {
                   title="Click to view solver details"
                 >
                   <span className={styles.rankBadge}>
-                    <RankPlate rank={entry.rank} size="sm" />
+                    {entry.rank && entry.rank <= 3 ? (
+                      entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : '🥉'
+                    ) : (
+                      `#${entry.rank}`
+                    )}
                   </span>
 
                   <div className={styles.solverCell}>
@@ -694,7 +704,15 @@ service cloud.firestore {
           <div className={styles.personalBanner}>
             <div className={styles.personalLeft}>
               <div className={styles.personalRankIcon}>
-                <RankPlate rank={user ? userRank : null} size="md" />
+                {user ? (
+                  userRank && userRank <= 3 ? (
+                    userRank === 1 ? '👑' : userRank === 2 ? '🥈' : '🥉'
+                  ) : (
+                    <Medal size={20} color="var(--accent)" />
+                  )
+                ) : (
+                  <Crown size={20} color="var(--accent)" />
+                )}
               </div>
               <div className={styles.personalText}>
                 <span className={styles.personalTitle}>

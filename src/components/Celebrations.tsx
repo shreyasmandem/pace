@@ -4,9 +4,9 @@ import { Flag, Flame, X } from 'lucide-react';
 import { ALL_TRACKS, TRACK_META, TRACK_ORDER, getAllProblems } from '../data';
 import { usePaceStore, currentStreak } from '../state/store';
 import { longestStreak } from '../lib/leaderboard';
-import { bestDay, computeMilestones, recordBibsEarnedToday, type Milestone } from '../lib/milestones';
+import { bestDay, computeMilestones, recordBadgesEarnedToday, type Milestone } from '../lib/milestones';
 import { consumeUserSolveIntent } from '../lib/celebrate';
-import { MiniBib } from './RaceBib';
+import { MiniBadge } from './Badge';
 import styles from './Celebrations.module.css';
 
 type PaceState = ReturnType<typeof usePaceStore.getState>;
@@ -14,12 +14,12 @@ type PaceState = ReturnType<typeof usePaceStore.getState>;
 type ToastBody =
   | { kind: 'streak'; streak: number }
   | { kind: 'topic'; topic: string; count: number; color: string }
-  | { kind: 'bib'; milestone: Milestone };
+  | { kind: 'badge'; milestone: Milestone };
 
 type Toast = ToastBody & { id: number; leaving?: boolean };
 
 const MAX_VISIBLE = 3;
-const TOAST_MS = { streak: 4500, topic: 5000, bib: 6500 } as const;
+const TOAST_MS = { streak: 4500, topic: 5000, badge: 6500 } as const;
 
 function milestonesFor(state: PaceState): Milestone[] {
   const progress = state.progress || {};
@@ -102,8 +102,8 @@ export default function Celebrations() {
       if (firstSolveToday) bodies.push({ kind: 'streak', streak: currentStreak(state.solveLog) });
 
       if (newlyEarned.length > 0) {
-        recordBibsEarnedToday(newlyEarned.map((m) => m.id));
-        for (const m of newlyEarned.slice(-2)) bodies.push({ kind: 'bib', milestone: m });
+        recordBadgesEarnedToday(newlyEarned.map((m) => m.id));
+        for (const m of newlyEarned.slice(-2)) bodies.push({ kind: 'badge', milestone: m });
       }
 
       push(bodies);
@@ -142,14 +142,14 @@ export default function Celebrations() {
             </>
           )}
 
-          {t.kind === 'bib' && (
+          {t.kind === 'badge' && (
             <>
-              <span className={styles.bibSlot}>
-                <MiniBib milestone={t.milestone} />
+              <span className={styles.badgeSlot}>
+                <MiniBadge milestone={t.milestone} />
               </span>
               <span className={styles.text}>
-                <strong>New bib: {t.milestone.name}</strong>
-                <span>Pinned to your wall.</span>
+                <strong>New badge: {t.milestone.name}</strong>
+                <span>Added to your badges.</span>
               </span>
               <button
                 className={styles.action}

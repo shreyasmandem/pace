@@ -153,8 +153,14 @@
 }
 
 .plRankMedal {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface-sunken));
+  border: 1px solid rgba(255, 122, 41, 0.4);
   display: grid;
   place-items: center;
+  font-size: 1.5rem;
   flex-shrink: 0;
 }
 
@@ -428,7 +434,8 @@
 }
 
 .podiumCrown {
-  margin-bottom: 10px;
+  font-size: 1.4rem;
+  margin-bottom: 4px;
 }
 
 .avatarWrap {
@@ -652,8 +659,14 @@
 }
 
 .personalRankIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border: 1px solid var(--accent);
   display: grid;
   place-items: center;
+  font-size: 1.25rem;
   flex-shrink: 0;
 }
 
