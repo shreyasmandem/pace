@@ -50,6 +50,13 @@ const ProblemRow = forwardRef<HTMLDivElement, ProblemRowProps>(function ProblemR
     }
   };
 
+  const primaryLink =
+    problem.links?.leetcode ||
+    problem.links?.practice ||
+    problem.links?.gfg ||
+    problem.links?.codestudio ||
+    problem.links?.article;
+
   return (
     <div ref={ref} className={`${styles.row} ${highlighted ? styles.highlighted : ''}`}>
       <button
@@ -68,34 +75,52 @@ const ProblemRow = forwardRef<HTMLDivElement, ProblemRowProps>(function ProblemR
         )}
       </button>
 
-      <span className={styles.index}>{String(index + 1).padStart(2, '0')}</span>
+      <span className={`${styles.index} mono`}>{String(index + 1).padStart(2, '0')}</span>
 
-      <span className={`${styles.title} ${solved ? styles.titleSolved : ''}`}>{problem.title}</span>
+      <div className={styles.titleCol}>
+        {primaryLink ? (
+          <a
+            href={primaryLink}
+            target="_blank"
+            rel="noreferrer"
+            className={`${styles.titleLink} ${solved ? styles.titleSolved : ''}`}
+            title={problem.title}
+          >
+            {problem.title}
+          </a>
+        ) : (
+          <span className={`${styles.titleLink} ${solved ? styles.titleSolved : ''}`} title={problem.title}>
+            {problem.title}
+          </span>
+        )}
+      </div>
 
       <span className={`${styles.difficulty} ${DIFFICULTY_CLASS[problem.difficulty] ?? styles.practice}`}>
         {problem.difficulty}
       </span>
 
-      <ResourceLinks links={problem.links} />
+      <div className={styles.actions}>
+        <ResourceLinks links={problem.links} />
 
-      <button
-        className={`${styles.iconButton} ${styles.tutorBtn} ${hasChat || hasNote ? styles.tutorActive : ''}`}
-        onClick={handleTutorClick}
-        aria-label="Ask Pacer"
-        title="Ask Pacer"
-      >
-        <Sparkles size={13} />
-      </button>
+        <button
+          className={`${styles.iconButton} ${styles.tutorBtn} ${hasChat || hasNote ? styles.tutorActive : ''}`}
+          onClick={handleTutorClick}
+          aria-label="Ask Pacer"
+          title="Ask Pacer"
+        >
+          <Sparkles size={13} />
+        </button>
 
-      <button
-        className={`${styles.iconButton} ${bookmarked ? styles.iconActive : ''}`}
-        onClick={() => toggleBookmark(problem.id)}
-        aria-pressed={bookmarked}
-        aria-label="Bookmark"
-        title="Bookmark"
-      >
-        <Bookmark size={14} fill={bookmarked ? 'currentColor' : 'none'} />
-      </button>
+        <button
+          className={`${styles.iconButton} ${bookmarked ? styles.iconActive : ''}`}
+          onClick={() => toggleBookmark(problem.id)}
+          aria-pressed={bookmarked}
+          aria-label="Bookmark"
+          title="Bookmark"
+        >
+          <Bookmark size={14} fill={bookmarked ? 'currentColor' : 'none'} />
+        </button>
+      </div>
     </div>
   );
 });

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ChevronRight, Flag, PlayCircle, Sparkles } from 'lucide-react';
+import { ChevronRight, Flag } from 'lucide-react';
 import type { Problem, TopicGroup } from '../types';
 import { usePaceStore } from '../state/store';
 import ProblemRow from './ProblemRow';
@@ -63,20 +63,6 @@ export default function TopicSection({
     }
   }, [highlightId, group.problems]);
 
-  const handleOpenTutorForTopic = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onOpenTutor) {
-      onOpenTutor({
-        topicId: group.id,
-        topicTitle: group.title,
-        problems: group.problems,
-        currentProblem: null,
-      });
-    } else if (onOpenNotes && group.problems[0]) {
-      onOpenNotes(group.problems[0].id);
-    }
-  };
-
   return (
     <section className={styles.section}>
       <div
@@ -100,27 +86,6 @@ export default function TopicSection({
             <span className={`${styles.note} ${open ? styles.noteVisible : ''}`}>{note}</span>
           )}
         </span>
-        <button
-          className={styles.tutorBtn}
-          onClick={handleOpenTutorForTopic}
-          title={`Ask Pacer about ${group.title}`}
-          aria-label={`Ask Pacer about ${group.title}`}
-        >
-          <Sparkles size={13} className={styles.tutorSparkle} />
-          <span>Pacer</span>
-        </button>
-        {group.videoUrl && (
-          <a
-            href={group.videoUrl}
-            target="_blank"
-            rel="noreferrer"
-            className={styles.videoLink}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <PlayCircle size={13} />
-            Lecture
-          </a>
-        )}
         {complete ? (
           <span className={`${styles.cleared} ${justCleared ? styles.clearedStamp : ''}`}>
             <Flag size={12} />
@@ -137,28 +102,37 @@ export default function TopicSection({
       <div className={`${styles.accordionWrapper} ${open ? styles.accordionWrapperOpen : ''}`}>
         <div className={styles.accordionContent}>
           <div className={styles.problems}>
-            {group.problems.map((p, i) => (
-              <ProblemRow
-                key={p.id}
-                problem={p}
-                index={i}
-                ref={p.id === highlightId ? highlightRef : undefined}
-                highlighted={p.id === highlightId}
-                onOpenNotes={onOpenNotes}
-                onOpenTutor={() => {
-                  if (onOpenTutor) {
-                    onOpenTutor({
-                      topicId: group.id,
-                      topicTitle: group.title,
-                      problems: group.problems,
-                      currentProblem: p,
-                    });
-                  } else if (onOpenNotes) {
-                    onOpenNotes(p.id);
-                  }
-                }}
-              />
-            ))}
+            <div className={styles.table}>
+              <div className={styles.tableHeader}>
+                <span className={styles.thCheck} />
+                <span className={styles.thIndex}>#</span>
+                <span className={styles.thTitle}>Problem Title</span>
+                <span className={styles.thDiff}>Difficulty</span>
+                <span className={styles.thActions}>Links</span>
+              </div>
+              {group.problems.map((p, i) => (
+                <ProblemRow
+                  key={p.id}
+                  problem={p}
+                  index={i}
+                  ref={p.id === highlightId ? highlightRef : undefined}
+                  highlighted={p.id === highlightId}
+                  onOpenNotes={onOpenNotes}
+                  onOpenTutor={() => {
+                    if (onOpenTutor) {
+                      onOpenTutor({
+                        topicId: group.id,
+                        topicTitle: group.title,
+                        problems: group.problems,
+                        currentProblem: p,
+                      });
+                    } else if (onOpenNotes) {
+                      onOpenNotes(p.id);
+                    }
+                  }}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
