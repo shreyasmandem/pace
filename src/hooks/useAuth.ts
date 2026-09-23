@@ -13,9 +13,26 @@ function getCachedUser(): Partial<User> | null {
   return null;
 }
 
+const profileListeners = new Set<() => void>();
+
+export function notifyProfileUpdated() {
+  profileListeners.forEach((fn) => fn());
+}
+
 export function useAuthUser() {
   const [user, setUser] = useState<User | null>(() => (auth?.currentUser as User) ?? (getCachedUser() as User) ?? null);
   const [loading, setLoading] = useState(Boolean(auth && !auth.currentUser && !getCachedUser()));
+
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      const currentUser = (auth?.currentUser as User) ?? (getCachedUser() as User) ?? null;
+      setUser(currentUser ? { ...currentUser } : null);
+    };
+    profileListeners.add(handleProfileUpdate);
+    return () => {
+      profileListeners.delete(handleProfileUpdate);
+    };
+  }, []);
 
   useEffect(() => {
     if (!auth) {

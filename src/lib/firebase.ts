@@ -83,3 +83,18 @@ export function signOut() {
   return firebaseSignOut(auth);
 }
 
+export async function updateUserDisplayName(newDisplayName: string) {
+  if (!auth?.currentUser) throw new Error('Not authenticated');
+  await updateProfile(auth.currentUser, { displayName: newDisplayName });
+  try {
+    const cached = localStorage.getItem('pace_cached_auth_user');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      parsed.displayName = newDisplayName;
+      localStorage.setItem('pace_cached_auth_user', JSON.stringify(parsed));
+    }
+  } catch {
+    // ignore
+  }
+}
+

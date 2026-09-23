@@ -186,6 +186,39 @@ export async function publishToLeaderboard(
   }
 }
 
+export async function updateLeaderboardDisplayName(
+  uid: string,
+  displayName: string
+): Promise<boolean> {
+  if (!db || !uid) return false;
+  try {
+    await setDoc(
+      doc(db, 'leaderboard', uid),
+      {
+        displayName,
+        updatedAt: Date.now(),
+      },
+      { merge: true }
+    );
+    try {
+      await setDoc(
+        doc(db, 'users', uid),
+        {
+          displayName,
+          updatedAt: Date.now(),
+        },
+        { merge: true }
+      );
+    } catch {
+      // ignore
+    }
+    return true;
+  } catch (err: any) {
+    console.warn('Could not update display name in leaderboard collection:', err);
+    return false;
+  }
+}
+
 function processLeaderboardSnap(
   snapDocs: { id: string; data: () => Record<string, any> }[],
   sortBy: 'solvedCount' | 'streak' | 'weeklyCount',
