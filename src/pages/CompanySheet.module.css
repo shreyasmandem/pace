@@ -68,8 +68,10 @@
 .comboboxDropdown {
   position: absolute;
   top: calc(100% + 6px);
-  left: 0;
-  width: 340px;
+  right: 0;
+  left: auto;
+  width: 320px;
+  max-width: calc(100vw - 32px);
   max-height: 380px;
   background: var(--surface);
   border: 1px solid var(--border-strong);
@@ -80,7 +82,7 @@
   flex-direction: column;
   overflow: hidden;
   animation: dropdownSlide 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-  transform-origin: top left;
+  transform-origin: top right;
 }
 
 @keyframes dropdownSlide {
@@ -110,6 +112,7 @@
 
 .dropdownSearch {
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   position: relative;
@@ -124,6 +127,7 @@
 
 .dropdownSearch input {
   width: 100%;
+  min-width: 0;
   height: 34px;
   padding: 0 28px 0 32px;
   border-radius: var(--radius-sm);
@@ -132,11 +136,15 @@
   color: var(--text-primary);
   font-size: 0.84rem;
   outline: none;
+  box-shadow: none;
   transition: border-color 0.15s ease;
 }
 
-.dropdownSearch input:focus {
+.dropdownSearch input:focus,
+.dropdownSearch input:focus-visible {
   border-color: var(--accent);
+  outline: none;
+  box-shadow: none;
 }
 
 .dropdownClearBtn {
@@ -425,8 +433,15 @@
   background: none;
   border: 0;
   outline: 0;
+  box-shadow: none;
   color: var(--text-primary);
   font-size: 0.85rem;
+}
+
+.search input:focus,
+.search input:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 .search input::placeholder {
