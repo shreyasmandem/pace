@@ -19,7 +19,7 @@ service cloud.firestore {
     // System broadcast announcements & configuration
     match /system/{docId} {
       allow read: if true;
-      allow write, delete: if isAdmin();
+      allow write, delete: if request.auth != null;
     }
   }
 }

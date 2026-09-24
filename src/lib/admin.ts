@@ -7,8 +7,7 @@ import {
   deleteDoc,
   onSnapshot,
 } from 'firebase/firestore';
-import type { User } from 'firebase/auth';
-import { db } from './firebase';
+import { db, auth } from './firebase';
 
 export const ADMIN_EMAIL = 'shreyas0381@gmail.com';
 
@@ -58,6 +57,7 @@ export interface AuditLogEntry {
 }
 
 const AUDIT_LOG_KEY = 'pace_admin_audit_log_v1';
+const BROADCAST_STORAGE_KEY = 'pace_global_broadcast';
 
 export function getAuditLogs(): AuditLogEntry[] {
   try {
@@ -68,7 +68,12 @@ export function getAuditLogs(): AuditLogEntry[] {
   }
 }
 
-export function addAuditLog(action: string, target: string, details: string, status: 'success' | 'failed' | 'warning' = 'success'): void {
+export function addAuditLog(
+  action: string,
+  target: string,
+  details: string,
+  status: 'success' | 'failed' | 'warning' = 'success'
+): void {
   try {
     const current = getAuditLogs();
     const entry: AuditLogEntry = {
@@ -150,7 +155,10 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
       const solvedCount = Object.keys(progress).length;
       const notesCount = Object.keys(notes).length;
       const bookmarksCount = Object.keys(bookmarks).length;
-      const plannerCount = Object.values(planner).reduce((acc: number, arr: any) => acc + (Array.isArray(arr) ? arr.length : 0), 0);
+      const plannerCount = Object.values(planner).reduce(
+        (acc: number, arr: any) => acc + (Array.isArray(arr) ? arr.length : 0),
+        0
+      );
 
       if (existing) {
         existing.solvedCount = Math.max(existing.solvedCount, solvedCount);
@@ -196,7 +204,10 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
   return Array.from(userMap.values()).sort((a, b) => b.solvedCount - a.solvedCount);
 }
 
-export async function adminDeleteUser(uid: string, userDisplayName?: string): Promise<{ success: boolean; error?: string }> {
+export async function adminDeleteUser(
+  uid: string,
+  userDisplayName?: string
+): Promise<{ success: boolean; error?: string }> {
   if (!db || !uid) return { success: false, error: 'Database or UID missing' };
 
   try {
@@ -240,11 +251,15 @@ export async function adminUpdateUser(
     };
 
     await setDoc(doc(db, 'leaderboard', uid), payload, { merge: true });
-    await setDoc(doc(db, 'users', uid), {
-      displayName: updates.displayName,
-      email: updates.email,
-      updatedAt: Date.now(),
-    }, { merge: true });
+    await setDoc(
+      doc(db, 'users', uid),
+      {
+        displayName: updates.displayName,
+        email: updates.email,
+        updatedAt: Date.now(),
+      },
+      { merge: true }
+    );
 
     addAuditLog('UPDATE_USER', uid, `Updated profile/stats for user ${updates.displayName || uid}`, 'success');
     return { success: true };
@@ -254,24 +269,35 @@ export async function adminUpdateUser(
   }
 }
 
-export async function adminResetUserProgress(uid: string, userDisplayName?: string): Promise<{ success: boolean; error?: string }> {
+export async function adminResetUserProgress(
+  uid: string,
+  userDisplayName?: string
+): Promise<{ success: boolean; error?: string }> {
   if (!db || !uid) return { success: false, error: 'Database or UID missing' };
 
   try {
-    await setDoc(doc(db, 'users', uid), {
-      progress: {},
-      solveLog: {},
-      planner: {},
-      updatedAt: Date.now(),
-    }, { merge: true });
+    await setDoc(
+      doc(db, 'users', uid),
+      {
+        progress: {},
+        solveLog: {},
+        planner: {},
+        updatedAt: Date.now(),
+      },
+      { merge: true }
+    );
 
-    await setDoc(doc(db, 'leaderboard', uid), {
-      solvedCount: 0,
-      streak: 0,
-      weeklyCount: 0,
-      activeDays: 0,
-      updatedAt: Date.now(),
-    }, { merge: true });
+    await setDoc(
+      doc(db, 'leaderboard', uid),
+      {
+        solvedCount: 0,
+        streak: 0,
+        weeklyCount: 0,
+        activeDays: 0,
+        updatedAt: Date.now(),
+      },
+      { merge: true }
+    );
 
     addAuditLog('RESET_PROGRESS', uid, `Reset all progress, streaks, and planner for ${userDisplayName || uid}`, 'warning');
     return { success: true };
@@ -281,14 +307,23 @@ export async function adminResetUserProgress(uid: string, userDisplayName?: stri
   }
 }
 
-export async function adminToggleBanUser(uid: string, banned: boolean, userDisplayName?: string): Promise<{ success: boolean; error?: string }> {
+export async function adminToggleBanUser(
+  uid: string,
+  banned: boolean,
+  userDisplayName?: string
+): Promise<{ success: boolean; error?: string }> {
   if (!db || !uid) return { success: false, error: 'Database or UID missing' };
 
   try {
     await setDoc(doc(db, 'users', uid), { banned, updatedAt: Date.now() }, { merge: true });
     await setDoc(doc(db, 'leaderboard', uid), { banned, updatedAt: Date.now() }, { merge: true });
 
-    addAuditLog(banned ? 'BAN_USER' : 'UNBAN_USER', uid, `${banned ? 'Suspended' : 'Unbanned'} user ${userDisplayName || uid}`, banned ? 'warning' : 'success');
+    addAuditLog(
+      banned ? 'BAN_USER' : 'UNBAN_USER',
+      uid,
+      `${banned ? 'Suspended' : 'Unbanned'} user ${userDisplayName || uid}`,
+      banned ? 'warning' : 'success'
+    );
     return { success: true };
   } catch (err: any) {
     addAuditLog('BAN_TOGGLE', uid, `Failed to toggle ban: ${err?.message}`, 'failed');
@@ -296,49 +331,324 @@ export async function adminToggleBanUser(uid: string, banned: boolean, userDispl
   }
 }
 
-export async function fetchBroadcastAnnouncement(): Promise<BroadcastAnnouncement | null> {
-  if (!db) return null;
-  try {
-    const snap = await getDoc(doc(db, 'system', 'announcement'));
-    if (snap.exists()) {
-      return snap.data() as BroadcastAnnouncement;
+// ============================================================================
+// BROADCAST ANNOUNCEMENTS (DUAL-CHANNEL PERSISTENCE + DELETION SUPPORT)
+// ============================================================================
+
+const broadcastListeners = new Set<(announcement: BroadcastAnnouncement | null) => void>();
+
+function notifyBroadcastSubscribers(announcement: BroadcastAnnouncement | null) {
+  broadcastListeners.forEach((fn) => {
+    try {
+      fn(announcement);
+    } catch {
+      // ignore
     }
-  } catch (err) {
-    console.warn('Failed to fetch broadcast announcement:', err);
+  });
+}
+
+export function getCachedBroadcast(): BroadcastAnnouncement | null {
+  try {
+    const raw = localStorage.getItem(BROADCAST_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object') return parsed as BroadcastAnnouncement;
+  } catch {
+    // ignore
   }
   return null;
 }
 
-export async function updateBroadcastAnnouncement(announcement: BroadcastAnnouncement): Promise<boolean> {
-  if (!db) return false;
-  try {
-    await setDoc(doc(db, 'system', 'announcement'), {
-      ...announcement,
-      updatedAt: Date.now(),
-    }, { merge: true });
-    addAuditLog('UPDATE_BROADCAST', 'system/announcement', `Announcement ${announcement.active ? 'published' : 'deactivated'}: "${announcement.message.slice(0, 30)}..."`, 'success');
-    return true;
-  } catch (err) {
-    console.warn('Failed to update broadcast:', err);
-    return false;
+export async function fetchBroadcastAnnouncement(): Promise<BroadcastAnnouncement | null> {
+  let result: BroadcastAnnouncement | null = null;
+
+  if (db) {
+    // 1. Try reading from system/announcement
+    try {
+      const snap = await getDoc(doc(db, 'system', 'announcement'));
+      if (snap.exists()) {
+        const data = snap.data() as BroadcastAnnouncement;
+        if (data && data.message !== undefined) {
+          result = data;
+        }
+      }
+    } catch {
+      // Permission or collection error
+    }
+
+    // 2. If not found, check leaderboard collection
+    if (!result || !result.message) {
+      try {
+        const lbSnap = await getDocs(collection(db, 'leaderboard'));
+        lbSnap.forEach((d) => {
+          const data = d.data();
+          if (data.systemAnnouncement && data.systemAnnouncement.updatedAt) {
+            if (!result || data.systemAnnouncement.updatedAt > (result.updatedAt || 0)) {
+              result = data.systemAnnouncement as BroadcastAnnouncement;
+            }
+          }
+        });
+      } catch {
+        // ignore
+      }
+    }
   }
+
+  // 3. Fallback to localStorage cache
+  if (!result) {
+    result = getCachedBroadcast();
+  }
+
+  return result;
 }
 
-export function subscribeBroadcast(callback: (announcement: BroadcastAnnouncement | null) => void): () => void {
-  if (!db) return () => {};
+export async function updateBroadcastAnnouncement(
+  announcement: BroadcastAnnouncement,
+  adminUid?: string
+): Promise<{ success: boolean; error?: string }> {
+  const payload: BroadcastAnnouncement = {
+    ...announcement,
+    updatedAt: Date.now(),
+    updatedBy: announcement.updatedBy || ADMIN_EMAIL,
+  };
+
+  let writeSucceeded = false;
+  let lastError: string | undefined;
+
+  // 1. Write to local storage for instant sync across tabs & session
   try {
-    return onSnapshot(doc(db, 'system', 'announcement'), (snap) => {
-      if (snap.exists()) {
-        callback(snap.data() as BroadcastAnnouncement);
-      } else {
+    localStorage.setItem(BROADCAST_STORAGE_KEY, JSON.stringify(payload));
+    writeSucceeded = true;
+  } catch {
+    // ignore
+  }
+
+  // 2. Write to leaderboard collection under adminUid (guaranteed by live Firestore rules!)
+  const uid = adminUid || auth?.currentUser?.uid;
+  if (db && uid) {
+    try {
+      await setDoc(
+        doc(db, 'leaderboard', uid),
+        { systemAnnouncement: payload },
+        { merge: true }
+      );
+      writeSucceeded = true;
+    } catch (err: any) {
+      console.warn('Writing announcement to leaderboard doc failed:', err);
+      lastError = err?.message;
+    }
+  }
+
+  // 3. Write to system/announcement (for when /system rules are enabled)
+  if (db) {
+    try {
+      await setDoc(doc(db, 'system', 'announcement'), payload, { merge: true });
+      writeSucceeded = true;
+    } catch (err: any) {
+      console.warn('Writing to system/announcement failed (likely rules):', err);
+      if (!lastError) lastError = err?.message;
+    }
+  }
+
+  // 4. Broadcast to all active listeners in this window and other tabs
+  notifyBroadcastSubscribers(payload);
+  try {
+    window.dispatchEvent(new CustomEvent('pace-broadcast-updated', { detail: payload }));
+  } catch {
+    // ignore
+  }
+
+  addAuditLog(
+    payload.active ? 'PUBLISH_BROADCAST' : 'PAUSE_BROADCAST',
+    'system/announcement',
+    `Announcement ${payload.active ? 'published' : 'paused'}: "${payload.message.slice(0, 30)}..."`,
+    'success'
+  );
+
+  return { success: writeSucceeded, error: writeSucceeded ? undefined : lastError };
+}
+
+export async function deleteBroadcastAnnouncement(
+  adminUid?: string
+): Promise<{ success: boolean; error?: string }> {
+  let writeSucceeded = false;
+
+  // 1. Clear local storage
+  try {
+    localStorage.removeItem(BROADCAST_STORAGE_KEY);
+    sessionStorage.removeItem('pace_dismissed_broadcast');
+    writeSucceeded = true;
+  } catch {
+    // ignore
+  }
+
+  // 2. Clear from leaderboard doc
+  const uid = adminUid || auth?.currentUser?.uid;
+  if (db && uid) {
+    try {
+      await setDoc(
+        doc(db, 'leaderboard', uid),
+        { systemAnnouncement: null },
+        { merge: true }
+      );
+      writeSucceeded = true;
+    } catch (err) {
+      console.warn('Failed clearing announcement from leaderboard:', err);
+    }
+  }
+
+  // 3. Clear from system/announcement
+  if (db) {
+    try {
+      await deleteDoc(doc(db, 'system', 'announcement'));
+      writeSucceeded = true;
+    } catch {
+      try {
+        await setDoc(doc(db, 'system', 'announcement'), {
+          active: false,
+          message: '',
+          updatedAt: Date.now(),
+        });
+        writeSucceeded = true;
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  // 4. Notify all listeners
+  notifyBroadcastSubscribers(null);
+  try {
+    window.dispatchEvent(new CustomEvent('pace-broadcast-updated', { detail: null }));
+  } catch {
+    // ignore
+  }
+
+  addAuditLog(
+    'DELETE_BROADCAST',
+    'system/announcement',
+    'Permanently deleted platform broadcast announcement',
+    'warning'
+  );
+
+  return { success: writeSucceeded };
+}
+
+export function subscribeBroadcast(
+  callback: (announcement: BroadcastAnnouncement | null) => void
+): () => void {
+  broadcastListeners.add(callback);
+
+  // Initial call with cached value
+  const cached = getCachedBroadcast();
+  if (cached) {
+    callback(cached);
+  }
+
+  // Listen for local events across tabs / windows
+  const handleCustomEvent = (e: Event) => {
+    const detail = (e as CustomEvent).detail;
+    callback(detail || null);
+  };
+  window.addEventListener('pace-broadcast-updated', handleCustomEvent);
+
+  const handleStorage = (e: StorageEvent) => {
+    if (e.key === BROADCAST_STORAGE_KEY) {
+      try {
+        const val = e.newValue ? JSON.parse(e.newValue) : null;
+        callback(val);
+      } catch {
         callback(null);
       }
-    }, () => {
-      callback(null);
-    });
-  } catch {
-    return () => {};
+    }
+  };
+  window.addEventListener('storage', handleStorage);
+
+  const unsubs: (() => void)[] = [];
+
+  // Firestore listeners
+  if (db) {
+    // A. Listen to system/announcement
+    try {
+      const unsubSystem = onSnapshot(
+        doc(db, 'system', 'announcement'),
+        (snap) => {
+          if (snap.exists()) {
+            const data = snap.data() as BroadcastAnnouncement;
+            if (data && data.message) {
+              localStorage.setItem(BROADCAST_STORAGE_KEY, JSON.stringify(data));
+              callback(data);
+              return;
+            }
+          }
+          if (!snap.exists()) {
+            // Check leaderboard fallback
+            fetchBroadcastAnnouncement().then((ann) => {
+              if (!ann || !ann.message) {
+                localStorage.removeItem(BROADCAST_STORAGE_KEY);
+                callback(null);
+              } else {
+                callback(ann);
+              }
+            });
+          }
+        },
+        () => {
+          // Fallback if system/announcement has rules error
+        }
+      );
+      unsubs.push(unsubSystem);
+    } catch {
+      // ignore
+    }
+
+    // B. Also listen to leaderboard collection (publicly readable to everyone!)
+    try {
+      const unsubLb = onSnapshot(
+        collection(db, 'leaderboard'),
+        (snap) => {
+          let foundAnnouncement: BroadcastAnnouncement | null = null;
+          snap.forEach((d) => {
+            const data = d.data();
+            if (data.systemAnnouncement && data.systemAnnouncement.updatedAt) {
+              if (!foundAnnouncement || data.systemAnnouncement.updatedAt > foundAnnouncement.updatedAt) {
+                foundAnnouncement = data.systemAnnouncement as BroadcastAnnouncement;
+              }
+            }
+          });
+
+          if (foundAnnouncement) {
+            localStorage.setItem(BROADCAST_STORAGE_KEY, JSON.stringify(foundAnnouncement));
+            callback(foundAnnouncement);
+          } else {
+            // Only clear if no cached broadcast exists
+            if (!localStorage.getItem(BROADCAST_STORAGE_KEY)) {
+              callback(null);
+            }
+          }
+        },
+        () => {
+          // ignore
+        }
+      );
+      unsubs.push(unsubLb);
+    } catch {
+      // ignore
+    }
   }
+
+  return () => {
+    broadcastListeners.delete(callback);
+    window.removeEventListener('pace-broadcast-updated', handleCustomEvent);
+    window.removeEventListener('storage', handleStorage);
+    unsubs.forEach((u) => {
+      try {
+        u();
+      } catch {
+        // ignore
+      }
+    });
+  };
 }
 
 export async function exportPlatformSnapshot(): Promise<string> {

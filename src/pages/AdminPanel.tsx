@@ -37,6 +37,7 @@ import {
   adminToggleBanUser,
   fetchBroadcastAnnouncement,
   updateBroadcastAnnouncement,
+  deleteBroadcastAnnouncement,
   exportPlatformSnapshot,
   getAuditLogs,
   clearAuditLogs,
@@ -87,6 +88,7 @@ export default function AdminPanel() {
     updatedAt: Date.now(),
     updatedBy: ADMIN_EMAIL,
   });
+  const [deleteAlertModalOpen, setDeleteAlertModalOpen] = useState(false);
 
   // Audit logs state
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
@@ -201,12 +203,38 @@ export default function AdminPanel() {
   };
 
   // Save Broadcast Announcement
-  const handleSaveBroadcast = async () => {
-    const success = await updateBroadcastAnnouncement(broadcast);
-    if (success) {
-      showToast(broadcast.active ? 'Broadcast announcement published' : 'Broadcast deactivated');
+  const handleSaveBroadcast = async (customPayload?: BroadcastAnnouncement) => {
+    const target = customPayload || broadcast;
+    if (target.active && (!target.message || !target.message.trim())) {
+      showToast('Please enter an announcement message first');
+      return;
+    }
+    const res = await updateBroadcastAnnouncement(target, user?.uid);
+    if (res.success) {
+      setBroadcast({ ...target });
+      showToast(target.active ? '🚀 Announcement published live to all users!' : '⏸️ Announcement paused / deactivated');
     } else {
-      showToast('Failed to update announcement');
+      showToast(res.error || 'Failed to update announcement');
+    }
+  };
+
+  // Delete Broadcast Alert
+  const handleDeleteBroadcast = async () => {
+    const res = await deleteBroadcastAnnouncement(user?.uid);
+    if (res.success) {
+      setBroadcast({
+        active: false,
+        message: '',
+        type: 'info',
+        link: '',
+        linkText: '',
+        updatedAt: Date.now(),
+        updatedBy: ADMIN_EMAIL,
+      });
+      setDeleteAlertModalOpen(false);
+      showToast('🗑️ Announcement permanently deleted from platform');
+    } else {
+      showToast(res.error || 'Failed to delete announcement');
     }
   };
 
@@ -694,148 +722,239 @@ export default function AdminPanel() {
 
       {/* TAB 2: BROADCAST BANNER */}
       {activeTab === 'broadcast' && (
-        <div className={styles.broadcastCard}>
-          <div>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: 4 }}>
-              Global Platform Broadcast Announcement
-            </h2>
-            <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)' }}>
-              Broadcast real-time announcements, maintenance notices, and milestone alerts to all Pace users.
-            </p>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label className={styles.formLabel}>Banner Visibility</label>
-            <div className={styles.radioRow}>
-              <label className={styles.radioOption}>
-                <input
-                  type="radio"
-                  name="broadcastActive"
-                  checked={broadcast.active}
-                  onChange={() => setBroadcast((b) => ({ ...b, active: true }))}
-                />
-                <span style={{ fontWeight: 600, color: 'var(--difficulty-easy)' }}>
-                  Active (Displayed to all users)
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* Live Active Alert Status Card */}
+          {broadcast.message && broadcast.message.trim() && (
+            <div className={styles.liveAlertCard}>
+              <div className={styles.liveAlertHeader}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Radio size={18} color={broadcast.active ? 'var(--difficulty-easy)' : 'var(--text-tertiary)'} />
+                  <span style={{ fontWeight: 700, fontSize: '1rem' }}>Current Platform Alert</span>
+                  {broadcast.active ? (
+                    <span className={styles.liveBadgeActive}>● LIVE ON SITE</span>
+                  ) : (
+                    <span className={styles.liveBadgeInactive}>○ INACTIVE / PAUSED</span>
+                  )}
+                </div>
+                <span style={{ fontSize: '0.74rem', color: 'var(--text-tertiary)' }}>
+                  Last updated: {new Date(broadcast.updatedAt).toLocaleTimeString()} •{' '}
+                  {new Date(broadcast.updatedAt).toLocaleDateString()}
                 </span>
-              </label>
-              <label className={styles.radioOption}>
-                <input
-                  type="radio"
-                  name="broadcastActive"
-                  checked={!broadcast.active}
-                  onChange={() => setBroadcast((b) => ({ ...b, active: false }))}
-                />
-                <span style={{ color: 'var(--text-tertiary)' }}>Deactivated / Standby</span>
-              </label>
+              </div>
+
+              <div
+                className={styles.liveAlertBody}
+                style={{
+                  borderLeftColor:
+                    broadcast.type === 'warning'
+                      ? '#f59e0b'
+                      : broadcast.type === 'alert'
+                      ? '#ef4444'
+                      : broadcast.type === 'success'
+                      ? '#10b981'
+                      : '#3b82f6',
+                }}
+              >
+                <div>{broadcast.message}</div>
+                {broadcast.link && (
+                  <div style={{ marginTop: 6, fontSize: '0.82rem', textDecoration: 'underline' }}>
+                    {broadcast.linkText || 'Link: ' + broadcast.link} ↗
+                  </div>
+                )}
+              </div>
+
+              <div className={styles.liveAlertActions}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <button
+                    type="button"
+                    className={styles.deleteAlertBtn}
+                    onClick={() => setDeleteAlertModalOpen(true)}
+                    title="Permanently delete this alert"
+                  >
+                    <Trash2 size={14} />
+                    <span>Delete Alert</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={styles.actionBtn}
+                    onClick={() => {
+                      const next = { ...broadcast, active: !broadcast.active };
+                      handleSaveBroadcast(next);
+                    }}
+                  >
+                    {broadcast.active ? 'Pause / Hide Banner' : 'Reactivate Banner'}
+                  </button>
+                </div>
+
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)' }}>
+                  Theme style: <strong style={{ textTransform: 'capitalize' }}>{broadcast.type}</strong>
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className={styles.formGroup}>
-            <label className={styles.formLabel}>Announcement Message</label>
-            <textarea
-              className={styles.formTextarea}
-              placeholder="e.g., 🚀 NeetCode 250 curriculum is now live! Register in settings to start preparing."
-              value={broadcast.message}
-              onChange={(e) => setBroadcast((b) => ({ ...b, message: e.target.value }))}
-            />
-          </div>
+          {/* Alert Composer */}
+          <div className={styles.broadcastCard}>
+            <div>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: 4 }}>
+                {broadcast.message ? 'Edit Platform Announcement' : 'Compose Platform Announcement'}
+              </h2>
+              <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)' }}>
+                Publish real-time announcements, maintenance notices, and milestone alerts displayed at the top of Pace for all users.
+              </p>
+            </div>
 
-          <div className={styles.formGroup}>
-            <label className={styles.formLabel}>Banner Theme Style</label>
-            <div className={styles.radioRow}>
-              {(['info', 'warning', 'alert', 'success'] as const).map((t) => (
-                <label key={t} className={styles.radioOption}>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Banner Visibility</label>
+              <div className={styles.radioRow}>
+                <label className={styles.radioOption}>
                   <input
                     type="radio"
-                    name="broadcastType"
-                    checked={broadcast.type === t}
-                    onChange={() => setBroadcast((b) => ({ ...b, type: t }))}
+                    name="broadcastActive"
+                    checked={broadcast.active}
+                    onChange={() => setBroadcast((b) => ({ ...b, active: true }))}
                   />
-                  <span style={{ textTransform: 'capitalize' }}>{t}</span>
+                  <span style={{ fontWeight: 600, color: 'var(--difficulty-easy)' }}>
+                    Active (Displayed immediately to all users)
+                  </span>
                 </label>
-              ))}
+                <label className={styles.radioOption}>
+                  <input
+                    type="radio"
+                    name="broadcastActive"
+                    checked={!broadcast.active}
+                    onChange={() => setBroadcast((b) => ({ ...b, active: false }))}
+                  />
+                  <span style={{ color: 'var(--text-tertiary)' }}>Deactivated / Standby</span>
+                </label>
+              </div>
             </div>
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Action Link URL (Optional)</label>
-              <input
-                type="text"
-                className={styles.formInput}
-                placeholder="e.g., /companies or https://github.com..."
-                value={broadcast.link || ''}
-                onChange={(e) => setBroadcast((b) => ({ ...b, link: e.target.value }))}
+              <label className={styles.formLabel}>Announcement Message</label>
+              <textarea
+                className={styles.formTextarea}
+                placeholder="e.g., 🚀 NeetCode 250 curriculum is now live! Register in settings to start preparing."
+                value={broadcast.message}
+                onChange={(e) => setBroadcast((b) => ({ ...b, message: e.target.value }))}
               />
             </div>
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Action Button Text</label>
-              <input
-                type="text"
-                className={styles.formInput}
-                placeholder="e.g., Explore now →"
-                value={broadcast.linkText || ''}
-                onChange={(e) => setBroadcast((b) => ({ ...b, linkText: e.target.value }))}
-              />
-            </div>
-          </div>
 
-          {/* Live Preview Box */}
-          <div className={styles.previewBox}>
-            <div className={styles.previewLabel}>Live User Preview</div>
-            <div
-              style={{
-                padding: '10px 14px',
-                borderRadius: 'var(--radius-sm)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                fontSize: '0.85rem',
-                background:
-                  broadcast.type === 'warning'
-                    ? 'rgba(245, 158, 11, 0.15)'
-                    : broadcast.type === 'alert'
-                    ? 'rgba(239, 68, 68, 0.15)'
-                    : broadcast.type === 'success'
-                    ? 'rgba(16, 185, 129, 0.15)'
-                    : 'rgba(59, 130, 246, 0.15)',
-                color:
-                  broadcast.type === 'warning'
-                    ? '#fcd34d'
-                    : broadcast.type === 'alert'
-                    ? '#fca5a5'
-                    : broadcast.type === 'success'
-                    ? '#6ee7b7'
-                    : '#93c5fd',
-              }}
-            >
-              <span>{broadcast.message || 'No announcement message specified yet.'}</span>
-              {broadcast.link && (
-                <span style={{ textDecoration: 'underline', fontWeight: 600 }}>
-                  {broadcast.linkText || 'Learn more →'}
-                </span>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Banner Theme Style</label>
+              <div className={styles.radioRow}>
+                {(['info', 'warning', 'alert', 'success'] as const).map((t) => (
+                  <label key={t} className={styles.radioOption}>
+                    <input
+                      type="radio"
+                      name="broadcastType"
+                      checked={broadcast.type === t}
+                      onChange={() => setBroadcast((b) => ({ ...b, type: t }))}
+                    />
+                    <span style={{ textTransform: 'capitalize' }}>{t}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Action Link URL (Optional)</label>
+                <input
+                  type="text"
+                  className={styles.formInput}
+                  placeholder="e.g., /companies or https://github.com..."
+                  value={broadcast.link || ''}
+                  onChange={(e) => setBroadcast((b) => ({ ...b, link: e.target.value }))}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Action Button Text</label>
+                <input
+                  type="text"
+                  className={styles.formInput}
+                  placeholder="e.g., Explore now →"
+                  value={broadcast.linkText || ''}
+                  onChange={(e) => setBroadcast((b) => ({ ...b, linkText: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            {/* Live Preview Box */}
+            <div className={styles.previewBox}>
+              <div className={styles.previewLabel}>Live User Preview</div>
+              <div
+                style={{
+                  padding: '10px 14px',
+                  borderRadius: 'var(--radius-sm)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  fontSize: '0.85rem',
+                  background:
+                    broadcast.type === 'warning'
+                      ? 'rgba(245, 158, 11, 0.15)'
+                      : broadcast.type === 'alert'
+                      ? 'rgba(239, 68, 68, 0.15)'
+                      : broadcast.type === 'success'
+                      ? 'rgba(16, 185, 129, 0.15)'
+                      : 'rgba(59, 130, 246, 0.15)',
+                  color:
+                    broadcast.type === 'warning'
+                      ? '#fcd34d'
+                      : broadcast.type === 'alert'
+                      ? '#fca5a5'
+                      : broadcast.type === 'success'
+                      ? '#6ee7b7'
+                      : '#93c5fd',
+                }}
+              >
+                <span>{broadcast.message || 'No announcement message entered yet.'}</span>
+                {broadcast.link && (
+                  <span style={{ textDecoration: 'underline', fontWeight: 600 }}>
+                    {broadcast.linkText || 'Learn more →'}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.broadcastActionsRow}>
+              {broadcast.message && broadcast.message.trim() && (
+                <button
+                  type="button"
+                  className={styles.deleteAlertBtn}
+                  onClick={() => setDeleteAlertModalOpen(true)}
+                  style={{ marginRight: 'auto' }}
+                >
+                  <Trash2 size={14} />
+                  <span>Delete Alert</span>
+                </button>
               )}
-            </div>
-          </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-            <button
-              type="button"
-              className={styles.actionBtn}
-              onClick={() => {
-                setBroadcast((b) => ({ ...b, active: false }));
-                handleSaveBroadcast();
-              }}
-            >
-              Deactivate Banner
-            </button>
-            <button
-              type="button"
-              className={`${styles.actionBtn} ${styles.actionBtnPrimary}`}
-              onClick={handleSaveBroadcast}
-            >
-              Publish Announcement
-            </button>
+              <button
+                type="button"
+                className={styles.actionBtn}
+                onClick={() => {
+                  const inactive = { ...broadcast, active: false };
+                  handleSaveBroadcast(inactive);
+                }}
+              >
+                Save as Inactive
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.actionBtn} ${styles.actionBtnPrimary}`}
+                onClick={() => {
+                  const activePayload = { ...broadcast, active: true };
+                  handleSaveBroadcast(activePayload);
+                }}
+              >
+                <Radio size={15} />
+                <span>Publish Live Alert</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1380,6 +1499,69 @@ export default function AdminPanel() {
                 onClick={handleConfirmReset}
               >
                 Confirm Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 5: DELETE BROADCAST ALERT CONFIRMATION */}
+      {deleteAlertModalOpen && (
+        <div className={styles.modalBackdrop} onClick={() => setDeleteAlertModalOpen(false)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <AlertTriangle size={20} color="#ef4444" />
+                <h3 className={styles.modalTitle} style={{ color: '#ef4444' }}>
+                  Delete Broadcast Alert
+                </h3>
+              </div>
+              <button
+                type="button"
+                className={styles.closeIconBtn}
+                onClick={() => setDeleteAlertModalOpen(false)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className={styles.modalBody}>
+              <p>
+                Are you sure you want to permanently delete this broadcast announcement?
+              </p>
+              {broadcast.message && (
+                <div
+                  style={{
+                    padding: '12px 14px',
+                    borderRadius: 'var(--radius-sm)',
+                    background: 'var(--surface-sunken)',
+                    borderLeft: '3px solid #ef4444',
+                    fontSize: '0.85rem',
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  "{broadcast.message}"
+                </div>
+              )}
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-tertiary)' }}>
+                This will immediately remove the alert banner from the top of the site for all users and wipe it from the database.
+              </p>
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button
+                type="button"
+                className={styles.cancelBtn}
+                onClick={() => setDeleteAlertModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.dangerBtn}
+                onClick={handleDeleteBroadcast}
+              >
+                Permanently Delete Alert
               </button>
             </div>
           </div>
