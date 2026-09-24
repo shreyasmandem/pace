@@ -226,10 +226,19 @@ function processLeaderboardSnap(
 ): LeaderboardEntry[] {
   const combinedMap = new Map<string, LeaderboardEntry>();
 
+  // Collect any deleted users from admin documents or deleted flags
+  const deletedUids = new Set<string>();
+  snapDocs.forEach((docSnap) => {
+    const data = docSnap.data();
+    if (Array.isArray(data.deletedUsers)) {
+      data.deletedUsers.forEach((id: string) => deletedUids.add(id));
+    }
+  });
+
   snapDocs.forEach((docSnap) => {
     const data = docSnap.data();
     const uid = data.uid || docSnap.id;
-    if (uid) {
+    if (uid && !deletedUids.has(uid) && !data.deleted) {
       combinedMap.set(uid, {
         uid,
         displayName: data.displayName || 'Pacer',
@@ -243,8 +252,8 @@ function processLeaderboardSnap(
     }
   });
 
-  // Always ensure current signed-in user is present with accurate local stats
-  if (currentUser && currentUser.uid) {
+  // Always ensure current signed-in user is present with accurate local stats (unless deleted)
+  if (currentUser && currentUser.uid && !deletedUids.has(currentUser.uid)) {
     const existing = combinedMap.get(currentUser.uid);
     combinedMap.set(currentUser.uid, {
       uid: currentUser.uid,

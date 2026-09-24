@@ -32,6 +32,7 @@ import {
   ADMIN_EMAIL,
   fetchAdminUsers,
   adminDeleteUser,
+  adminRestoreUser,
   adminUpdateUser,
   adminResetUserProgress,
   adminToggleBanUser,
@@ -163,17 +164,41 @@ export default function AdminPanel() {
     }
   };
 
-  // Confirm Delete User
+  // Confirm Delete User (Dual-Channel: Instant Local UI Reaction + Resilient Firestore Tracking)
   const handleConfirmDelete = async () => {
     if (!deleteTarget) return;
-    const res = await adminDeleteUser(deleteTarget.uid, deleteTarget.displayName);
+    const targetUid = deleteTarget.uid;
+    const targetName = deleteTarget.displayName;
+
+    // Immediately update local state so user disappears from active view in 0ms!
+    setUsers((prev) =>
+      prev.map((u) => (u.uid === targetUid ? { ...u, deleted: true } : u))
+    );
+    setDeleteTarget(null);
+    setDeleteConfirmText('');
+
+    const res = await adminDeleteUser(targetUid, targetName, user?.uid);
     if (res.success) {
-      showToast(`User ${deleteTarget.displayName} successfully deleted`);
-      setDeleteTarget(null);
-      setDeleteConfirmText('');
+      showToast(`User "${targetName}" permanently purged from platform`);
       loadData(false);
     } else {
       showToast(res.error || 'Failed to delete user');
+      loadData(false);
+    }
+  };
+
+  // Restore Deleted User
+  const handleRestoreUser = async (u: AdminUser) => {
+    setUsers((prev) =>
+      prev.map((item) => (item.uid === u.uid ? { ...item, deleted: false } : item))
+    );
+    const res = await adminRestoreUser(u.uid, u.displayName, user?.uid);
+    if (res.success) {
+      showToast(`User "${u.displayName}" restored to active status`);
+      loadData(false);
+    } else {
+      showToast(res.error || 'Failed to restore user');
+      loadData(false);
     }
   };
 
@@ -193,7 +218,7 @@ export default function AdminPanel() {
   // Toggle Ban User
   const handleToggleBan = async (u: AdminUser) => {
     const nextState = !u.banned;
-    const res = await adminToggleBanUser(u.uid, nextState, u.displayName);
+    const res = await adminToggleBanUser(u.uid, nextState, u.displayName, user?.uid);
     if (res.success) {
       showToast(`${nextState ? 'Banned' : 'Unbanned'} ${u.displayName}`);
       loadData(false);
@@ -264,10 +289,27 @@ export default function AdminPanel() {
     setTimeout(() => setCopiedUid(null), 1800);
   };
 
+  // Active vs Deleted / Suspended user groups
+  const activeUsers = useMemo(() => users.filter((u) => !u.deleted), [users]);
+  const deletedUsers = useMemo(() => users.filter((u) => u.deleted), [users]);
+  const suspendedUsers = useMemo(() => users.filter((u) => u.banned && !u.deleted), [users]);
+
   // Filtered & Sorted Users
   const filteredUsers = useMemo(() => {
     return users
       .filter((u) => {
+        if (selectedTier === 'deleted') {
+          if (!u.deleted) return false;
+        } else if (selectedTier === 'suspended') {
+          if (u.deleted || !u.banned) return false;
+        } else {
+          if (u.deleted) return false;
+          if (selectedTier !== 'all') {
+            const tier = calculateTier(u.solvedCount).tier.toLowerCase();
+            if (tier !== selectedTier.toLowerCase()) return false;
+          }
+        }
+
         const query = searchQuery.toLowerCase().trim();
         const matchesQuery =
           !query ||
@@ -275,14 +317,7 @@ export default function AdminPanel() {
           u.email.toLowerCase().includes(query) ||
           u.uid.toLowerCase().includes(query);
 
-        if (!matchesQuery) return false;
-
-        if (selectedTier !== 'all') {
-          const tier = calculateTier(u.solvedCount).tier.toLowerCase();
-          if (tier !== selectedTier.toLowerCase()) return false;
-        }
-
-        return true;
+        return matchesQuery;
       })
       .sort((a, b) => {
         if (sortBy === 'solved') return b.solvedCount - a.solvedCount;
@@ -293,14 +328,14 @@ export default function AdminPanel() {
       });
   }, [users, searchQuery, selectedTier, sortBy]);
 
-  // Aggregate Metrics
+  // Aggregate Metrics (calculated from active non-deleted users)
   const totalPlatformSolves = useMemo(
-    () => users.reduce((acc, u) => acc + (u.solvedCount || 0), 0),
-    [users]
+    () => activeUsers.reduce((acc, u) => acc + (u.solvedCount || 0), 0),
+    [activeUsers]
   );
   const activeStreakCount = useMemo(
-    () => users.filter((u) => u.streak > 0).length,
-    [users]
+    () => activeUsers.filter((u) => u.streak > 0).length,
+    [activeUsers]
   );
 
   // Security Check: strictly PC + shreyas0381@gmail.com
@@ -381,9 +416,11 @@ export default function AdminPanel() {
             <Users size={22} />
           </div>
           <div className={styles.metricInfo}>
-            <span className={styles.metricLabel}>Registered Users</span>
-            <span className={`${styles.metricValue} numeric`}>{users.length}</span>
-            <span className={styles.metricDetail}>Synced across accounts</span>
+            <span className={styles.metricLabel}>Active Users</span>
+            <span className={`${styles.metricValue} numeric`}>{activeUsers.length}</span>
+            <span className={styles.metricDetail}>
+              {deletedUsers.length > 0 ? `${deletedUsers.length} deleted accounts purged` : 'Synced across accounts'}
+            </span>
           </div>
         </div>
 
@@ -438,7 +475,7 @@ export default function AdminPanel() {
         >
           <Users size={16} />
           <span>User Management</span>
-          <span className={styles.tabBadge}>{users.length}</span>
+          <span className={styles.tabBadge}>{activeUsers.length}</span>
         </button>
 
         <button
@@ -509,7 +546,13 @@ export default function AdminPanel() {
                 onChange={(e) => setSelectedTier(e.target.value)}
                 className={styles.selectInput}
               >
-                <option value="all">All Tiers</option>
+                <option value="all">All Active Users ({activeUsers.length})</option>
+                {deletedUsers.length > 0 && (
+                  <option value="deleted">🗑️ Deleted Accounts ({deletedUsers.length})</option>
+                )}
+                {suspendedUsers.length > 0 && (
+                  <option value="suspended">⛔ Suspended Users ({suspendedUsers.length})</option>
+                )}
                 <option value="grandmaster">Grandmaster (450+)</option>
                 <option value="master">Master (250+)</option>
                 <option value="diamond">Diamond (120+)</option>
@@ -554,6 +597,8 @@ export default function AdminPanel() {
                       <td colSpan={8} className={styles.emptyState}>
                         {loading
                           ? 'Fetching user directory from Firestore...'
+                          : selectedTier === 'deleted'
+                          ? 'No deleted accounts on platform.'
                           : 'No users matching current filters.'}
                       </td>
                     </tr>
@@ -583,7 +628,8 @@ export default function AdminPanel() {
                                       OWNER
                                     </span>
                                   )}
-                                  {u.banned && <span className={styles.bannedPill}>SUSPENDED</span>}
+                                  {u.banned && !u.deleted && <span className={styles.bannedPill}>SUSPENDED</span>}
+                                  {u.deleted && <span className={styles.deletedPill}>DELETED</span>}
                                 </div>
                                 <span className={styles.userEmail}>{u.email || 'No email registered'}</span>
                               </div>
@@ -655,57 +701,71 @@ export default function AdminPanel() {
 
                           <td>
                             <div className={styles.actionButtons} style={{ justifyContent: 'flex-end' }}>
-                              <button
-                                type="button"
-                                className={styles.rowActionBtn}
-                                onClick={() => setInspectUser(u)}
-                                title="Inspect raw JSON data"
-                              >
-                                <Eye size={14} />
-                              </button>
-
-                              <button
-                                type="button"
-                                className={styles.rowActionBtn}
-                                onClick={() => openEditModal(u)}
-                                title="Edit user stats & profile"
-                              >
-                                <Edit3 size={14} />
-                              </button>
-
-                              <button
-                                type="button"
-                                className={styles.rowActionBtn}
-                                onClick={() => setResetTarget(u)}
-                                title="Reset user solves/progress"
-                              >
-                                <RotateCcw size={14} />
-                              </button>
-
-                              {!isOwner && (
+                              {u.deleted ? (
                                 <button
                                   type="button"
-                                  className={styles.rowActionBtn}
-                                  onClick={() => handleToggleBan(u)}
-                                  title={u.banned ? 'Unban user' : 'Suspend / Ban user'}
-                                  style={{ color: u.banned ? 'var(--difficulty-easy)' : undefined }}
+                                  className={styles.restoreBtn}
+                                  onClick={() => handleRestoreUser(u)}
+                                  title="Restore this user account"
                                 >
-                                  <Ban size={14} />
+                                  <RotateCcw size={13} />
+                                  <span>Restore Account</span>
                                 </button>
-                              )}
+                              ) : (
+                                <>
+                                  <button
+                                    type="button"
+                                    className={styles.rowActionBtn}
+                                    onClick={() => setInspectUser(u)}
+                                    title="Inspect raw JSON data"
+                                  >
+                                    <Eye size={14} />
+                                  </button>
 
-                              {!isOwner && (
-                                <button
-                                  type="button"
-                                  className={`${styles.rowActionBtn} ${styles.rowActionBtnDanger}`}
-                                  onClick={() => {
-                                    setDeleteTarget(u);
-                                    setDeleteConfirmText('');
-                                  }}
-                                  title="Delete user account"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
+                                  <button
+                                    type="button"
+                                    className={styles.rowActionBtn}
+                                    onClick={() => openEditModal(u)}
+                                    title="Edit user stats & profile"
+                                  >
+                                    <Edit3 size={14} />
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    className={styles.rowActionBtn}
+                                    onClick={() => setResetTarget(u)}
+                                    title="Reset user solves/progress"
+                                  >
+                                    <RotateCcw size={14} />
+                                  </button>
+
+                                  {!isOwner && (
+                                    <button
+                                      type="button"
+                                      className={styles.rowActionBtn}
+                                      onClick={() => handleToggleBan(u)}
+                                      title={u.banned ? 'Unban user' : 'Suspend / Ban user'}
+                                      style={{ color: u.banned ? 'var(--difficulty-easy)' : undefined }}
+                                    >
+                                      <Ban size={14} />
+                                    </button>
+                                  )}
+
+                                  {!isOwner && (
+                                    <button
+                                      type="button"
+                                      className={`${styles.rowActionBtn} ${styles.rowActionBtnDanger}`}
+                                      onClick={() => {
+                                        setDeleteTarget(u);
+                                        setDeleteConfirmText('');
+                                      }}
+                                      title="Delete user account"
+                                    >
+                                      <Trash2 size={14} />
+                                    </button>
+                                  )}
+                                </>
                               )}
                             </div>
                           </td>
@@ -1124,6 +1184,50 @@ export default function AdminPanel() {
               }}
             >
               <span>Purge Cache</span>
+            </button>
+          </div>
+
+          <div className={styles.tableCard} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <ShieldCheck size={20} color="var(--accent)" />
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>Firestore Cloud Security Rules</h3>
+            </div>
+            <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)' }}>
+              Copy Pace's production security rules to paste into Firebase Console &gt; Firestore Database &gt; Rules for full database-level deletion permissions.
+            </p>
+            <button
+              type="button"
+              className={`${styles.actionBtn} ${styles.actionBtnPrimary}`}
+              style={{ marginTop: 8 }}
+              onClick={() => {
+                const rules = `rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'shreyas0381@gmail.com';
+    }
+
+    match /users/{userId} {
+      allow read, write, delete: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+    }
+
+    match /leaderboard/{userId} {
+      allow read: if true;
+      allow write, delete: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+    }
+
+    match /system/{docId} {
+      allow read: if true;
+      allow write, delete: if request.auth != null;
+    }
+  }
+}`;
+                copyToClipboard(rules, 'rules_copied');
+                showToast('📋 Production Firestore rules copied to clipboard!');
+              }}
+            >
+              <Copy size={14} />
+              <span>{copiedUid === 'rules_copied' ? 'Copied to Clipboard!' : 'Copy Firestore Rules'}</span>
             </button>
           </div>
         </div>

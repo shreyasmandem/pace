@@ -204,6 +204,14 @@ async function startSyncing(user: User) {
       // Ignore in-flight local writes
       if (snap.metadata.hasPendingWrites) return;
 
+      const remoteData = snap.data() as Partial<SyncableState & { updatedAt?: number; resetVersion?: number; deleted?: boolean }>;
+      if (remoteData?.deleted) {
+        stopListening();
+        localStorage.clear();
+        auth?.signOut();
+        return;
+      }
+
       if (!snap.exists()) {
         // First sign-in on this account: seed remote doc from local
         isInitialLoad = false;
@@ -211,7 +219,6 @@ async function startSyncing(user: User) {
         return;
       }
 
-      const remoteData = snap.data() as Partial<SyncableState & { updatedAt?: number; resetVersion?: number }>;
       const remoteUpdatedAt = remoteData?.updatedAt || 0;
 
       // Check if remote data needs the global v2 reset

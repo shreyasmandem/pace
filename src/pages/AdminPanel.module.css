@@ -438,6 +438,38 @@
   margin-left: 6px;
 }
 
+.deletedPill {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 6px;
+}
+
+.restoreBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--difficulty-easy);
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.restoreBtn:hover {
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+}
+
 .uidCode {
   font-family: var(--font-mono);
   font-size: 0.72rem;

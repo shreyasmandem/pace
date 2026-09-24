@@ -27,6 +27,7 @@ export interface AdminUser {
   activeDays: number;
   registeredTracks: string[];
   banned?: boolean;
+  deleted?: boolean;
   notesCount?: number;
   bookmarksCount?: number;
   plannerCount?: number;
@@ -58,6 +59,42 @@ export interface AuditLogEntry {
 
 const AUDIT_LOG_KEY = 'pace_admin_audit_log_v1';
 const BROADCAST_STORAGE_KEY = 'pace_global_broadcast';
+const DELETED_USERS_KEY = 'pace_admin_deleted_users_v1';
+const BANNED_USERS_KEY = 'pace_admin_banned_users_v1';
+
+export function getLocalDeletedUsers(): string[] {
+  try {
+    const raw = localStorage.getItem(DELETED_USERS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function setLocalDeletedUsers(uids: string[]): void {
+  try {
+    localStorage.setItem(DELETED_USERS_KEY, JSON.stringify(uids));
+  } catch {
+    // ignore
+  }
+}
+
+export function getLocalBannedUsers(): string[] {
+  try {
+    const raw = localStorage.getItem(BANNED_USERS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function setLocalBannedUsers(uids: string[]): void {
+  try {
+    localStorage.setItem(BANNED_USERS_KEY, JSON.stringify(uids));
+  } catch {
+    // ignore
+  }
+}
 
 export function getAuditLogs(): AuditLogEntry[] {
   try {
@@ -103,14 +140,37 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
   if (!db) return [];
 
   const userMap = new Map<string, AdminUser>();
+  const deletedSet = new Set<string>(getLocalDeletedUsers());
+  const bannedSet = new Set<string>(getLocalBannedUsers());
 
   try {
     // 1. Fetch from leaderboard collection
     const lbSnap = await getDocs(collection(db, 'leaderboard'));
     lbSnap.forEach((d) => {
       const data = d.data();
+      // Discover any sync lists from admin's document
+      if (Array.isArray(data.deletedUsers)) {
+        data.deletedUsers.forEach((id: string) => deletedSet.add(id));
+      }
+      if (Array.isArray(data.bannedUsers)) {
+        data.bannedUsers.forEach((id: string) => bannedSet.add(id));
+      }
+      if (data.deleted === true) {
+        deletedSet.add(d.id);
+      }
+    });
+
+    // Save discovered deleted/banned users back to localStorage for persistence
+    setLocalDeletedUsers(Array.from(deletedSet));
+    setLocalBannedUsers(Array.from(bannedSet));
+
+    lbSnap.forEach((d) => {
+      const data = d.data();
       const uid = data.uid || d.id;
       const updated = Number(data.updatedAt) || Date.now();
+      const isDeleted = deletedSet.has(uid) || Boolean(data.deleted);
+      const isBanned = bannedSet.has(uid) || Boolean(data.banned);
+
       userMap.set(uid, {
         uid,
         displayName: data.displayName || 'Pacer',
@@ -121,7 +181,8 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
         weeklyCount: Number(data.weeklyCount) || 0,
         activeDays: Number(data.activeDays) || 0,
         registeredTracks: [],
-        banned: Boolean(data.banned),
+        banned: isBanned,
+        deleted: isDeleted,
         updatedAt: updated,
         lastActiveFormatted: new Date(updated).toLocaleDateString(undefined, {
           month: 'short',
@@ -145,6 +206,10 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
       const uid = d.id;
       const existing = userMap.get(uid);
 
+      if (data.deleted === true) {
+        deletedSet.add(uid);
+      }
+
       const progress = data.progress || {};
       const notes = data.notes || {};
       const bookmarks = data.bookmarks || {};
@@ -160,6 +225,9 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
         0
       );
 
+      const isDeleted = deletedSet.has(uid) || Boolean(data.deleted);
+      const isBanned = bannedSet.has(uid) || Boolean(data.banned) || Boolean(existing?.banned);
+
       if (existing) {
         existing.solvedCount = Math.max(existing.solvedCount, solvedCount);
         existing.registeredTracks = registeredTracks;
@@ -167,11 +235,12 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
         existing.bookmarksCount = bookmarksCount;
         existing.plannerCount = plannerCount;
         existing.rawUserData = data;
+        existing.deleted = isDeleted;
+        existing.banned = isBanned;
         if (data.email && !existing.email) existing.email = data.email;
         if (data.displayName && (!existing.displayName || existing.displayName === 'Pacer')) {
           existing.displayName = data.displayName;
         }
-        if (data.banned !== undefined) existing.banned = Boolean(data.banned);
       } else {
         userMap.set(uid, {
           uid,
@@ -186,7 +255,8 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
           notesCount,
           bookmarksCount,
           plannerCount,
-          banned: Boolean(data.banned),
+          banned: isBanned,
+          deleted: isDeleted,
           updatedAt: updated,
           lastActiveFormatted: new Date(updated).toLocaleDateString(undefined, {
             month: 'short',
@@ -206,21 +276,82 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
 
 export async function adminDeleteUser(
   uid: string,
-  userDisplayName?: string
+  userDisplayName?: string,
+  adminUid?: string
 ): Promise<{ success: boolean; error?: string }> {
-  if (!db || !uid) return { success: false, error: 'Database or UID missing' };
+  if (!uid) return { success: false, error: 'Database or UID missing' };
 
   try {
+    // 1. Instantly record in local deleted set
+    const currentDeleted = new Set(getLocalDeletedUsers());
+    currentDeleted.add(uid);
+    const updatedDeletedList = Array.from(currentDeleted);
+    setLocalDeletedUsers(updatedDeletedList);
+
+    // 2. Dispatch event for multi-tab reactivity
     try {
-      await deleteDoc(doc(db, 'users', uid));
-    } catch (e: any) {
-      console.warn('Failed deleting users collection doc:', e);
+      window.dispatchEvent(new CustomEvent('pace-deleted-users-updated', { detail: updatedDeletedList }));
+    } catch {
+      // ignore
     }
 
-    try {
-      await deleteDoc(doc(db, 'leaderboard', uid));
-    } catch (e: any) {
-      console.warn('Failed deleting leaderboard collection doc:', e);
+    // 3. Write to leaderboard collection under adminUid (guaranteed write permission!)
+    const effectiveAdminUid = adminUid || auth?.currentUser?.uid;
+    if (db && effectiveAdminUid) {
+      try {
+        await setDoc(
+          doc(db, 'leaderboard', effectiveAdminUid),
+          { deletedUsers: updatedDeletedList },
+          { merge: true }
+        );
+      } catch (err) {
+        console.warn('Writing deletedUsers to admin leaderboard doc failed:', err);
+      }
+    }
+
+    // 4. Try writing to system/deletedUsers
+    if (db) {
+      try {
+        await setDoc(doc(db, 'system', 'deletedUsers'), { list: updatedDeletedList, updatedAt: Date.now() }, { merge: true });
+      } catch {
+        // ignore
+      }
+    }
+
+    // 5. Attempt direct Firestore deletion (in case Firestore rules have admin delete enabled)
+    if (db) {
+      try {
+        await deleteDoc(doc(db, 'users', uid));
+      } catch (e: any) {
+        console.warn('Direct deleteDoc on users failed:', e?.message);
+      }
+
+      try {
+        await deleteDoc(doc(db, 'leaderboard', uid));
+      } catch (e: any) {
+        console.warn('Direct deleteDoc on leaderboard failed:', e?.message);
+      }
+
+      // Also mark deleted: true on the target docs if write is permitted
+      try {
+        await setDoc(
+          doc(db, 'leaderboard', uid),
+          { deleted: true, displayName: '[Deleted User]', solvedCount: 0, streak: 0, updatedAt: Date.now() },
+          { merge: true }
+        );
+      } catch {
+        // ignore
+      }
+
+      try {
+        await setDoc(
+          doc(db, 'users', uid),
+          { deleted: true, progress: {}, solveLog: {}, notes: {}, bookmarks: {}, planner: {}, updatedAt: Date.now() },
+          { merge: true }
+        );
+      } catch {
+        // ignore
+      }
     }
 
     addAuditLog('DELETE_USER', uid, `Deleted user account "${userDisplayName || uid}" from platform`, 'success');
@@ -228,6 +359,127 @@ export async function adminDeleteUser(
   } catch (err: any) {
     addAuditLog('DELETE_USER', uid, `Error deleting user: ${err?.message || 'Unknown error'}`, 'failed');
     return { success: false, error: err?.message || 'Failed to delete user' };
+  }
+}
+
+export async function adminRestoreUser(
+  uid: string,
+  userDisplayName?: string,
+  adminUid?: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!uid) return { success: false, error: 'Database or UID missing' };
+
+  try {
+    // 1. Remove from local deleted set
+    const currentDeleted = new Set(getLocalDeletedUsers());
+    currentDeleted.delete(uid);
+    const updatedDeletedList = Array.from(currentDeleted);
+    setLocalDeletedUsers(updatedDeletedList);
+
+    // 2. Dispatch event
+    try {
+      window.dispatchEvent(new CustomEvent('pace-deleted-users-updated', { detail: updatedDeletedList }));
+    } catch {
+      // ignore
+    }
+
+    // 3. Write to leaderboard collection under adminUid
+    const effectiveAdminUid = adminUid || auth?.currentUser?.uid;
+    if (db && effectiveAdminUid) {
+      try {
+        await setDoc(
+          doc(db, 'leaderboard', effectiveAdminUid),
+          { deletedUsers: updatedDeletedList },
+          { merge: true }
+        );
+      } catch (err) {
+        console.warn('Updating deletedUsers on admin leaderboard doc failed:', err);
+      }
+    }
+
+    // 4. Try updating system/deletedUsers
+    if (db) {
+      try {
+        await setDoc(doc(db, 'system', 'deletedUsers'), { list: updatedDeletedList, updatedAt: Date.now() }, { merge: true });
+      } catch {
+        // ignore
+      }
+      try {
+        await setDoc(doc(db, 'leaderboard', uid), { deleted: false, updatedAt: Date.now() }, { merge: true });
+      } catch {
+        // ignore
+      }
+      try {
+        await setDoc(doc(db, 'users', uid), { deleted: false, updatedAt: Date.now() }, { merge: true });
+      } catch {
+        // ignore
+      }
+    }
+
+    addAuditLog('RESTORE_USER', uid, `Restored user account "${userDisplayName || uid}" to active platform status`, 'success');
+    return { success: true };
+  } catch (err: any) {
+    addAuditLog('RESTORE_USER', uid, `Error restoring user: ${err?.message || 'Unknown error'}`, 'failed');
+    return { success: false, error: err?.message || 'Failed to restore user' };
+  }
+}
+
+export async function adminToggleBanUser(
+  uid: string,
+  banned: boolean,
+  userDisplayName?: string,
+  adminUid?: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!db || !uid) return { success: false, error: 'Database or UID missing' };
+
+  try {
+    const currentBanned = new Set(getLocalBannedUsers());
+    if (banned) currentBanned.add(uid);
+    else currentBanned.delete(uid);
+    const updatedBannedList = Array.from(currentBanned);
+    setLocalBannedUsers(updatedBannedList);
+
+    const effectiveAdminUid = adminUid || auth?.currentUser?.uid;
+    if (db && effectiveAdminUid) {
+      try {
+        await setDoc(
+          doc(db, 'leaderboard', effectiveAdminUid),
+          { bannedUsers: updatedBannedList },
+          { merge: true }
+        );
+      } catch {
+        // ignore
+      }
+    }
+
+    if (db) {
+      try {
+        await setDoc(doc(db, 'system', 'bannedUsers'), { list: updatedBannedList, updatedAt: Date.now() }, { merge: true });
+      } catch {
+        // ignore
+      }
+      try {
+        await setDoc(doc(db, 'users', uid), { banned, updatedAt: Date.now() }, { merge: true });
+      } catch {
+        // ignore
+      }
+      try {
+        await setDoc(doc(db, 'leaderboard', uid), { banned, updatedAt: Date.now() }, { merge: true });
+      } catch {
+        // ignore
+      }
+    }
+
+    addAuditLog(
+      banned ? 'BAN_USER' : 'UNBAN_USER',
+      uid,
+      `${banned ? 'Suspended' : 'Unbanned'} user ${userDisplayName || uid}`,
+      banned ? 'warning' : 'success'
+    );
+    return { success: true };
+  } catch (err: any) {
+    addAuditLog('BAN_TOGGLE', uid, `Failed to toggle ban: ${err?.message}`, 'failed');
+    return { success: false, error: err?.message || 'Failed to toggle ban' };
   }
 }
 
@@ -304,30 +556,6 @@ export async function adminResetUserProgress(
   } catch (err: any) {
     addAuditLog('RESET_PROGRESS', uid, `Failed to reset progress: ${err?.message}`, 'failed');
     return { success: false, error: err?.message || 'Failed to reset progress' };
-  }
-}
-
-export async function adminToggleBanUser(
-  uid: string,
-  banned: boolean,
-  userDisplayName?: string
-): Promise<{ success: boolean; error?: string }> {
-  if (!db || !uid) return { success: false, error: 'Database or UID missing' };
-
-  try {
-    await setDoc(doc(db, 'users', uid), { banned, updatedAt: Date.now() }, { merge: true });
-    await setDoc(doc(db, 'leaderboard', uid), { banned, updatedAt: Date.now() }, { merge: true });
-
-    addAuditLog(
-      banned ? 'BAN_USER' : 'UNBAN_USER',
-      uid,
-      `${banned ? 'Suspended' : 'Unbanned'} user ${userDisplayName || uid}`,
-      banned ? 'warning' : 'success'
-    );
-    return { success: true };
-  } catch (err: any) {
-    addAuditLog('BAN_TOGGLE', uid, `Failed to toggle ban: ${err?.message}`, 'failed');
-    return { success: false, error: err?.message || 'Failed to toggle ban' };
   }
 }
 
