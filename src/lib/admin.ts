@@ -144,6 +144,22 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
   const bannedSet = new Set<string>(getLocalBannedUsers());
 
   try {
+    // 0. Fetch global moderation state from system/moderation
+    try {
+      const modDoc = await getDoc(doc(db, 'system', 'moderation'));
+      if (modDoc.exists()) {
+        const modData = modDoc.data();
+        if (Array.isArray(modData.deletedUsers)) {
+          modData.deletedUsers.forEach((id: string) => deletedSet.add(id));
+        }
+        if (Array.isArray(modData.bannedUsers)) {
+          modData.bannedUsers.forEach((id: string) => bannedSet.add(id));
+        }
+      }
+    } catch {
+      // ignore
+    }
+
     // 1. Fetch from leaderboard collection
     const lbSnap = await getDocs(collection(db, 'leaderboard'));
     lbSnap.forEach((d) => {
@@ -157,6 +173,9 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
       }
       if (data.deleted === true) {
         deletedSet.add(d.id);
+      }
+      if (data.banned === true) {
+        bannedSet.add(d.id);
       }
     });
 
@@ -309,8 +328,18 @@ export async function adminDeleteUser(
       }
     }
 
-    // 4. Try writing to system/deletedUsers
+    // 4. Write to system/moderation (globally readable by all clients)
     if (db) {
+      try {
+        await setDoc(
+          doc(db, 'system', 'moderation'),
+          { deletedUsers: updatedDeletedList, updatedAt: Date.now() },
+          { merge: true }
+        );
+      } catch (err) {
+        console.warn('Writing to system/moderation failed:', err);
+      }
+
       try {
         await setDoc(doc(db, 'system', 'deletedUsers'), { list: updatedDeletedList, updatedAt: Date.now() }, { merge: true });
       } catch {
@@ -318,8 +347,47 @@ export async function adminDeleteUser(
       }
     }
 
-    // 5. Attempt direct Firestore deletion (in case Firestore rules have admin delete enabled)
+    // 5. Attempt direct Firestore deletion & soft-wipe
     if (db) {
+      // Mark deleted: true on target docs first so any listening clients react instantly
+      try {
+        await setDoc(
+          doc(db, 'users', uid),
+          {
+            deleted: true,
+            progress: {},
+            solveLog: {},
+            notes: {},
+            bookmarks: {},
+            planner: {},
+            tutorChats: {},
+            registeredTracks: [],
+            updatedAt: Date.now(),
+          },
+          { merge: true }
+        );
+      } catch {
+        // ignore
+      }
+
+      try {
+        await setDoc(
+          doc(db, 'leaderboard', uid),
+          {
+            deleted: true,
+            displayName: '[Deleted User]',
+            solvedCount: 0,
+            streak: 0,
+            weeklyCount: 0,
+            activeDays: 0,
+            updatedAt: Date.now(),
+          },
+          { merge: true }
+        );
+      } catch {
+        // ignore
+      }
+
       try {
         await deleteDoc(doc(db, 'users', uid));
       } catch (e: any) {
@@ -330,27 +398,6 @@ export async function adminDeleteUser(
         await deleteDoc(doc(db, 'leaderboard', uid));
       } catch (e: any) {
         console.warn('Direct deleteDoc on leaderboard failed:', e?.message);
-      }
-
-      // Also mark deleted: true on the target docs if write is permitted
-      try {
-        await setDoc(
-          doc(db, 'leaderboard', uid),
-          { deleted: true, displayName: '[Deleted User]', solvedCount: 0, streak: 0, updatedAt: Date.now() },
-          { merge: true }
-        );
-      } catch {
-        // ignore
-      }
-
-      try {
-        await setDoc(
-          doc(db, 'users', uid),
-          { deleted: true, progress: {}, solveLog: {}, notes: {}, bookmarks: {}, planner: {}, updatedAt: Date.now() },
-          { merge: true }
-        );
-      } catch {
-        // ignore
       }
     }
 
@@ -397,8 +444,17 @@ export async function adminRestoreUser(
       }
     }
 
-    // 4. Try updating system/deletedUsers
+    // 4. Update system/moderation and system/deletedUsers
     if (db) {
+      try {
+        await setDoc(
+          doc(db, 'system', 'moderation'),
+          { deletedUsers: updatedDeletedList, updatedAt: Date.now() },
+          { merge: true }
+        );
+      } catch (err) {
+        console.warn('Updating system/moderation failed:', err);
+      }
       try {
         await setDoc(doc(db, 'system', 'deletedUsers'), { list: updatedDeletedList, updatedAt: Date.now() }, { merge: true });
       } catch {
@@ -453,6 +509,15 @@ export async function adminToggleBanUser(
     }
 
     if (db) {
+      try {
+        await setDoc(
+          doc(db, 'system', 'moderation'),
+          { bannedUsers: updatedBannedList, updatedAt: Date.now() },
+          { merge: true }
+        );
+      } catch (err) {
+        console.warn('Updating system/moderation failed:', err);
+      }
       try {
         await setDoc(doc(db, 'system', 'bannedUsers'), { list: updatedBannedList, updatedAt: Date.now() }, { merge: true });
       } catch {

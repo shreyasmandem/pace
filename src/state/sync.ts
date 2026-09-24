@@ -3,6 +3,12 @@ import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth, db } from '../lib/firebase';
 import { usePaceStore, currentStreak, type ChatMessage, type PlanItem, type TrackId, type TutorLanguage } from './store';
 import { publishToLeaderboard, calculateWeeklySolves } from '../lib/leaderboard';
+import {
+  getLocalDeletedUsers,
+  setLocalDeletedUsers,
+  getLocalBannedUsers,
+  setLocalBannedUsers,
+} from '../lib/admin';
 
 export type SyncStatus = 'signed-out' | 'syncing' | 'synced' | 'offline';
 
@@ -115,6 +121,7 @@ function mapsEqual(a: Record<string, unknown> | undefined, b: Record<string, unk
 }
 
 let unsubscribeSnapshot: Unsubscribe | null = null;
+let unsubscribeModeration: Unsubscribe | null = null;
 let unsubscribeStore: (() => void) | null = null;
 let applyingRemoteUpdate = false;
 let pushTimer: ReturnType<typeof setTimeout> | null = null;
@@ -138,9 +145,59 @@ export function subscribeSyncStatus(listener: (status: SyncStatus) => void) {
   };
 }
 
+function handleAccountPurged() {
+  stopListening();
+  applyingRemoteUpdate = true;
+  try {
+    usePaceStore.getState().resetAll();
+  } catch (err) {
+    console.error('Failed to reset store on account purge:', err);
+  }
+  applyingRemoteUpdate = false;
+
+  try {
+    const del = localStorage.getItem('pace_admin_deleted_users_v1');
+    const ban = localStorage.getItem('pace_admin_banned_users_v1');
+    localStorage.clear();
+    if (del) localStorage.setItem('pace_admin_deleted_users_v1', del);
+    if (ban) localStorage.setItem('pace_admin_banned_users_v1', ban);
+  } catch {
+    // ignore
+  }
+
+  try {
+    sessionStorage.setItem('pace_account_deleted_notice', 'true');
+    window.dispatchEvent(new CustomEvent('pace-account-status', { detail: { status: 'deleted' } }));
+  } catch {
+    // ignore
+  }
+
+  if (auth) {
+    auth.signOut().catch(() => {});
+  }
+  setStatus('signed-out');
+}
+
+function handleAccountSuspended() {
+  stopListening();
+  try {
+    sessionStorage.setItem('pace_account_suspended_notice', 'true');
+    window.dispatchEvent(new CustomEvent('pace-account-status', { detail: { status: 'suspended' } }));
+  } catch {
+    // ignore
+  }
+
+  if (auth) {
+    auth.signOut().catch(() => {});
+  }
+  setStatus('signed-out');
+}
+
 function stopListening() {
   unsubscribeSnapshot?.();
   unsubscribeSnapshot = null;
+  unsubscribeModeration?.();
+  unsubscribeModeration = null;
   unsubscribeStore?.();
   unsubscribeStore = null;
   if (pushTimer) clearTimeout(pushTimer);
@@ -152,6 +209,10 @@ function stopListening() {
 
 function pushToFirestore(uid: string) {
   if (!db) return;
+  // Guard: Never push if this account is marked deleted or banned
+  if (getLocalDeletedUsers().includes(uid) || getLocalBannedUsers().includes(uid)) {
+    return;
+  }
   const state = usePaceStore.getState();
   const payload = pickSyncable(state);
   const tutorChats = state.tutorChats || {};
@@ -199,7 +260,44 @@ async function startSyncing(user: User) {
   if (!db) return;
   currentUid = user.uid;
   isInitialLoad = true;
+
+  // Immediate check against local caches
+  if (getLocalBannedUsers().includes(user.uid)) {
+    handleAccountSuspended();
+    return;
+  }
+  if (getLocalDeletedUsers().includes(user.uid)) {
+    handleAccountPurged();
+    return;
+  }
+
   setStatus('syncing');
+
+  // Listen to system/moderation doc for real-time ban/delete enforcement
+  const moderationRef = doc(db, 'system', 'moderation');
+  unsubscribeModeration = onSnapshot(
+    moderationRef,
+    (modSnap) => {
+      if (modSnap.exists()) {
+        const modData = modSnap.data();
+        const deletedUsers: string[] = Array.isArray(modData.deletedUsers) ? modData.deletedUsers : [];
+        const bannedUsers: string[] = Array.isArray(modData.bannedUsers) ? modData.bannedUsers : [];
+
+        setLocalDeletedUsers(deletedUsers);
+        setLocalBannedUsers(bannedUsers);
+
+        if (bannedUsers.includes(user.uid)) {
+          handleAccountSuspended();
+          return;
+        }
+        if (deletedUsers.includes(user.uid)) {
+          handleAccountPurged();
+          return;
+        }
+      }
+    },
+    (err) => console.warn('Moderation listener warning:', err)
+  );
 
   // Immediately broadcast user to the community leaderboard on sign-in
   const initialStore = usePaceStore.getState();
@@ -219,15 +317,26 @@ async function startSyncing(user: User) {
       // Ignore in-flight local writes
       if (snap.metadata.hasPendingWrites) return;
 
-      const remoteData = snap.data() as Partial<SyncableState & { updatedAt?: number; resetVersion?: number; deleted?: boolean }>;
-      if (remoteData?.deleted) {
-        stopListening();
-        localStorage.clear();
-        auth?.signOut();
+      const remoteData = snap.data() as Partial<SyncableState & { updatedAt?: number; resetVersion?: number; deleted?: boolean; banned?: boolean }>;
+
+      // Check for ban status
+      if (remoteData?.banned === true || getLocalBannedUsers().includes(user.uid)) {
+        handleAccountSuspended();
+        return;
+      }
+
+      // Check for deletion status
+      if (remoteData?.deleted === true || getLocalDeletedUsers().includes(user.uid)) {
+        handleAccountPurged();
         return;
       }
 
       if (!snap.exists()) {
+        // If not initial load, or user is in deleted list, user was deleted in Firestore
+        if (!isInitialLoad || getLocalDeletedUsers().includes(user.uid)) {
+          handleAccountPurged();
+          return;
+        }
         // First sign-in on this account: seed remote doc from local
         isInitialLoad = false;
         pushToFirestore(user.uid);

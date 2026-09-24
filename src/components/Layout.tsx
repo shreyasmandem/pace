@@ -26,6 +26,55 @@ export default function Layout() {
     }
   });
 
+  const [moderationNotice, setModerationNotice] = useState<{ type: 'deleted' | 'suspended'; message: string } | null>(() => {
+    try {
+      if (sessionStorage.getItem('pace_account_suspended_notice') === 'true') {
+        return {
+          type: 'suspended',
+          message: 'Your account has been suspended by an administrator. Access to cloud synchronization and leaderboard has been disabled.',
+        };
+      }
+      if (sessionStorage.getItem('pace_account_deleted_notice') === 'true') {
+        return {
+          type: 'deleted',
+          message: 'Your account was deleted by an administrator. You must sign up with Google again to create a new account.',
+        };
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  });
+
+  useEffect(() => {
+    function onAccountStatus(e: any) {
+      const status = e?.detail?.status;
+      if (status === 'suspended') {
+        setModerationNotice({
+          type: 'suspended',
+          message: 'Your account has been suspended by an administrator. Access to cloud synchronization and leaderboard has been disabled.',
+        });
+      } else if (status === 'deleted') {
+        setModerationNotice({
+          type: 'deleted',
+          message: 'Your account was deleted by an administrator. You must sign up with Google again to create a new account.',
+        });
+      }
+    }
+    window.addEventListener('pace-account-status', onAccountStatus);
+    return () => window.removeEventListener('pace-account-status', onAccountStatus);
+  }, []);
+
+  const handleDismissModerationNotice = () => {
+    setModerationNotice(null);
+    try {
+      sessionStorage.removeItem('pace_account_suspended_notice');
+      sessionStorage.removeItem('pace_account_deleted_notice');
+    } catch {
+      // ignore
+    }
+  };
+
   // Listen to live broadcast announcement
   useEffect(() => {
     return subscribeBroadcast((announcement) => {
@@ -108,6 +157,23 @@ export default function Layout() {
               className={styles.broadcastCloseBtn}
               onClick={handleDismissBroadcast}
               aria-label="Dismiss banner"
+            >
+              <X size={15} />
+            </button>
+          </div>
+        )}
+
+        {moderationNotice && (
+          <div className={`${styles.broadcastBanner} ${styles.broadcastAlert}`}>
+            <div className={styles.broadcastContent}>
+              <AlertTriangle size={15} />
+              <span>{moderationNotice.message}</span>
+            </div>
+            <button
+              type="button"
+              className={styles.broadcastCloseBtn}
+              onClick={handleDismissModerationNotice}
+              aria-label="Dismiss notice"
             >
               <X size={15} />
             </button>

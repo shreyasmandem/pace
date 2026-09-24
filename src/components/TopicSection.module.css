@@ -73,9 +73,78 @@
   margin-top: 2px;
 }
 
+.headerMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: none;
+  margin-top: 1px;
+}
+
+.checkAllBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-hairline);
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
+  font-size: 0.73rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s var(--easing);
+  animation: fadeInCheck 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fadeInCheck {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.checkAllBtn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.checkAllBtnComplete {
+  border-color: rgba(76, 208, 138, 0.35);
+  color: var(--difficulty-easy);
+}
+
+.checkAllBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1.5px solid var(--border-strong);
+  background: transparent;
+  flex: none;
+  transition: all 0.15s ease;
+}
+
+.checkAllBoxActive {
+  background: var(--difficulty-easy);
+  border-color: var(--difficulty-easy);
+  color: var(--accent-ink);
+}
+
+.checkAllLabel {
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .fraction {
   flex: none;
-  margin-top: 2px;
   font-size: 0.78rem;
   color: var(--text-tertiary);
   transition: color 0.2s ease;
@@ -170,6 +239,36 @@
 
 .thCheck {
   width: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.thCheckBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  padding: 0;
+  margin: 0;
+  border-radius: 4px;
+  border: 1.5px solid var(--border-strong);
+  background: transparent;
+  color: var(--accent-ink);
+  cursor: pointer;
+  line-height: 0;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+}
+
+.thCheckBtn:hover {
+  border-color: var(--accent);
+  transform: scale(1.06);
+}
+
+.thCheckBtnActive {
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 .thIndex {

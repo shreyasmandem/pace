@@ -218,12 +218,16 @@ export default function AdminPanel() {
   // Toggle Ban User
   const handleToggleBan = async (u: AdminUser) => {
     const nextState = !u.banned;
+    setUsers((prev) =>
+      prev.map((item) => (item.uid === u.uid ? { ...item, banned: nextState } : item))
+    );
     const res = await adminToggleBanUser(u.uid, nextState, u.displayName, user?.uid);
     if (res.success) {
-      showToast(`${nextState ? 'Banned' : 'Unbanned'} ${u.displayName}`);
+      showToast(`${nextState ? 'Suspended' : 'Unbanned'} ${u.displayName}`);
       loadData(false);
     } else {
       showToast(res.error || 'Action failed');
+      loadData(false);
     }
   };
 

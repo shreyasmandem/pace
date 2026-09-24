@@ -198,11 +198,24 @@ export const usePaceStore = create<PaceState>()(
       setManyProblems: (ids, value) =>
         set((state) => {
           const progress = { ...state.progress };
+          const log = { ...state.solveLog };
+          const day = todayISO();
+          let delta = 0;
           for (const id of ids) {
-            if (value) progress[id] = true;
-            else delete progress[id];
+            const current = !!progress[id];
+            if (value && !current) {
+              progress[id] = true;
+              delta++;
+            } else if (!value && current) {
+              delete progress[id];
+              delta--;
+            }
           }
-          return { progress };
+          if (delta !== 0) {
+            log[day] = Math.max(0, (log[day] || 0) + delta);
+            if (log[day] <= 0) delete log[day];
+          }
+          return { progress, solveLog: log };
         }),
 
       notes: {},

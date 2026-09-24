@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ChevronRight, Flag } from 'lucide-react';
+import { Check, ChevronRight, Flag } from 'lucide-react';
 import type { Problem, TopicGroup } from '../types';
 import { usePaceStore } from '../state/store';
 import ProblemRow from './ProblemRow';
@@ -34,11 +34,18 @@ export default function TopicSection({
 }: TopicSectionProps) {
   const [open, setOpen] = useState(defaultOpen || !!highlightId);
   const progress = usePaceStore((s) => s.progress);
+  const setManyProblems = usePaceStore((s) => s.setManyProblems);
   const highlightRef = useRef<HTMLDivElement>(null);
 
   const solved = group.problems.reduce((n, p) => n + (progress[p.id] ? 1 : 0), 0);
   const percent = group.problems.length ? (solved / group.problems.length) * 100 : 0;
   const complete = solved === group.problems.length && group.problems.length > 0;
+
+  const handleToggleAll = () => {
+    const ids = group.problems.map((p) => p.id);
+    const nextValue = !complete;
+    setManyProblems(ids, nextValue);
+  };
 
   // Stamp animation only when the topic is finished while you're looking at it, not on load.
   const [justCleared, setJustCleared] = useState(false);
@@ -86,16 +93,36 @@ export default function TopicSection({
             <span className={`${styles.note} ${open ? styles.noteVisible : ''}`}>{note}</span>
           )}
         </span>
-        {complete ? (
-          <span className={`${styles.cleared} ${justCleared ? styles.clearedStamp : ''}`}>
-            <Flag size={12} />
-            Cleared
-          </span>
-        ) : (
-          <span className={`${styles.fraction} mono`}>
-            {solved}/{group.problems.length}
-          </span>
-        )}
+        <div className={styles.headerMeta}>
+          {open && (
+            <button
+              type="button"
+              className={`${styles.checkAllBtn} ${complete ? styles.checkAllBtnComplete : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleToggleAll();
+              }}
+              title={complete ? 'Uncheck all problems in this topic' : 'Check all problems in this topic'}
+              aria-label={complete ? 'Uncheck all problems' : 'Check all problems'}
+            >
+              <span className={`${styles.checkAllBox} ${complete ? styles.checkAllBoxActive : ''}`}>
+                {complete && <Check size={11} strokeWidth={3} />}
+              </span>
+              <span className={styles.checkAllLabel}>{complete ? 'Uncheck all' : 'Check all'}</span>
+            </button>
+          )}
+
+          {complete ? (
+            <span className={`${styles.cleared} ${justCleared ? styles.clearedStamp : ''}`}>
+              <Flag size={12} />
+              Cleared
+            </span>
+          ) : (
+            <span className={`${styles.fraction} mono`}>
+              {solved}/{group.problems.length}
+            </span>
+          )}
+        </div>
       </div>
       <Lane percent={percent} color={accent} size="sm" />
 
@@ -104,7 +131,20 @@ export default function TopicSection({
           <div className={styles.problems}>
             <div className={styles.table}>
               <div className={styles.tableHeader}>
-                <span className={styles.thCheck} />
+                <span className={styles.thCheck}>
+                  <button
+                    type="button"
+                    className={`${styles.thCheckBtn} ${complete ? styles.thCheckBtnActive : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleAll();
+                    }}
+                    title={complete ? 'Uncheck all problems' : 'Check all problems'}
+                    aria-label={complete ? 'Uncheck all problems' : 'Check all problems'}
+                  >
+                    {complete && <Check size={11} strokeWidth={3} />}
+                  </button>
+                </span>
                 <span className={styles.thIndex}>#</span>
                 <span className={styles.thTitle}>Problem Title</span>
                 <span className={styles.thDiff}>Difficulty</span>
