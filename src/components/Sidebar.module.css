@@ -155,41 +155,25 @@
   color: var(--text-tertiary);
 }
 
-/* Admin Link Styling */
+/* Admin Section Styling */
+.adminSection {
+  width: 100%;
+}
+
 .adminLink {
-  color: #f87171 !important;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.18);
-  margin-top: 4px;
+  width: 100%;
+  color: var(--text-secondary);
 }
 
 .adminLink:hover {
-  background: rgba(239, 68, 68, 0.16) !important;
-  color: #fca5a5 !important;
-  border-color: rgba(239, 68, 68, 0.35);
+  color: var(--text-primary);
+  background: var(--surface-hover);
 }
 
-.adminLinkActive {
-  background: rgba(239, 68, 68, 0.22) !important;
-  color: #ffffff !important;
-  border-color: #ef4444 !important;
+.adminLink.active {
+  color: var(--text-primary);
+  background: var(--surface-hover);
   font-weight: 600;
-}
-
-.adminIcon {
-  color: #ef4444;
-}
-
-.adminBadge {
-  margin-left: auto;
-  font-size: 0.6rem;
-  font-weight: 800;
-  font-family: var(--font-mono);
-  padding: 1px 5px;
-  border-radius: 4px;
-  background: #ef4444;
-  color: #ffffff;
-  letter-spacing: 0.05em;
 }
 
 .tracks {
@@ -287,12 +271,19 @@
 
 .footer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: var(--space-2);
   padding: var(--space-3) var(--space-2) 0;
   margin-top: var(--space-3);
   border-top: 1px solid var(--border-hairline);
-  min-height: 40px;
+}
+
+.footerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 36px;
 }
 
 .streak {
@@ -465,6 +456,19 @@
   width: 100%;
 }
 
+.sidebar.collapsed .adminSection {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.sidebar.collapsed .footerRow {
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
 .sidebar.collapsed .footerActions {
   flex-direction: column;
   align-items: center;
@@ -487,7 +491,6 @@
   .kbd,
   .utilityLink span,
   .navBadge,
-  .adminBadge,
   .tracksHeading,
   .trackTop,
   .streak span,
@@ -541,6 +544,12 @@
     align-items: center;
     gap: 12px;
     padding: var(--space-3) 0 0;
+  }
+
+  .footerRow {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
   }
 
   .footerActions {

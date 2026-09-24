@@ -9,7 +9,7 @@ import {
   CalendarDays,
   PanelLeftClose,
   PanelLeftOpen,
-  ShieldAlert,
+  ShieldCheck,
 } from 'lucide-react';
 import { TRACK_META, TRACK_ORDER } from '../data';
 import { useTrackStats } from '../hooks/useTrackStats';
@@ -144,23 +144,6 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
           <BarChart3 size={16} />
           {!isCollapsed && <span>Progress &amp; streaks</span>}
         </NavLink>
-
-        {/* Admin Command Center (Strictly PC + Shreyas Mandem only) */}
-        {isDesktop && isAdmin && (
-          <NavLink
-            to="/admin"
-            className={`${styles.utilityLink} ${styles.adminLink} ${isAdminActive ? styles.adminLinkActive : ''}`}
-            title={isCollapsed ? 'Admin Command Center (Root)' : undefined}
-          >
-            <ShieldAlert size={16} className={styles.adminIcon} />
-            {!isCollapsed && (
-              <>
-                <span>Admin Panel</span>
-                <span className={styles.adminBadge}>ROOT</span>
-              </>
-            )}
-          </NavLink>
-        )}
       </nav>
 
       {/* Enrolled Tracks */}
@@ -243,33 +226,51 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
 
       {/* Footer */}
       <div className={styles.footer}>
-        <div
-          className={styles.streak}
-          title={`${streak} day active streak`}
-        >
-          <Flame
-            key={streak}
-            size={16}
-            className={streak > 0 ? styles.flameActive : styles.flameIdle}
-          />
-          {!isCollapsed && (
-            <span>
-              <span className="numeric">{streak}</span> day{streak === 1 ? '' : 's'}
-            </span>
-          )}
-        </div>
+        {/* Admin Section (Strictly PC + Shreyas Mandem only, subtle & docked above streak/settings) */}
+        {isDesktop && isAdmin && (
+          <div className={styles.adminSection}>
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                `${styles.utilityLink} ${styles.adminLink} ${isActive ? styles.active : ''}`
+              }
+              title={isCollapsed ? 'Admin Panel' : undefined}
+            >
+              <ShieldCheck size={16} />
+              {!isCollapsed && <span>Admin Panel</span>}
+            </NavLink>
+          </div>
+        )}
 
-        <div className={styles.footerActions}>
-          <ThemeToggle />
-          <NavLink
-            to="/settings"
-            className={styles.iconButton}
-            aria-label="Settings"
-            title={isCollapsed ? 'Settings' : undefined}
+        <div className={styles.footerRow}>
+          <div
+            className={styles.streak}
+            title={`${streak} day active streak`}
           >
-            <Settings size={16} />
-          </NavLink>
-          <AccountButton />
+            <Flame
+              key={streak}
+              size={16}
+              className={streak > 0 ? styles.flameActive : styles.flameIdle}
+            />
+            {!isCollapsed && (
+              <span>
+                <span className="numeric">{streak}</span> day{streak === 1 ? '' : 's'}
+              </span>
+            )}
+          </div>
+
+          <div className={styles.footerActions}>
+            <ThemeToggle />
+            <NavLink
+              to="/settings"
+              className={styles.iconButton}
+              aria-label="Settings"
+              title={isCollapsed ? 'Settings' : undefined}
+            >
+              <Settings size={16} />
+            </NavLink>
+            <AccountButton />
+          </div>
         </div>
       </div>
     </aside>
