@@ -10,18 +10,26 @@
   min-width: 0;
   margin-left: 248px;
   overflow-x: hidden;
+  transition: margin-left 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.mainCollapsed {
+  margin-left: 72px;
 }
 
 @media (max-width: 1080px) {
-  .main {
-    margin-left: 76px;
+  .main,
+  .mainCollapsed {
+    margin-left: 72px;
   }
 }
 
 @media (max-width: 760px) {
-  .main {
+  .main,
+  .mainCollapsed {
     margin-left: 0;
-    /* Use dvh so height stays stable when browser chrome appears/hides */
     min-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     padding-top: calc(env(safe-area-inset-top, 0px) + 14px);
     padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
@@ -33,6 +41,7 @@
 .pageTransition {
   animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
   will-change: opacity;
+  flex: 1;
 }
 
 @keyframes pageFadeIn {
@@ -44,3 +53,84 @@
   }
 }
 
+/* Global Announcement Banner */
+.broadcastBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+  animation: bannerSlideDown 0.25s ease-out;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  backdrop-filter: blur(12px);
+}
+
+@keyframes bannerSlideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.broadcastInfo {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+}
+
+.broadcastWarning {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+}
+
+.broadcastAlert {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.broadcastSuccess {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #6ee7b7;
+}
+
+.broadcastContent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.broadcastLink {
+  margin-left: 8px;
+  text-decoration: underline;
+  font-weight: 600;
+  color: currentColor;
+}
+
+.broadcastCloseBtn {
+  background: none;
+  border: none;
+  color: currentColor;
+  opacity: 0.7;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: opacity 0.15s ease;
+}
+
+.broadcastCloseBtn:hover {
+  opacity: 1;
+}

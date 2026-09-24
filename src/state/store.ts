@@ -73,6 +73,10 @@ interface PaceState {
   searchOpen: boolean;
   setSearchOpen: (v: boolean) => void;
 
+  sidebarCollapsed: boolean;
+  toggleSidebar: () => void;
+  setSidebarCollapsed: (v: boolean) => void;
+
   planner: Record<string, PlanItem[]>;
   addToPlan: (date: string, items: Omit<PlanItem, 'id'>[]) => void;
   removeFromPlan: (date: string, itemId: string) => void;
@@ -247,6 +251,10 @@ export const usePaceStore = create<PaceState>()(
 
       searchOpen: false,
       setSearchOpen: (v) => set({ searchOpen: v }),
+
+      sidebarCollapsed: false,
+      toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+      setSidebarCollapsed: (v) => set({ sidebarCollapsed: v }),
 
       planner: {},
       addToPlan: (date, items) =>
@@ -471,6 +479,7 @@ export const usePaceStore = create<PaceState>()(
           bookmarks: persistedState?.bookmarks ?? {},
           solveLog: persistedState?.solveLog ?? {},
           planner: persistedState?.planner ?? {},
+          sidebarCollapsed: Boolean(persistedState?.sidebarCollapsed),
           registeredTracks: Array.isArray(persistedState?.registeredTracks)
             ? persistedState.registeredTracks
             : [],

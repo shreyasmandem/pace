@@ -1,9 +1,22 @@
+import { useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Flame, Search, Settings, BarChart3, Building2, CalendarDays } from 'lucide-react';
+import {
+  Flame,
+  Search,
+  Settings,
+  BarChart3,
+  Building2,
+  CalendarDays,
+  PanelLeftClose,
+  PanelLeftOpen,
+  ShieldAlert,
+} from 'lucide-react';
 import { TRACK_META, TRACK_ORDER } from '../data';
 import { useTrackStats } from '../hooks/useTrackStats';
-import { usePaceStore } from '../state/store';
-import { currentStreak } from '../state/store';
+import { usePaceStore, currentStreak } from '../state/store';
+import { useAuthUser } from '../hooks/useAuth';
+import { useIsDesktop } from '../hooks/useIsDesktop';
+import { isPaceAdmin } from '../lib/admin';
 import Lane from './Lane';
 import ThemeToggle from './ThemeToggle';
 import AccountButton from './AccountButton';
@@ -16,74 +29,194 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
   const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
   const streak = currentStreak(solveLog);
 
+  const sidebarCollapsed = usePaceStore((s) => s.sidebarCollapsed);
+  const toggleSidebar = usePaceStore((s) => s.toggleSidebar);
+
+  const isDesktop = useIsDesktop(1080);
+  const { user } = useAuthUser();
+  const isAdmin = isPaceAdmin(user);
+
+  // Keyboard shortcut Ctrl+B or Cmd+B to toggle sidebar on desktop
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        toggleSidebar();
+      }
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [toggleSidebar]);
+
   const isCompanyActive = location.pathname.startsWith('/compan');
+  const isAdminActive = location.pathname.startsWith('/admin');
+
+  // True collapsed state only on PC when user chose to collapse
+  const isCollapsed = isDesktop && sidebarCollapsed;
 
   return (
-    <aside className={styles.sidebar}>
-      <NavLink to="/" className={styles.brand}>
-        <img src="/pace-mark.png" alt="" className={styles.mark} />
-        <span className={styles.wordmark}>Pace</span>
-      </NavLink>
+    <aside
+      className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ''}`}
+      aria-label="Main Navigation"
+    >
+      {/* Brand Header */}
+      <div className={styles.brandRow}>
+        <NavLink
+          to="/"
+          className={styles.brand}
+          title={isCollapsed ? 'Pace Dashboard' : undefined}
+        >
+          <img src="/pace-mark.png" alt="Pace" className={styles.mark} />
+          {!isCollapsed && <span className={styles.wordmark}>PACE</span>}
+        </NavLink>
 
-      <button className={styles.searchTrigger} onClick={onOpenSearch}>
-        <Search size={15} />
-        <span>Search problems</span>
-        <kbd className={styles.kbd}>⌘K</kbd>
+        {isDesktop && !isCollapsed && (
+          <button
+            type="button"
+            className={styles.toggleCollapseBtn}
+            onClick={toggleSidebar}
+            title="Minimize sidebar (Ctrl+B)"
+            aria-label="Minimize sidebar"
+          >
+            <PanelLeftClose size={16} />
+          </button>
+        )}
+
+        {isDesktop && isCollapsed && (
+          <button
+            type="button"
+            className={styles.toggleExpandBtn}
+            onClick={toggleSidebar}
+            title="Expand sidebar (Ctrl+B)"
+            aria-label="Expand sidebar"
+          >
+            <PanelLeftOpen size={16} />
+          </button>
+        )}
+      </div>
+
+      {/* Search Bar */}
+      <button
+        type="button"
+        className={styles.searchTrigger}
+        onClick={onOpenSearch}
+        title={isCollapsed ? 'Search problems (⌘K)' : undefined}
+      >
+        <Search size={16} />
+        {!isCollapsed && (
+          <>
+            <span>Search problems</span>
+            <kbd className={styles.kbd}>⌘K</kbd>
+          </>
+        )}
       </button>
 
+      {/* Main Nav */}
       <nav className={styles.nav}>
         <NavLink
           to="/planner"
           className={({ isActive }) => `${styles.utilityLink} ${isActive ? styles.active : ''}`}
+          title={isCollapsed ? 'Roadmap & Planner' : undefined}
         >
-          <CalendarDays size={15} />
-          <span>Roadmap &amp; Planner</span>
+          <CalendarDays size={16} />
+          {!isCollapsed && <span>Roadmap &amp; Planner</span>}
         </NavLink>
+
         <NavLink
           to="/companies"
           className={`${styles.utilityLink} ${isCompanyActive ? styles.active : ''}`}
+          title={isCollapsed ? 'Company DSA (500+)' : undefined}
         >
-          <Building2 size={15} />
-          <span>Company DSA</span>
-          <span className={styles.navBadge}>500+</span>
+          <Building2 size={16} />
+          {!isCollapsed && (
+            <>
+              <span>Company DSA</span>
+              <span className={styles.navBadge}>500+</span>
+            </>
+          )}
         </NavLink>
+
         <NavLink
           to="/stats"
           className={({ isActive }) => `${styles.utilityLink} ${isActive ? styles.active : ''}`}
+          title={isCollapsed ? 'Progress & streaks' : undefined}
         >
-          <BarChart3 size={15} />
-          <span>Progress &amp; streaks</span>
+          <BarChart3 size={16} />
+          {!isCollapsed && <span>Progress &amp; streaks</span>}
         </NavLink>
+
+        {/* Admin Command Center (Strictly PC + Shreyas Mandem only) */}
+        {isDesktop && isAdmin && (
+          <NavLink
+            to="/admin"
+            className={`${styles.utilityLink} ${styles.adminLink} ${isAdminActive ? styles.adminLinkActive : ''}`}
+            title={isCollapsed ? 'Admin Command Center (Root)' : undefined}
+          >
+            <ShieldAlert size={16} className={styles.adminIcon} />
+            {!isCollapsed && (
+              <>
+                <span>Admin Panel</span>
+                <span className={styles.adminBadge}>ROOT</span>
+              </>
+            )}
+          </NavLink>
+        )}
       </nav>
 
+      {/* Enrolled Tracks */}
       <div className={styles.tracks}>
-        <span className={styles.tracksHeading}>Enrolled Tracks</span>
+        {!isCollapsed && <span className={styles.tracksHeading}>Enrolled Tracks</span>}
+
         {registeredTracks.length === 0 ? (
-          <div style={{ padding: '8px 12px', fontSize: '0.78rem', color: 'var(--text-tertiary)' }}>
-            <span>No tracks enrolled.</span>
+          !isCollapsed ? (
+            <div className={styles.noTracksBox}>
+              <span>No tracks enrolled.</span>
+              <NavLink to="/settings" className={styles.registerTrackLink}>
+                + Register tracks →
+              </NavLink>
+            </div>
+          ) : (
             <NavLink
               to="/settings"
-              style={{
-                display: 'block',
-                marginTop: '4px',
-                color: 'var(--accent)',
-                textDecoration: 'none',
-                fontWeight: 500,
-              }}
+              className={styles.collapsedAddTrack}
+              title="Register tracks"
             >
-              + Register tracks →
+              +
             </NavLink>
-          </div>
+          )
         ) : (
-          <ul>
+          <ul className={styles.trackList}>
             {registeredTracks.map((id) => {
               const meta = TRACK_META[id];
               const stat = stats[id];
+              const titleTooltip = `${meta.label}: ${stat.solved}/${stat.total} solved (${Math.round(stat.percent)}%)`;
+
+              if (isCollapsed) {
+                return (
+                  <li key={id}>
+                    <NavLink
+                      to={`/track/${id}`}
+                      className={({ isActive }) =>
+                        `${styles.collapsedTrackTile} ${isActive ? styles.active : ''}`
+                      }
+                      title={titleTooltip}
+                    >
+                      <span className={styles.collapsedTrackLabel}>{meta.shortLabel}</span>
+                      <div
+                        className={styles.collapsedTrackDot}
+                        style={{ background: meta.accent }}
+                      />
+                    </NavLink>
+                  </li>
+                );
+              }
+
               return (
                 <li key={id}>
                   <NavLink
                     to={`/track/${id}`}
                     className={({ isActive }) => `${styles.trackRow} ${isActive ? styles.active : ''}`}
+                    title={titleTooltip}
                   >
                     <span className={styles.trackTop}>
                       <span className={styles.trackName}>{meta.shortLabel}</span>
@@ -96,22 +229,10 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
                 </li>
               );
             })}
-            {registeredTracks.length < TRACK_ORDER.length && (
+
+            {!isCollapsed && registeredTracks.length < TRACK_ORDER.length && (
               <li>
-                <NavLink
-                  to="/settings"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '6px 12px',
-                    fontSize: '0.75rem',
-                    color: 'var(--text-tertiary)',
-                    textDecoration: 'none',
-                    borderRadius: 'var(--radius-sm)',
-                    marginTop: '4px',
-                  }}
-                >
+                <NavLink to="/settings" className={styles.exploreTracksLink}>
                   <span>+ Explore more tracks</span>
                 </NavLink>
               </li>
@@ -120,16 +241,32 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
         )}
       </div>
 
+      {/* Footer */}
       <div className={styles.footer}>
-        <div className={styles.streak}>
-          <Flame key={streak} size={15} className={streak > 0 ? styles.flameActive : styles.flameIdle} />
-          <span>
-            <span className="numeric">{streak}</span> day{streak === 1 ? '' : 's'}
-          </span>
+        <div
+          className={styles.streak}
+          title={`${streak} day active streak`}
+        >
+          <Flame
+            key={streak}
+            size={16}
+            className={streak > 0 ? styles.flameActive : styles.flameIdle}
+          />
+          {!isCollapsed && (
+            <span>
+              <span className="numeric">{streak}</span> day{streak === 1 ? '' : 's'}
+            </span>
+          )}
         </div>
+
         <div className={styles.footerActions}>
           <ThemeToggle />
-          <NavLink to="/settings" className={styles.iconButton} aria-label="Settings">
+          <NavLink
+            to="/settings"
+            className={styles.iconButton}
+            aria-label="Settings"
+            title={isCollapsed ? 'Settings' : undefined}
+          >
             <Settings size={16} />
           </NavLink>
           <AccountButton />
