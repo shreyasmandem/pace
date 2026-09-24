@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, ChevronRight, Flag } from 'lucide-react';
+import { Check, ChevronRight, Flag, Minus } from 'lucide-react';
 import type { Problem, TopicGroup } from '../types';
 import { usePaceStore } from '../state/store';
 import ProblemRow from './ProblemRow';
@@ -40,6 +40,7 @@ export default function TopicSection({
   const solved = group.problems.reduce((n, p) => n + (progress[p.id] ? 1 : 0), 0);
   const percent = group.problems.length ? (solved / group.problems.length) * 100 : 0;
   const complete = solved === group.problems.length && group.problems.length > 0;
+  const partial = solved > 0 && !complete;
 
   const handleToggleAll = () => {
     const ids = group.problems.map((p) => p.id);
@@ -97,7 +98,7 @@ export default function TopicSection({
           {open && (
             <button
               type="button"
-              className={`${styles.checkAllBtn} ${complete ? styles.checkAllBtnComplete : ''}`}
+              className={`${styles.checkAllBtn} ${complete ? styles.checkAllBtnComplete : partial ? styles.checkAllBtnPartial : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
                 handleToggleAll();
@@ -105,8 +106,8 @@ export default function TopicSection({
               title={complete ? 'Uncheck all problems in this topic' : 'Check all problems in this topic'}
               aria-label={complete ? 'Uncheck all problems' : 'Check all problems'}
             >
-              <span className={`${styles.checkAllBox} ${complete ? styles.checkAllBoxActive : ''}`}>
-                {complete && <Check size={11} strokeWidth={3} />}
+              <span className={`${styles.checkAllBox} ${complete ? styles.checkAllBoxActive : partial ? styles.checkAllBoxPartial : ''}`}>
+                {complete ? <Check size={11} strokeWidth={3} /> : partial ? <Minus size={11} strokeWidth={3} /> : null}
               </span>
               <span className={styles.checkAllLabel}>{complete ? 'Uncheck all' : 'Check all'}</span>
             </button>
@@ -134,7 +135,7 @@ export default function TopicSection({
                 <span className={styles.thCheck}>
                   <button
                     type="button"
-                    className={`${styles.thCheckBtn} ${complete ? styles.thCheckBtnActive : ''}`}
+                    className={`${styles.thCheckBtn} ${complete ? styles.thCheckBtnActive : partial ? styles.thCheckBtnPartial : ''}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       handleToggleAll();
@@ -142,7 +143,7 @@ export default function TopicSection({
                     title={complete ? 'Uncheck all problems' : 'Check all problems'}
                     aria-label={complete ? 'Uncheck all problems' : 'Check all problems'}
                   >
-                    {complete && <Check size={11} strokeWidth={3} />}
+                    {complete ? <Check size={12} strokeWidth={3} /> : partial ? <Minus size={12} strokeWidth={3} /> : null}
                   </button>
                 </span>
                 <span className={styles.thIndex}>#</span>

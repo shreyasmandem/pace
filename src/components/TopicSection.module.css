@@ -119,6 +119,11 @@
   color: var(--difficulty-easy);
 }
 
+.checkAllBtnPartial {
+  border-color: rgba(255, 107, 0, 0.35);
+  color: var(--accent);
+}
+
 .checkAllBox {
   display: flex;
   align-items: center;
@@ -135,6 +140,12 @@
 .checkAllBoxActive {
   background: var(--difficulty-easy);
   border-color: var(--difficulty-easy);
+  color: var(--accent-ink);
+}
+
+.checkAllBoxPartial {
+  background: var(--accent);
+  border-color: var(--accent);
   color: var(--accent-ink);
 }
 
@@ -247,8 +258,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 17px;
-  height: 17px;
+  width: 19px;
+  height: 19px;
   padding: 0;
   margin: 0;
   border-radius: 4px;
@@ -267,6 +278,11 @@
 }
 
 .thCheckBtnActive {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.thCheckBtnPartial {
   background: var(--accent);
   border-color: var(--accent);
 }
