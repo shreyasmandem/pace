@@ -36,6 +36,10 @@ const TOP_TECH = [
   { id: 'infosys', name: 'Infosys' },
 ];
 
+const ALL_COMPANIES_SORTED = [...COMPANIES].sort((a, b) =>
+  a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+);
+
 const DIFFICULTIES = ['All', 'Easy', 'Medium', 'Hard'];
 const STATUSES = ['All', 'Solved', 'Unsolved'];
 const PAGE_SIZE = 50;
@@ -187,13 +191,13 @@ export default function CompanySheet() {
     return filteredProblems.slice(0, displayLimit);
   }, [filteredProblems, displayLimit]);
 
-  // Filtered company list for dropdown
+  // Filtered company list for dropdown (alphabetical order, all 500+ companies)
   const dropdownCompanies = useMemo(() => {
     const q = companySearch.trim().toLowerCase();
-    if (!q) return COMPANIES.slice(0, 100);
-    return COMPANIES.filter(
+    if (!q) return ALL_COMPANIES_SORTED;
+    return ALL_COMPANIES_SORTED.filter(
       (c) => c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q)
-    ).slice(0, 100);
+    );
   }, [companySearch]);
 
   const selectCompany = (id: string) => {
