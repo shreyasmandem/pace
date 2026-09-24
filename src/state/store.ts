@@ -64,6 +64,7 @@ interface PaceState {
   tutorChats: Record<string, ChatMessage[]>;
   addTutorMessage: (topicKey: string, message: { role: 'user' | 'assistant'; content: string }) => void;
   clearTutorChat: (topicKey: string) => void;
+  clearAllTutorChats: () => void;
 
   bookmarks: Record<string, boolean>;
   toggleBookmark: (id: string) => void;
@@ -237,6 +238,8 @@ export const usePaceStore = create<PaceState>()(
           delete tutorChats[topicKey];
           return { tutorChats };
         }),
+      clearAllTutorChats: () =>
+        set({ tutorChats: {} }),
 
       bookmarks: {},
       toggleBookmark: (id) =>
@@ -392,7 +395,28 @@ export const usePaceStore = create<PaceState>()(
           }
           return { progress, notes, bookmarks };
         }),
-      resetAll: () =>
+      resetAll: () => {
+        try {
+          if (typeof window !== 'undefined' && window.localStorage) {
+            const toRemove: string[] = [];
+            for (let i = 0; i < window.localStorage.length; i++) {
+              const k = window.localStorage.key(i);
+              if (
+                k &&
+                (k.startsWith('pacer_') ||
+                  k.startsWith('pace_tutor') ||
+                  k.includes('chat') ||
+                  k.includes('tutor'))
+              ) {
+                toRemove.push(k);
+              }
+            }
+            toRemove.forEach((k) => window.localStorage.removeItem(k));
+          }
+        } catch {
+          // ignore
+        }
+
         set({
           progress: {},
           notes: {},
@@ -401,7 +425,8 @@ export const usePaceStore = create<PaceState>()(
           tutorChats: {},
           planner: {},
           registeredTracks: [],
-        }),
+        });
+      },
 
       exportSnapshot: () => {
         const { progress, notes, bookmarks, solveLog, tutorChats, planner, registeredTracks, tutorLanguage } = get();

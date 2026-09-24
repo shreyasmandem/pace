@@ -534,6 +534,7 @@ export async function adminResetUserProgress(
         progress: {},
         solveLog: {},
         planner: {},
+        tutorChats: {},
         updatedAt: Date.now(),
       },
       { merge: true }

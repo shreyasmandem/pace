@@ -5,8 +5,9 @@ import type { Theme, TutorLanguage } from '../state/store';
 import type { TrackId } from '../types';
 import { TRACK_ORDER, TRACK_META, getTrack } from '../data';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { doc, setDoc } from 'firebase/firestore';
 import { useAuthUser, useSyncStatus, notifyProfileUpdated } from '../hooks/useAuth';
-import { signInWithGoogle, signOut, firebaseEnabled, updateUserDisplayName } from '../lib/firebase';
+import { signInWithGoogle, signOut, firebaseEnabled, updateUserDisplayName, db } from '../lib/firebase';
 import { updateLeaderboardDisplayName, publishToLeaderboard, calculateWeeklySolves } from '../lib/leaderboard';
 import styles from './Settings.module.css';
 
@@ -74,6 +75,8 @@ export default function Settings() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importMessage, setImportMessage] = useState<string | null>(null);
   const [confirmingReset, setConfirmingReset] = useState(false);
+  const [resetMessage, setResetMessage] = useState<string | null>(null);
+  const [isResetting, setIsResetting] = useState(false);
   const [unregisteringTrackId, setUnregisteringTrackId] = useState<TrackId | null>(null);
   const { user } = useAuthUser();
   const syncStatus = useSyncStatus();
@@ -161,6 +164,89 @@ export default function Settings() {
     };
     reader.readAsText(file);
     e.target.value = '';
+  }
+
+  async function handleResetAll() {
+    setIsResetting(true);
+    try {
+      // 1. Reset local Zustand store
+      resetAll();
+
+      // 2. Extra safety: scrub localStorage directly
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          const raw = localStorage.getItem('pace-store');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed?.state) {
+              parsed.state.tutorChats = {};
+              parsed.state.progress = {};
+              parsed.state.notes = {};
+              parsed.state.bookmarks = {};
+              parsed.state.solveLog = {};
+              parsed.state.planner = {};
+              parsed.state.registeredTracks = [];
+              localStorage.setItem('pace-store', JSON.stringify(parsed));
+            }
+          }
+          const toRemove: string[] = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (
+              k &&
+              (k.startsWith('pacer_') ||
+                k.startsWith('pace_tutor') ||
+                k.includes('chat') ||
+                k.includes('tutor'))
+            ) {
+              toRemove.push(k);
+            }
+          }
+          toRemove.forEach((k) => localStorage.removeItem(k));
+        }
+      } catch {
+        // ignore
+      }
+
+      // 3. Clear remote Firestore documents if signed in
+      if (db && user?.uid) {
+        try {
+          await setDoc(
+            doc(db, 'users', user.uid),
+            {
+              progress: {},
+              notes: {},
+              bookmarks: {},
+              solveLog: {},
+              planner: {},
+              tutorChats: {},
+              registeredTracks: [],
+              resetVersion: 2,
+              updatedAt: Date.now(),
+            },
+            { merge: true }
+          );
+        } catch (err) {
+          console.warn('Failed clearing Firestore user doc on resetAll:', err);
+        }
+        try {
+          await publishToLeaderboard(user.uid, user, {
+            solvedCount: 0,
+            streak: 0,
+            weeklyCount: 0,
+            activeDays: 0,
+          });
+        } catch {
+          // ignore
+        }
+      }
+
+      setResetMessage('All progress, personal notes, bookmarks, and Pacer AI tutor chat history have been permanently reset.');
+      setTimeout(() => setResetMessage(null), 5000);
+    } finally {
+      setIsResetting(false);
+      setConfirmingReset(false);
+    }
   }
 
   return (
@@ -417,9 +503,18 @@ export default function Settings() {
         <p className={styles.blockText}>
           Clear all solved progress, bookmarks, personal notes, and Pacer AI tutor chat history across every track and company. Export a backup first if you might want it back.
         </p>
-        <button className={styles.dangerButton} onClick={() => setConfirmingReset(true)}>
-          Reset all progress
+        <button
+          className={styles.dangerButton}
+          onClick={() => setConfirmingReset(true)}
+          disabled={isResetting}
+        >
+          {isResetting ? 'Resetting...' : 'Reset all progress'}
         </button>
+        {resetMessage && (
+          <p className={styles.importMessage} style={{ color: 'var(--color-accent-amber, #f59e0b)', marginTop: '0.75rem' }}>
+            {resetMessage}
+          </p>
+        )}
       </section>
 
       {confirmingReset && (
@@ -427,10 +522,7 @@ export default function Settings() {
           title="Reset all progress?"
           body="This will permanently delete all your solved progress, bookmarks, personal notes, and Pacer AI tutor chat history across every track and company. This cannot be undone."
           confirmLabel="Reset everything"
-          onConfirm={() => {
-            resetAll();
-            setConfirmingReset(false);
-          }}
+          onConfirm={handleResetAll}
           onCancel={() => setConfirmingReset(false)}
         />
       )}
