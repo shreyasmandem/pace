@@ -6,6 +6,8 @@ import {
   setDoc,
   deleteDoc,
   onSnapshot,
+  updateDoc,
+  deleteField,
 } from 'firebase/firestore';
 import { db, auth } from './firebase';
 
@@ -46,6 +48,7 @@ export interface BroadcastAnnouncement {
   linkText?: string;
   updatedAt: number;
   updatedBy: string;
+  deleted?: boolean;
 }
 
 export interface AuditLogEntry {
@@ -646,7 +649,24 @@ export function getCachedBroadcast(): BroadcastAnnouncement | null {
     const raw = localStorage.getItem(BROADCAST_STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    if (parsed && typeof parsed === 'object') return parsed as BroadcastAnnouncement;
+    if (parsed && typeof parsed === 'object') {
+      // Must be explicitly active, non-empty, and not marked deleted
+      if (
+        parsed.active === true &&
+        typeof parsed.message === 'string' &&
+        parsed.message.trim() &&
+        !parsed.deleted
+      ) {
+        return parsed as BroadcastAnnouncement;
+      }
+      // Purge invalid, empty, or deleted cached announcement immediately
+      try {
+        localStorage.removeItem(BROADCAST_STORAGE_KEY);
+      } catch {
+        // ignore
+      }
+      return null;
+    }
   } catch {
     // ignore
   }
@@ -654,54 +674,45 @@ export function getCachedBroadcast(): BroadcastAnnouncement | null {
 }
 
 export async function fetchBroadcastAnnouncement(): Promise<BroadcastAnnouncement | null> {
-  let result: BroadcastAnnouncement | null = null;
-
-  if (db) {
-    // 1. Try reading from system/announcement
-    try {
-      const snap = await getDoc(doc(db, 'system', 'announcement'));
-      if (snap.exists()) {
-        const data = snap.data() as BroadcastAnnouncement;
-        if (data && data.message !== undefined) {
-          result = data;
-        }
-      }
-    } catch {
-      // Permission or collection error
-    }
-
-    // 2. If not found, check leaderboard collection
-    if (!result || !result.message) {
-      try {
-        const lbSnap = await getDocs(collection(db, 'leaderboard'));
-        lbSnap.forEach((d) => {
-          const data = d.data();
-          if (data.systemAnnouncement && data.systemAnnouncement.updatedAt) {
-            if (!result || data.systemAnnouncement.updatedAt > (result.updatedAt || 0)) {
-              result = data.systemAnnouncement as BroadcastAnnouncement;
-            }
-          }
-        });
-      } catch {
-        // ignore
-      }
-    }
+  const firestore = db;
+  if (!firestore) {
+    const cached = getCachedBroadcast();
+    return cached && cached.active && cached.message && !cached.deleted ? cached : null;
   }
 
-  // 3. Fallback to localStorage cache
-  if (!result) {
-    result = getCachedBroadcast();
+  try {
+    const snap = await getDoc(doc(firestore, 'system', 'announcement'));
+    if (snap.exists()) {
+      const data = snap.data() as (BroadcastAnnouncement & { deleted?: boolean });
+      if (
+        data &&
+        data.active === true &&
+        typeof data.message === 'string' &&
+        data.message.trim() &&
+        !data.deleted
+      ) {
+        return data;
+      }
+      // Inactive, empty, or marked deleted -> no active announcement
+      return null;
+    }
+    // Document does not exist in Firestore -> no active announcement
+    return null;
+  } catch (err) {
+    console.warn('fetchBroadcastAnnouncement error:', err);
+    return null;
   }
-
-  return result;
 }
 
 export async function updateBroadcastAnnouncement(
   announcement: BroadcastAnnouncement,
   adminUid?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const payload: BroadcastAnnouncement = {
+  const isActive = Boolean(announcement.active && announcement.message && announcement.message.trim());
+  const payload: BroadcastAnnouncement & { deleted: boolean } = {
     ...announcement,
+    active: isActive,
+    deleted: false,
     updatedAt: Date.now(),
     updatedBy: announcement.updatedBy || ADMIN_EMAIL,
   };
@@ -709,45 +720,71 @@ export async function updateBroadcastAnnouncement(
   let writeSucceeded = false;
   let lastError: string | undefined;
 
-  // 1. Write to local storage for instant sync across tabs & session
-  try {
-    localStorage.setItem(BROADCAST_STORAGE_KEY, JSON.stringify(payload));
-    writeSucceeded = true;
-  } catch {
-    // ignore
+  // 1. Local storage: store only if active, otherwise remove immediately
+  if (isActive) {
+    try {
+      localStorage.setItem(BROADCAST_STORAGE_KEY, JSON.stringify(payload));
+      writeSucceeded = true;
+    } catch {
+      // ignore
+    }
+  } else {
+    try {
+      localStorage.removeItem(BROADCAST_STORAGE_KEY);
+      sessionStorage.removeItem('pace_dismissed_broadcast');
+      writeSucceeded = true;
+    } catch {
+      // ignore
+    }
   }
 
-  // 2. Write to leaderboard collection under adminUid (guaranteed by live Firestore rules!)
-  const uid = adminUid || auth?.currentUser?.uid;
-  if (db && uid) {
+  // 2. Write to system/announcement as the single platform source of truth
+  const firestore = db;
+  if (firestore) {
     try {
-      await setDoc(
-        doc(db, 'leaderboard', uid),
-        { systemAnnouncement: payload },
-        { merge: true }
-      );
+      await setDoc(doc(firestore, 'system', 'announcement'), payload);
       writeSucceeded = true;
     } catch (err: any) {
-      console.warn('Writing announcement to leaderboard doc failed:', err);
+      console.warn('Writing to system/announcement failed:', err);
       lastError = err?.message;
     }
-  }
 
-  // 3. Write to system/announcement (for when /system rules are enabled)
-  if (db) {
+    // Clean up legacy leaderboard documents so no zombie announcement lingers
     try {
-      await setDoc(doc(db, 'system', 'announcement'), payload, { merge: true });
-      writeSucceeded = true;
-    } catch (err: any) {
-      console.warn('Writing to system/announcement failed (likely rules):', err);
-      if (!lastError) lastError = err?.message;
+      const uid = adminUid || auth?.currentUser?.uid;
+      if (uid) {
+        await setDoc(
+          doc(firestore, 'leaderboard', uid),
+          { systemAnnouncement: null },
+          { merge: true }
+        );
+      }
+      if (!isActive) {
+        const lbSnap = await getDocs(collection(firestore, 'leaderboard'));
+        const clearPromises: Promise<any>[] = [];
+        lbSnap.forEach((d) => {
+          if (d.data().systemAnnouncement) {
+            clearPromises.push(
+              updateDoc(doc(firestore, 'leaderboard', d.id), {
+                systemAnnouncement: deleteField(),
+              }).catch(() => {
+                return setDoc(doc(firestore, 'leaderboard', d.id), { systemAnnouncement: null }, { merge: true });
+              })
+            );
+          }
+        });
+        await Promise.all(clearPromises);
+      }
+    } catch {
+      // ignore
     }
   }
 
-  // 4. Broadcast to all active listeners in this window and other tabs
-  notifyBroadcastSubscribers(payload);
+  // 3. Broadcast to all active listeners in this tab and other tabs
+  const broadcastToEmit = isActive ? payload : null;
+  notifyBroadcastSubscribers(broadcastToEmit);
   try {
-    window.dispatchEvent(new CustomEvent('pace-broadcast-updated', { detail: payload }));
+    window.dispatchEvent(new CustomEvent('pace-broadcast-updated', { detail: broadcastToEmit }));
   } catch {
     // ignore
   }
@@ -755,7 +792,7 @@ export async function updateBroadcastAnnouncement(
   addAuditLog(
     payload.active ? 'PUBLISH_BROADCAST' : 'PAUSE_BROADCAST',
     'system/announcement',
-    `Announcement ${payload.active ? 'published' : 'paused'}: "${payload.message.slice(0, 30)}..."`,
+    `Announcement ${payload.active ? 'published' : 'paused'}: "${(payload.message || '').slice(0, 30)}..."`,
     'success'
   );
 
@@ -766,8 +803,9 @@ export async function deleteBroadcastAnnouncement(
   adminUid?: string
 ): Promise<{ success: boolean; error?: string }> {
   let writeSucceeded = false;
+  let lastError: string | undefined;
 
-  // 1. Clear local storage
+  // 1. Clear local storage & session storage on current device
   try {
     localStorage.removeItem(BROADCAST_STORAGE_KEY);
     sessionStorage.removeItem('pace_dismissed_broadcast');
@@ -776,41 +814,59 @@ export async function deleteBroadcastAnnouncement(
     // ignore
   }
 
-  // 2. Clear from leaderboard doc
-  const uid = adminUid || auth?.currentUser?.uid;
-  if (db && uid) {
-    try {
-      await setDoc(
-        doc(db, 'leaderboard', uid),
-        { systemAnnouncement: null },
-        { merge: true }
-      );
-      writeSucceeded = true;
-    } catch (err) {
-      console.warn('Failed clearing announcement from leaderboard:', err);
-    }
-  }
+  // 2. Write an authoritative deleted tombstone to system/announcement so all clients receive instant real-time removal
+  const firestore = db;
+  if (firestore) {
+    const tombstonePayload = {
+      active: false,
+      message: '',
+      type: 'info' as const,
+      link: '',
+      linkText: '',
+      deleted: true,
+      updatedAt: Date.now(),
+      updatedBy: ADMIN_EMAIL,
+    };
 
-  // 3. Clear from system/announcement
-  if (db) {
     try {
-      await deleteDoc(doc(db, 'system', 'announcement'));
+      await setDoc(doc(firestore, 'system', 'announcement'), tombstonePayload);
       writeSucceeded = true;
-    } catch {
-      try {
-        await setDoc(doc(db, 'system', 'announcement'), {
-          active: false,
-          message: '',
-          updatedAt: Date.now(),
-        });
-        writeSucceeded = true;
-      } catch {
-        // ignore
+    } catch (err: any) {
+      console.warn('Failed setting tombstone on system/announcement:', err);
+      lastError = err?.message;
+    }
+
+    // 3. Clear any legacy systemAnnouncement fields from leaderboard collection
+    try {
+      const uid = adminUid || auth?.currentUser?.uid;
+      if (uid) {
+        await setDoc(
+          doc(firestore, 'leaderboard', uid),
+          { systemAnnouncement: null },
+          { merge: true }
+        );
       }
+      const lbSnap = await getDocs(collection(firestore, 'leaderboard'));
+      const clearPromises: Promise<any>[] = [];
+      lbSnap.forEach((d) => {
+        const data = d.data();
+        if (data.systemAnnouncement) {
+          clearPromises.push(
+            updateDoc(doc(firestore, 'leaderboard', d.id), {
+              systemAnnouncement: deleteField(),
+            }).catch(() => {
+              return setDoc(doc(firestore, 'leaderboard', d.id), { systemAnnouncement: null }, { merge: true });
+            })
+          );
+        }
+      });
+      await Promise.all(clearPromises);
+    } catch (err) {
+      console.warn('Error clearing legacy systemAnnouncement from leaderboard collection:', err);
     }
   }
 
-  // 4. Notify all listeners
+  // 4. Notify all listeners in this window and other tabs immediately
   notifyBroadcastSubscribers(null);
   try {
     window.dispatchEvent(new CustomEvent('pace-broadcast-updated', { detail: null }));
@@ -825,7 +881,7 @@ export async function deleteBroadcastAnnouncement(
     'warning'
   );
 
-  return { success: writeSucceeded };
+  return { success: writeSucceeded, error: writeSucceeded ? undefined : lastError };
 }
 
 export function subscribeBroadcast(
@@ -833,26 +889,71 @@ export function subscribeBroadcast(
 ): () => void {
   broadcastListeners.add(callback);
 
-  // Initial call with cached value
+  // 1. Initial cached value (only if valid, active, and not deleted)
   const cached = getCachedBroadcast();
   if (cached) {
     callback(cached);
+  } else {
+    callback(null);
   }
 
-  // Listen for local events across tabs / windows
+  const clearBroadcast = () => {
+    try {
+      localStorage.removeItem(BROADCAST_STORAGE_KEY);
+      sessionStorage.removeItem('pace_dismissed_broadcast');
+    } catch {
+      // ignore
+    }
+    callback(null);
+  };
+
+  const applyBroadcast = (announcement: BroadcastAnnouncement) => {
+    try {
+      localStorage.setItem(BROADCAST_STORAGE_KEY, JSON.stringify(announcement));
+    } catch {
+      // ignore
+    }
+    callback(announcement);
+  };
+
+  // 2. Listen for local events across tabs / windows
   const handleCustomEvent = (e: Event) => {
-    const detail = (e as CustomEvent).detail;
-    callback(detail || null);
+    const detail = (e as CustomEvent).detail as (BroadcastAnnouncement & { deleted?: boolean }) | null;
+    if (
+      detail &&
+      detail.active === true &&
+      typeof detail.message === 'string' &&
+      detail.message.trim() &&
+      !detail.deleted
+    ) {
+      applyBroadcast(detail);
+    } else {
+      clearBroadcast();
+    }
   };
   window.addEventListener('pace-broadcast-updated', handleCustomEvent);
 
   const handleStorage = (e: StorageEvent) => {
     if (e.key === BROADCAST_STORAGE_KEY) {
-      try {
-        const val = e.newValue ? JSON.parse(e.newValue) : null;
-        callback(val);
-      } catch {
+      if (!e.newValue) {
         callback(null);
+        return;
+      }
+      try {
+        const val = JSON.parse(e.newValue);
+        if (
+          val &&
+          val.active === true &&
+          typeof val.message === 'string' &&
+          val.message.trim() &&
+          !val.deleted
+        ) {
+          callback(val);
+        } else {
+          clearBroadcast();
+        }
+      } catch {
+        clearBroadcast();
       }
     }
   };
@@ -860,74 +961,40 @@ export function subscribeBroadcast(
 
   const unsubs: (() => void)[] = [];
 
-  // Firestore listeners
-  if (db) {
-    // A. Listen to system/announcement
+  // 3. Real-Time Firestore Listener on the single source of truth: system/announcement
+  const firestore = db;
+  if (firestore) {
     try {
       const unsubSystem = onSnapshot(
-        doc(db, 'system', 'announcement'),
+        doc(firestore, 'system', 'announcement'),
         (snap) => {
-          if (snap.exists()) {
-            const data = snap.data() as BroadcastAnnouncement;
-            if (data && data.message) {
-              localStorage.setItem(BROADCAST_STORAGE_KEY, JSON.stringify(data));
-              callback(data);
-              return;
-            }
-          }
           if (!snap.exists()) {
-            // Check leaderboard fallback
-            fetchBroadcastAnnouncement().then((ann) => {
-              if (!ann || !ann.message) {
-                localStorage.removeItem(BROADCAST_STORAGE_KEY);
-                callback(null);
-              } else {
-                callback(ann);
-              }
-            });
+            // Document does not exist -> announcement permanently removed!
+            clearBroadcast();
+            return;
+          }
+
+          const data = snap.data() as (BroadcastAnnouncement & { deleted?: boolean });
+          if (
+            data &&
+            data.active === true &&
+            typeof data.message === 'string' &&
+            data.message.trim() &&
+            !data.deleted
+          ) {
+            applyBroadcast(data);
+          } else {
+            // Document exists but is paused, empty, inactive, or marked deleted -> clear it immediately!
+            clearBroadcast();
           }
         },
-        () => {
-          // Fallback if system/announcement has rules error
+        (err) => {
+          console.warn('System announcement listener warning:', err);
         }
       );
       unsubs.push(unsubSystem);
-    } catch {
-      // ignore
-    }
-
-    // B. Also listen to leaderboard collection (publicly readable to everyone!)
-    try {
-      const unsubLb = onSnapshot(
-        collection(db, 'leaderboard'),
-        (snap) => {
-          let foundAnnouncement: BroadcastAnnouncement | null = null;
-          snap.forEach((d) => {
-            const data = d.data();
-            if (data.systemAnnouncement && data.systemAnnouncement.updatedAt) {
-              if (!foundAnnouncement || data.systemAnnouncement.updatedAt > foundAnnouncement.updatedAt) {
-                foundAnnouncement = data.systemAnnouncement as BroadcastAnnouncement;
-              }
-            }
-          });
-
-          if (foundAnnouncement) {
-            localStorage.setItem(BROADCAST_STORAGE_KEY, JSON.stringify(foundAnnouncement));
-            callback(foundAnnouncement);
-          } else {
-            // Only clear if no cached broadcast exists
-            if (!localStorage.getItem(BROADCAST_STORAGE_KEY)) {
-              callback(null);
-            }
-          }
-        },
-        () => {
-          // ignore
-        }
-      );
-      unsubs.push(unsubLb);
-    } catch {
-      // ignore
+    } catch (err) {
+      console.warn('Failed subscribing to system/announcement:', err);
     }
   }
 

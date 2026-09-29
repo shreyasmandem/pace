@@ -118,6 +118,16 @@ export default function AdminPanel() {
       setUsers(userList);
       if (broadcastData) {
         setBroadcast(broadcastData);
+      } else {
+        setBroadcast({
+          active: false,
+          message: '',
+          type: 'info',
+          link: '',
+          linkText: '',
+          updatedAt: Date.now(),
+          updatedBy: ADMIN_EMAIL,
+        });
       }
       setAuditLogs(getAuditLogs());
       if (isManual) showToast('Platform data synced fresh from Firestore');
