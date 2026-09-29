@@ -172,7 +172,7 @@ export default function CompanySheet() {
     return problems.filter((p) => {
       if (q) {
         const matchTitle = p.title.toLowerCase().includes(q);
-        const matchTopic = p.topics.some((t) => t.toLowerCase().includes(q));
+        const matchTopic = p.topics?.some((t) => t.toLowerCase().includes(q)) ?? false;
         if (!matchTitle && !matchTopic) return false;
       }
       if (difficulty !== 'All' && p.difficulty !== difficulty) return false;
