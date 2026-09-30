@@ -39,6 +39,14 @@ export default function TrackEnrollModal({ isOpen, onClose }: TrackEnrollModalPr
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose, unregisteringTrackId]);
 
+  const handleUnregister = (id: TrackId, solvedCount: number) => {
+    if (solvedCount === 0) {
+      unregisterTrack(id);
+    } else {
+      setUnregisteringTrackId(id);
+    }
+  };
+
   if (!mounted || !isOpen || typeof document === 'undefined') return null;
 
   return createPortal(
@@ -132,9 +140,12 @@ export default function TrackEnrollModal({ isOpen, onClose }: TrackEnrollModalPr
                         <button
                           type="button"
                           className={styles.unregisterBtn}
-                          onClick={() => setUnregisteringTrackId(id)}
-                          title="Unregister from track"
-                          aria-label={`Unregister from ${meta.label}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUnregister(id, solved);
+                          }}
+                          title="Remove track"
+                          aria-label={`Remove ${meta.label}`}
                         >
                           <Trash2 size={13} />
                         </button>

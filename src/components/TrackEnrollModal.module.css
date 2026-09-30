@@ -294,11 +294,13 @@
 .unregisterBtn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 5px 9px;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
   border-radius: var(--radius-sm);
-  background: transparent;
-  border: 1px solid transparent;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-hairline);
   color: var(--text-tertiary);
   font-size: 0.74rem;
   cursor: pointer;
@@ -306,9 +308,14 @@
 }
 
 .unregisterBtn:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.35);
   color: rgb(239, 68, 68);
+  transform: translateY(-1px);
+}
+
+.unregisterBtn:active {
+  transform: translateY(0);
 }
 
 /* Progress bar inside enrolled cards */
