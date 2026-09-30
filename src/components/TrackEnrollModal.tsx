@@ -39,12 +39,8 @@ export default function TrackEnrollModal({ isOpen, onClose }: TrackEnrollModalPr
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose, unregisteringTrackId]);
 
-  const handleUnregister = (id: TrackId, solvedCount: number) => {
-    if (solvedCount === 0) {
-      unregisterTrack(id);
-    } else {
-      setUnregisteringTrackId(id);
-    }
+  const handleUnregister = (id: TrackId) => {
+    setUnregisteringTrackId(id);
   };
 
   if (!mounted || !isOpen || typeof document === 'undefined') return null;
@@ -142,7 +138,7 @@ export default function TrackEnrollModal({ isOpen, onClose }: TrackEnrollModalPr
                           className={styles.unregisterBtn}
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleUnregister(id, solved);
+                            handleUnregister(id);
                           }}
                           title="Remove track"
                           aria-label={`Remove ${meta.label}`}
