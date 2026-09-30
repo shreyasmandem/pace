@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Flame,
@@ -20,9 +20,11 @@ import { isPaceAdmin } from '../lib/admin';
 import Lane from './Lane';
 import ThemeToggle from './ThemeToggle';
 import AccountButton from './AccountButton';
+import TrackEnrollModal from './TrackEnrollModal';
 import styles from './Sidebar.module.css';
 
 export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) {
+  const [enrollModalOpen, setEnrollModalOpen] = useState(false);
   const location = useLocation();
   const stats = useTrackStats();
   const solveLog = usePaceStore((s) => s.solveLog);
@@ -154,18 +156,23 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
           !isCollapsed ? (
             <div className={styles.noTracksBox}>
               <span>No tracks enrolled.</span>
-              <NavLink to="/settings" className={styles.registerTrackLink}>
+              <button
+                type="button"
+                className={styles.registerTrackLink}
+                onClick={() => setEnrollModalOpen(true)}
+              >
                 + Register tracks →
-              </NavLink>
+              </button>
             </div>
           ) : (
-            <NavLink
-              to="/settings"
+            <button
+              type="button"
               className={styles.collapsedAddTrack}
+              onClick={() => setEnrollModalOpen(true)}
               title="Register tracks"
             >
               +
-            </NavLink>
+            </button>
           )
         ) : (
           <ul className={styles.trackList}>
@@ -215,9 +222,13 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
 
             {!isCollapsed && registeredTracks.length < TRACK_ORDER.length && (
               <li>
-                <NavLink to="/settings" className={styles.exploreTracksLink}>
+                <button
+                  type="button"
+                  className={styles.exploreTracksLink}
+                  onClick={() => setEnrollModalOpen(true)}
+                >
                   <span>+ Explore more tracks</span>
-                </NavLink>
+                </button>
               </li>
             )}
           </ul>
@@ -273,6 +284,11 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
           </div>
         </div>
       </div>
+
+      <TrackEnrollModal
+        isOpen={enrollModalOpen}
+        onClose={() => setEnrollModalOpen(false)}
+      />
     </aside>
   );
 }
