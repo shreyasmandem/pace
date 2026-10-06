@@ -6,6 +6,7 @@ import type { TrackId } from '../types';
 import { TRACK_META, getTrack } from '../data';
 import { useVisibleTracks } from '../hooks/useTrackStats';
 import ConfirmDialog from '../components/ConfirmDialog';
+import MobileAdminSection from '../components/MobileAdminSection';
 import { doc, setDoc } from 'firebase/firestore';
 import { useAuthUser, useSyncStatus, notifyProfileUpdated } from '../hooks/useAuth';
 import { signInWithGoogle, signOut, firebaseEnabled, updateUserDisplayName, db } from '../lib/firebase';
@@ -380,6 +381,8 @@ export default function Settings() {
           )}
         </section>
       )}
+
+      <MobileAdminSection />
 
       <section className={styles.block}>
         <h2 className={styles.blockTitle}>Appearance</h2>
