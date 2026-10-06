@@ -8,6 +8,7 @@ import {
   setLocalDeletedUsers,
   getLocalBannedUsers,
   setLocalBannedUsers,
+  isPaceAdmin,
 } from '../lib/admin';
 
 export type SyncStatus = 'signed-out' | 'syncing' | 'synced' | 'offline';
@@ -72,7 +73,10 @@ function cleanPlannerMap(map: Record<string, PlanItem[]> | undefined): Record<st
 
 function cleanRegisteredTracks(list: any): TrackId[] {
   if (!Array.isArray(list)) return [];
-  const valid: TrackId[] = ['a2z', 'nc150', 'nc250', 'blind75'];
+  const isAdmin = isPaceAdmin(auth?.currentUser ?? null);
+  const valid: TrackId[] = isAdmin
+    ? ['a2z', 'nc150', 'nc250', 'blind75', 'stripe-amazon']
+    : ['a2z', 'nc150', 'nc250', 'blind75'];
   return list.filter((id) => valid.includes(id));
 }
 

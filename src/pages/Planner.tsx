@@ -23,7 +23,8 @@ import {
   Target,
 } from 'lucide-react';
 import { usePaceStore, currentStreak, type PlanItem } from '../state/store';
-import { ALL_TRACKS, TRACK_META, TRACK_ORDER, getA2ZSteps, getTrack } from '../data';
+import { ALL_TRACKS, TRACK_META, getA2ZSteps, getTrack } from '../data';
+import { useVisibleTracks } from '../hooks/useTrackStats';
 import type { TrackId, ProblemLinks } from '../types';
 import { generateSmartPlan, type SmartPlanStrategy } from '../lib/smartPlanner';
 import {
@@ -88,7 +89,10 @@ export default function Planner() {
   const [showAddModal, setShowAddModal] = useState(false);
 
   // Store data & actions
-  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const {
+    visibleTrackOrder: TRACK_ORDER,
+    visibleRegisteredTracks: registeredTracks,
+  } = useVisibleTracks();
   const planner = usePaceStore((s) => s.planner || {});
   const progress = usePaceStore((s) => s.progress || {});
   const solveLog = usePaceStore((s) => s.solveLog || {});

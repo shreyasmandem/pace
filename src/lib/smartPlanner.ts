@@ -1,4 +1,4 @@
-import { ALL_TRACKS, TRACK_META, TRACK_ORDER, getTrack } from '../data';
+import { ALL_TRACKS, TRACK_META, PUBLIC_TRACK_ORDER, getTrack } from '../data';
 import type { TrackId, Problem, ProblemLinks } from '../types';
 
 export type SmartPlanStrategy =
@@ -127,7 +127,7 @@ export function generateSmartPlan(config: SmartPlanConfig): SmartPlanResult {
     progress,
   } = config;
 
-  const validTracks = trackIds.length > 0 ? trackIds : TRACK_ORDER;
+  const validTracks = trackIds.length > 0 ? trackIds : PUBLIC_TRACK_ORDER;
 
   // 1. Gather all candidates across selected tracks
   const seenTitles = new Set<string>();

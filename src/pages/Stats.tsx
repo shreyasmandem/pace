@@ -16,8 +16,8 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import { TRACK_META, TRACK_ORDER, ALL_TRACKS } from '../data';
-import { useAggregateStat, useTrackStats } from '../hooks/useTrackStats';
+import { TRACK_META, ALL_TRACKS } from '../data';
+import { useAggregateStat, useTrackStats, useVisibleTracks } from '../hooks/useTrackStats';
 import { usePaceStore, currentStreak } from '../state/store';
 import { useAuthUser } from '../hooks/useAuth';
 import { signInWithGoogle, db } from '../lib/firebase';
@@ -41,7 +41,7 @@ export default function Stats() {
   const { user } = useAuthUser();
   const aggregate = useAggregateStat();
   const trackStats = useTrackStats();
-  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const { visibleRegisteredTracks: registeredTracks } = useVisibleTracks();
 
   const progress = usePaceStore((s) => s.progress || {});
   const solveLog = usePaceStore((s) => s.solveLog || {});

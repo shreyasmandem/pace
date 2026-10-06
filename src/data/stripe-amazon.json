@@ -1,0 +1,2753 @@
+{
+ "trackId": "stripe-amazon",
+ "title": "Stripe × Amazon Sprint",
+ "groups": [
+  {
+   "id": "sa-day-01",
+   "title": "Day 1 · Wed Oct 7 — Arrays & hashing · Linear regression",
+   "problems": [
+    {
+     "id": "sa-two-sum",
+     "title": "Two Sum",
+     "difficulty": "Easy",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/two-sum/",
+      "neetcode": "https://neetcode.io/problems/two-integer-sum?list=neetcode150",
+      "article": "https://neetcode.io/solutions/two-sum",
+      "gfg": "https://bit.ly/3SVYU8f"
+     }
+    },
+    {
+     "id": "sa-group-anagrams",
+     "title": "Group Anagrams",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/group-anagrams/",
+      "neetcode": "https://neetcode.io/problems/anagram-groups?list=neetcode150",
+      "article": "https://neetcode.io/solutions/group-anagrams"
+     }
+    },
+    {
+     "id": "sa-top-k-frequent-elements",
+     "title": "Top K Frequent Elements",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/top-k-frequent-elements/",
+      "neetcode": "https://neetcode.io/problems/top-k-elements-in-list?list=neetcode150",
+      "article": "https://neetcode.io/solutions/top-k-frequent-elements",
+      "gfg": "https://bit.ly/3wcIHla"
+     }
+    },
+    {
+     "id": "sa-product-of-array-except-self",
+     "title": "Product of Array Except Self",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/product-of-array-except-self/",
+      "neetcode": "https://neetcode.io/problems/products-of-array-discluding-self?list=neetcode150",
+      "article": "https://neetcode.io/solutions/product-of-array-except-self"
+     }
+    },
+    {
+     "id": "sa-longest-consecutive-sequence",
+     "title": "Longest Consecutive Sequence",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/longest-consecutive-sequence/",
+      "neetcode": "https://neetcode.io/problems/longest-consecutive-sequence?list=neetcode150",
+      "article": "https://neetcode.io/solutions/longest-consecutive-sequence",
+      "youtube": "https://youtu.be/oO5uLE7EUlM",
+      "gfg": "https://bit.ly/3ApytAD"
+     }
+    },
+    {
+     "id": "sa-calculate-amount-paid-in-taxes",
+     "title": "Calculate Amount Paid in Taxes",
+     "difficulty": "Easy",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/calculate-amount-paid-in-taxes/"
+     }
+    },
+    {
+     "id": "sa-build-set-up-your-interview-ide-run-a-file-read-stdin-csv-plain-as",
+     "title": "Set up your interview IDE: run a file, read stdin/CSV, plain-assert tests (20m)",
+     "difficulty": "Build",
+     "links": {
+      "article": "https://docs.python.org/3/library/csv.html"
+     }
+    },
+    {
+     "id": "sa-v-7ArmBVF2dCs",
+     "title": "Linear regression, clearly explained · StatQuest (27m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=7ArmBVF2dCs"
+     }
+    },
+    {
+     "id": "sa-v-sDv4f4s2SB8",
+     "title": "Gradient descent, step by step · StatQuest (24m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=sDv4f4s2SB8"
+     }
+    },
+    {
+     "id": "sa-v-EuBBz3bI-aA",
+     "title": "Bias and variance · StatQuest (7m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=EuBBz3bI-aA"
+     }
+    },
+    {
+     "id": "sa-drill-derive-the-normal-equation-x-x-x-y-and-say-when-it-breaks",
+     "title": "Derive the normal equation θ = (XᵀX)⁻¹Xᵀy and say when it breaks",
+     "difficulty": "Drill",
+     "links": {
+      "article": "https://cs229.stanford.edu/main_notes.pdf"
+     }
+    },
+    {
+     "id": "sa-story-read-amazon-s-16-lps-and-stripe-s-6-operating-principles-lis",
+     "title": "Read Amazon's 16 LPs and Stripe's 6 operating principles; list 10 projects or moments",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    },
+    {
+     "id": "sa-v-UQrTMxouDUY",
+     "title": "The STAR method · Inside Amazon (6m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=UQrTMxouDUY"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-02",
+   "title": "Day 2 · Thu Oct 8 — Two pointers & parsing · Logistic regression, L1/L2",
+   "problems": [
+    {
+     "id": "sa-valid-palindrome",
+     "title": "Valid Palindrome",
+     "difficulty": "Easy",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/valid-palindrome/",
+      "neetcode": "https://neetcode.io/problems/is-palindrome?list=neetcode150",
+      "article": "https://neetcode.io/solutions/valid-palindrome",
+      "youtube": "https://www.youtube.com/watch?v=lRY_G-u_8jk",
+      "gfg": "https://practice.geeksforgeeks.org/problems/palindrome-string0817/1"
+     }
+    },
+    {
+     "id": "sa-3sum",
+     "title": "3Sum",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/3sum/",
+      "neetcode": "https://neetcode.io/problems/three-integer-sum?list=neetcode150",
+      "article": "https://neetcode.io/solutions/3sum",
+      "youtube": "https://youtu.be/DhFh8Kw7ymk",
+      "gfg": "https://bit.ly/3C9uTvQ"
+     }
+    },
+    {
+     "id": "sa-container-with-most-water",
+     "title": "Container With Most Water",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/container-with-most-water/",
+      "neetcode": "https://neetcode.io/problems/max-water-container?list=neetcode150",
+      "article": "https://neetcode.io/solutions/container-with-most-water"
+     }
+    },
+    {
+     "id": "sa-trapping-rain-water",
+     "title": "Trapping Rain Water",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/trapping-rain-water/",
+      "neetcode": "https://neetcode.io/problems/trapping-rain-water?list=neetcode150",
+      "article": "https://neetcode.io/solutions/trapping-rain-water",
+      "youtube": "https://youtu.be/1_5VuquLbXg",
+      "gfg": "https://bit.ly/3AqMa1W"
+     }
+    },
+    {
+     "id": "sa-string-to-integer-atoi",
+     "title": "String to Integer (atoi)",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/string-to-integer-atoi/",
+      "gfg": "https://bit.ly/3QUHBmf"
+     }
+    },
+    {
+     "id": "sa-v-yIYKR4sgzI8",
+     "title": "Logistic regression · StatQuest",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=yIYKR4sgzI8"
+     }
+    },
+    {
+     "id": "sa-v-XepXtl9YKwc",
+     "title": "Maximum likelihood, clearly explained · StatQuest (6m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=XepXtl9YKwc"
+     }
+    },
+    {
+     "id": "sa-v-BfKanl1aSG0",
+     "title": "Logistic regression pt 2: maximum likelihood · StatQuest (10m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=BfKanl1aSG0"
+     }
+    },
+    {
+     "id": "sa-v-Q81RR3yKn30",
+     "title": "Ridge (L2) regression · StatQuest (20m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=Q81RR3yKn30"
+     }
+    },
+    {
+     "id": "sa-v-NGf0voTMlcs",
+     "title": "Lasso (L1) regression · StatQuest (8m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=NGf0voTMlcs"
+     }
+    },
+    {
+     "id": "sa-drill-map-view-l2-gaussian-prior-l1-laplace-prior-why-l1-gives-spa",
+     "title": "MAP view: L2 = Gaussian prior, L1 = Laplace prior; why L1 gives sparse weights",
+     "difficulty": "Drill",
+     "links": {
+      "article": "https://cs229.stanford.edu/main_notes.pdf"
+     }
+    },
+    {
+     "id": "sa-story-star-customer-obsession-ownership-stripe-users-first",
+     "title": "STAR: Customer Obsession + Ownership (Stripe: Users first)",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-03",
+   "title": "Day 3 · Fri Oct 9 — Sliding window · Metrics & validation",
+   "problems": [
+    {
+     "id": "sa-best-time-to-buy-and-sell-stock",
+     "title": "Best Time to Buy and Sell Stock",
+     "difficulty": "Easy",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
+      "neetcode": "https://neetcode.io/problems/buy-and-sell-crypto?list=neetcode150",
+      "article": "https://neetcode.io/solutions/best-time-to-buy-and-sell-stock",
+      "youtube": "https://youtu.be/excAOvwF_Wk",
+      "gfg": "https://bit.ly/3Qrx6H9"
+     }
+    },
+    {
+     "id": "sa-longest-substring-without-repeating-characters",
+     "title": "Longest Substring Without Repeating Characters",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+      "neetcode": "https://neetcode.io/problems/longest-substring-without-duplicates?list=neetcode150",
+      "article": "https://neetcode.io/solutions/longest-substring-without-repeating-characters",
+      "youtube": "https://youtu.be/-zSxTJkcdAo",
+      "gfg": "https://bit.ly/3wegomm"
+     }
+    },
+    {
+     "id": "sa-longest-repeating-character-replacement",
+     "title": "Longest Repeating Character Replacement",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+      "neetcode": "https://neetcode.io/problems/longest-repeating-substring-with-replacement?list=neetcode150",
+      "article": "https://neetcode.io/solutions/longest-repeating-character-replacement",
+      "youtube": "https://youtu.be/_eNhaDCr6P0",
+      "gfg": "https://bit.ly/3WhN89U"
+     }
+    },
+    {
+     "id": "sa-minimum-window-substring",
+     "title": "Minimum Window Substring",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/minimum-window-substring/",
+      "neetcode": "https://neetcode.io/problems/minimum-window-with-characters?list=neetcode150",
+      "article": "https://neetcode.io/solutions/minimum-window-substring",
+      "youtube": "https://youtu.be/WJaij9ffOIY",
+      "gfg": "https://practice.geeksforgeeks.org/problems/smallest-window-in-a-string-containing-all-the-characters-of-another-string-1587115621/1"
+     }
+    },
+    {
+     "id": "sa-invalid-transactions",
+     "title": "Invalid Transactions",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/invalid-transactions/"
+     }
+    },
+    {
+     "id": "sa-v-Kdsp6soqA7o",
+     "title": "The confusion matrix · StatQuest (7m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=Kdsp6soqA7o"
+     }
+    },
+    {
+     "id": "sa-v-vP06aMoz4v8",
+     "title": "Sensitivity and specificity · StatQuest (12m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=vP06aMoz4v8"
+     }
+    },
+    {
+     "id": "sa-v-4jRBRDbJemM",
+     "title": "ROC and AUC, clearly explained · StatQuest (16m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=4jRBRDbJemM"
+     }
+    },
+    {
+     "id": "sa-v-fSytzGwwBVw",
+     "title": "Cross validation · StatQuest (6m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=fSytzGwwBVw"
+     }
+    },
+    {
+     "id": "sa-read-accuracy-precision-recall-google-ml-crash-course",
+     "title": "Accuracy, precision, recall · Google ML Crash Course",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall"
+     }
+    },
+    {
+     "id": "sa-drill-when-pr-auc-beats-roc-auc-choose-a-metric-for-1-1000-class-i",
+     "title": "When PR-AUC beats ROC-AUC; choose a metric for 1:1000 class imbalance",
+     "difficulty": "Drill",
+     "links": {
+      "article": "https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc"
+     }
+    },
+    {
+     "id": "sa-story-star-dive-deep-bias-for-action-stripe-move-with-urgency-and-",
+     "title": "STAR: Dive Deep + Bias for Action (Stripe: Move with urgency and focus)",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-04",
+   "title": "Day 4 · Sat Oct 10 — Prefix sums & stacks · Decision trees · Stripe build",
+   "problems": [
+    {
+     "id": "sa-subarray-sum-equals-k",
+     "title": "Subarray Sum Equals K",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/subarray-sum-equals-k/",
+      "neetcode": "https://neetcode.io/problems/subarray-sum-equals-k?list=neetcode250",
+      "article": "https://neetcode.io/solutions/subarray-sum-equals-k",
+      "gfg": "https://www.codingninjas.com/codestudio/problems/subarray-sums-i_1467103?utm_source=youtube&utm_medium=affiliate&utm_campaign=striver_Arrayproblems"
+     }
+    },
+    {
+     "id": "sa-minimum-penalty-for-a-shop",
+     "title": "Minimum Penalty for a Shop",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/minimum-penalty-for-a-shop/"
+     }
+    },
+    {
+     "id": "sa-valid-parentheses",
+     "title": "Valid Parentheses",
+     "difficulty": "Easy",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/valid-parentheses/",
+      "neetcode": "https://neetcode.io/problems/validate-parentheses?list=neetcode150",
+      "article": "https://neetcode.io/solutions/valid-parentheses",
+      "youtube": "https://youtu.be/xwjS0iZhw4I",
+      "gfg": "https://bit.ly/3An2IIo"
+     }
+    },
+    {
+     "id": "sa-daily-temperatures",
+     "title": "Daily Temperatures",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/daily-temperatures/",
+      "neetcode": "https://neetcode.io/problems/daily-temperatures?list=neetcode150",
+      "article": "https://neetcode.io/solutions/daily-temperatures"
+     }
+    },
+    {
+     "id": "sa-decode-string",
+     "title": "Decode String",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/decode-string/",
+      "neetcode": "https://neetcode.io/problems/decode-string?list=neetcode250",
+      "article": "https://neetcode.io/solutions/decode-string"
+     }
+    },
+    {
+     "id": "sa-basic-calculator-ii",
+     "title": "Basic Calculator II",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/basic-calculator-ii/"
+     }
+    },
+    {
+     "id": "sa-simple-bank-system",
+     "title": "Simple Bank System",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/simple-bank-system/"
+     }
+    },
+    {
+     "id": "sa-build-ledger-from-csv-parse-rows-account-balances-reject-overdraft",
+     "title": "Ledger from CSV: parse rows → account balances → reject overdrafts → per-merchant fees (75m)",
+     "difficulty": "Build",
+     "links": {
+      "article": "https://docs.python.org/3/library/csv.html"
+     }
+    },
+    {
+     "id": "sa-v-_L39rN6gz7Y",
+     "title": "Decision and classification trees · StatQuest (18m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=_L39rN6gz7Y"
+     }
+    },
+    {
+     "id": "sa-v-YtebGVx-Fxw",
+     "title": "Entropy for data science · StatQuest (17m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=YtebGVx-Fxw"
+     }
+    },
+    {
+     "id": "sa-v-g9c66TUylZ4",
+     "title": "Regression trees · StatQuest (23m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=g9c66TUylZ4"
+     }
+    },
+    {
+     "id": "sa-v-J4Wdy0Wc_xQ",
+     "title": "Random forests pt 1 · StatQuest (10m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=J4Wdy0Wc_xQ"
+     }
+    },
+    {
+     "id": "sa-drill-by-hand-entropy-gini-and-information-gain-for-a-10-row-datas",
+     "title": "By hand: entropy, Gini and information gain for a 10-row dataset; pick the best split",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-story-star-learn-and-be-curious-invent-and-simplify-a-simple-fix-o",
+     "title": "STAR: Learn and Be Curious + Invent and Simplify — 'a simple fix over a complex one' (Stripe: Stay curious)",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-05",
+   "title": "Day 5 · Sun Oct 11 — Binary search · Boosting & Bayes · Stripe mock 1",
+   "problems": [
+    {
+     "id": "sa-search-in-rotated-sorted-array",
+     "title": "Search in Rotated Sorted Array",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
+      "neetcode": "https://neetcode.io/problems/find-target-in-rotated-sorted-array?list=neetcode150",
+      "article": "https://neetcode.io/solutions/search-in-rotated-sorted-array",
+      "youtube": "https://www.youtube.com/watch?v=5qGrJbHhqFs",
+      "gfg": "https://bit.ly/3QH471y"
+     }
+    },
+    {
+     "id": "sa-find-first-and-last-position-of-element-in-sorted-array",
+     "title": "Find First and Last Position of Element in Sorted Array",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/",
+      "youtube": "https://youtu.be/hjR1IYVx9lY",
+      "gfg": "https://bit.ly/3QuCFEP"
+     }
+    },
+    {
+     "id": "sa-koko-eating-bananas",
+     "title": "Koko Eating Bananas",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/koko-eating-bananas/",
+      "neetcode": "https://neetcode.io/problems/eating-bananas?list=neetcode150",
+      "article": "https://neetcode.io/solutions/koko-eating-bananas",
+      "youtube": "https://youtu.be/qyfekrNni90",
+      "gfg": "https://bit.ly/3LSY491"
+     }
+    },
+    {
+     "id": "sa-capacity-to-ship-packages-within-d-days",
+     "title": "Capacity To Ship Packages Within D Days",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/",
+      "neetcode": "https://neetcode.io/problems/capacity-to-ship-packages-within-d-days?list=neetcode250",
+      "article": "https://neetcode.io/solutions/capacity-to-ship-packages-within-d-days",
+      "youtube": "https://www.youtube.com/watch?v=MG-Ac4TAvTY",
+      "gfg": "https://bit.ly/3PBInmS"
+     }
+    },
+    {
+     "id": "sa-find-peak-element",
+     "title": "Find Peak Element",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/find-peak-element/",
+      "youtube": "https://youtu.be/cXxmbemS6XM",
+      "gfg": "https://bit.ly/3Apsuf3"
+     }
+    },
+    {
+     "id": "sa-time-based-key-value-store",
+     "title": "Time Based Key-Value Store",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/time-based-key-value-store/",
+      "neetcode": "https://neetcode.io/problems/time-based-key-value-store?list=neetcode150",
+      "article": "https://neetcode.io/solutions/time-based-key-value-store"
+     }
+    },
+    {
+     "id": "sa-random-pick-with-weight",
+     "title": "Random Pick with Weight",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/random-pick-with-weight/"
+     }
+    },
+    {
+     "id": "sa-median-of-two-sorted-arrays",
+     "title": "Median of Two Sorted Arrays",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+      "neetcode": "https://neetcode.io/problems/median-of-two-sorted-arrays?list=neetcode150",
+      "article": "https://neetcode.io/solutions/median-of-two-sorted-arrays",
+      "youtube": "https://www.youtube.com/watch?v=wvcQg43_V8U",
+      "gfg": "https://bit.ly/3QPi7Xp"
+     }
+    },
+    {
+     "id": "sa-mock-timed-45m-accept-language-parser-exact-match-language-prefix",
+     "title": "Timed 45m: Accept-Language parser — exact match → language prefix → \"*\" wildcard and q-weights",
+     "difficulty": "Mock",
+     "links": {
+      "article": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Accept-Language"
+     }
+    },
+    {
+     "id": "sa-v-LsK-xG1cLYA",
+     "title": "AdaBoost, clearly explained · StatQuest (21m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=LsK-xG1cLYA"
+     }
+    },
+    {
+     "id": "sa-v-3CC4N4z3GJc",
+     "title": "Gradient boost pt 1: regression · StatQuest (16m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=3CC4N4z3GJc"
+     }
+    },
+    {
+     "id": "sa-v-OtD8wVaFm6E",
+     "title": "XGBoost pt 1: regression · StatQuest (26m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=OtD8wVaFm6E"
+     }
+    },
+    {
+     "id": "sa-v-O2L2Uv9pdDA",
+     "title": "Naive Bayes, clearly explained · StatQuest (15m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=O2L2Uv9pdDA"
+     }
+    },
+    {
+     "id": "sa-v-HVXime0nQeI",
+     "title": "K-nearest neighbours · StatQuest (6m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=HVXime0nQeI"
+     }
+    },
+    {
+     "id": "sa-drill-derive-naive-bayes-from-bayes-rule-why-the-independence-assu",
+     "title": "Derive Naive Bayes from Bayes' rule; why the independence assumption still works",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-story-star-deliver-results-insist-on-the-highest-standards-when-di",
+     "title": "STAR: Deliver Results + Insist on the Highest Standards — 'when did you exceed expectations?'",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-06",
+   "title": "Day 6 · Mon Oct 12 — Linked lists · SVMs & probability",
+   "problems": [
+    {
+     "id": "sa-reverse-linked-list",
+     "title": "Reverse Linked List",
+     "difficulty": "Easy",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/reverse-linked-list/",
+      "neetcode": "https://neetcode.io/problems/reverse-a-linked-list?list=neetcode150",
+      "article": "https://neetcode.io/solutions/reverse-linked-list",
+      "youtube": "https://www.youtube.com/watch?v=D2vI2DNJGd8",
+      "gfg": "https://bit.ly/3zY03mT"
+     }
+    },
+    {
+     "id": "sa-merge-two-sorted-lists",
+     "title": "Merge Two Sorted Lists",
+     "difficulty": "Easy",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/merge-two-sorted-lists/",
+      "neetcode": "https://neetcode.io/problems/merge-two-sorted-linked-lists?list=neetcode150",
+      "article": "https://neetcode.io/solutions/merge-two-sorted-lists"
+     }
+    },
+    {
+     "id": "sa-add-two-numbers",
+     "title": "Add Two Numbers",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/add-two-numbers/",
+      "neetcode": "https://neetcode.io/problems/add-two-numbers?list=neetcode150",
+      "article": "https://neetcode.io/solutions/add-two-numbers",
+      "youtube": "https://www.youtube.com/watch?v=XmRrGzR6udg",
+      "gfg": "https://bit.ly/3JZlGb7"
+     }
+    },
+    {
+     "id": "sa-remove-nth-node-from-end-of-list",
+     "title": "Remove Nth Node From End of List",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
+      "neetcode": "https://neetcode.io/problems/remove-node-from-end-of-linked-list?list=neetcode150",
+      "article": "https://neetcode.io/solutions/remove-nth-node-from-end-of-list",
+      "youtube": "https://youtu.be/3kMKYQ2wNIU",
+      "gfg": "https://bit.ly/3pobNKM"
+     }
+    },
+    {
+     "id": "sa-copy-list-with-random-pointer",
+     "title": "Copy List with Random Pointer",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/copy-list-with-random-pointer/",
+      "neetcode": "https://neetcode.io/problems/copy-linked-list-with-random-pointer?list=neetcode150",
+      "article": "https://neetcode.io/solutions/copy-list-with-random-pointer",
+      "youtube": "https://youtu.be/q570bKdrnlw",
+      "gfg": "https://bit.ly/3PpM6np"
+     }
+    },
+    {
+     "id": "sa-design-underground-system",
+     "title": "Design Underground System",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/design-underground-system/"
+     }
+    },
+    {
+     "id": "sa-v-efR1C6CvhmE",
+     "title": "Support vector machines pt 1 · StatQuest (21m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=efR1C6CvhmE"
+     }
+    },
+    {
+     "id": "sa-v-Qc5IyLW_hns",
+     "title": "SVMs pt 3: the RBF kernel · StatQuest (16m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=Qc5IyLW_hns"
+     }
+    },
+    {
+     "id": "sa-v-9wCnvr7Xw4E",
+     "title": "Bayes' theorem, clearly explained · StatQuest (14m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=9wCnvr7Xw4E"
+     }
+    },
+    {
+     "id": "sa-v-HZGCoVF3YvM",
+     "title": "Bayes' theorem, the geometry of changing beliefs · 3Blue1Brown (15m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=HZGCoVF3YvM"
+     }
+    },
+    {
+     "id": "sa-v-ypk7hmS2Bg0",
+     "title": "Unfair coin: a Bayes interview question · Datamatician (7m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=ypk7hmS2Bg0"
+     }
+    },
+    {
+     "id": "sa-drill-coin-problems-posterior-of-an-unfair-coin-after-k-heads-upda",
+     "title": "Coin problems: posterior of an unfair coin after k heads; update a prior out loud",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-story-star-are-right-a-lot-when-were-you-wrong-and-how-did-you-cou",
+     "title": "STAR: Are Right, A Lot — 'when were you wrong, and how did you course-correct?'",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-07",
+   "title": "Day 7 · Tue Oct 13 — Intervals · Unsupervised learning",
+   "problems": [
+    {
+     "id": "sa-merge-intervals",
+     "title": "Merge Intervals",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/merge-intervals/",
+      "neetcode": "https://neetcode.io/problems/merge-intervals?list=neetcode150",
+      "article": "https://neetcode.io/solutions/merge-intervals",
+      "youtube": "https://www.youtube.com/watch?v=IexN60k62jo",
+      "gfg": "https://bit.ly/3zRz904"
+     }
+    },
+    {
+     "id": "sa-insert-interval",
+     "title": "Insert Interval",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/insert-interval/",
+      "neetcode": "https://neetcode.io/problems/insert-new-interval?list=neetcode150",
+      "article": "https://neetcode.io/solutions/insert-interval",
+      "youtube": "https://youtu.be/xxRE-46OCC8",
+      "gfg": "https://bit.ly/3VeNtc1"
+     }
+    },
+    {
+     "id": "sa-interval-list-intersections",
+     "title": "Interval List Intersections",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/interval-list-intersections/"
+     }
+    },
+    {
+     "id": "sa-meeting-rooms-ii",
+     "title": "Meeting Rooms II",
+     "difficulty": "Medium",
+     "links": {
+      "neetcode": "https://neetcode.io/problems/meeting-schedule-ii?list=neetcode150",
+      "article": "https://neetcode.io/solutions/meeting-rooms-ii",
+      "practice": "https://neetcode.io/problems/meeting-schedule-ii?list=neetcode150"
+     }
+    },
+    {
+     "id": "sa-my-calendar-i",
+     "title": "My Calendar I",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/my-calendar-i/"
+     }
+    },
+    {
+     "id": "sa-v-4b5d3muPQmA",
+     "title": "K-means clustering · StatQuest (9m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=4b5d3muPQmA"
+     }
+    },
+    {
+     "id": "sa-v-FgakZw6K1QQ",
+     "title": "PCA, step by step · StatQuest (22m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=FgakZw6K1QQ"
+     }
+    },
+    {
+     "id": "sa-v-RDZUdRSDOok",
+     "title": "Clustering with DBSCAN · StatQuest (10m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=RDZUdRSDOok"
+     }
+    },
+    {
+     "id": "sa-v-wT2yLNUfyoM",
+     "title": "Gaussian mixture models explained · DataMListic (5m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=wT2yLNUfyoM"
+     }
+    },
+    {
+     "id": "sa-v-REypj2sy_5U",
+     "title": "The EM algorithm, how it works · Victor Lavrenko (8m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=REypj2sy_5U"
+     }
+    },
+    {
+     "id": "sa-drill-pca-two-ways-covariance-eigenvectors-vs-svd-what-explained-v",
+     "title": "PCA two ways: covariance eigenvectors vs SVD; what \"explained variance\" means",
+     "difficulty": "Drill",
+     "links": {
+      "article": "https://cs229.stanford.edu/main_notes.pdf"
+     }
+    },
+    {
+     "id": "sa-story-star-earn-trust-have-backbone-disagree-and-commit-stripe-col",
+     "title": "STAR: Earn Trust + Have Backbone; Disagree and Commit (Stripe: Collaborate egolessly)",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-08",
+   "title": "Day 8 · Wed Oct 14 — Heaps · Neural nets & backprop",
+   "problems": [
+    {
+     "id": "sa-kth-largest-element-in-an-array",
+     "title": "Kth Largest Element in an Array",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
+      "neetcode": "https://neetcode.io/problems/kth-largest-element-in-an-array?list=neetcode150",
+      "article": "https://neetcode.io/solutions/kth-largest-element-in-an-array",
+      "gfg": "https://bit.ly/3Avss5k"
+     }
+    },
+    {
+     "id": "sa-task-scheduler",
+     "title": "Task Scheduler",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/task-scheduler/",
+      "neetcode": "https://neetcode.io/problems/task-scheduling?list=neetcode150",
+      "article": "https://neetcode.io/solutions/task-scheduler",
+      "gfg": "https://bit.ly/3h2Z92Z"
+     }
+    },
+    {
+     "id": "sa-reorganize-string",
+     "title": "Reorganize String",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/reorganize-string/",
+      "neetcode": "https://neetcode.io/problems/reorganize-string?list=neetcode250",
+      "article": "https://neetcode.io/solutions/reorganize-string"
+     }
+    },
+    {
+     "id": "sa-merge-k-sorted-lists",
+     "title": "Merge k Sorted Lists",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/merge-k-sorted-lists/",
+      "neetcode": "https://neetcode.io/problems/merge-k-sorted-linked-lists?list=neetcode150",
+      "article": "https://neetcode.io/solutions/merge-k-sorted-lists",
+      "youtube": "https://www.youtube.com/watch?v=jXu-H7XuClE",
+      "gfg": "https://bit.ly/3QObTXC"
+     }
+    },
+    {
+     "id": "sa-find-median-from-data-stream",
+     "title": "Find Median from Data Stream",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/find-median-from-data-stream/",
+      "neetcode": "https://neetcode.io/problems/find-median-in-a-data-stream?list=neetcode150",
+      "article": "https://neetcode.io/solutions/find-median-from-data-stream",
+      "gfg": "https://bit.ly/3QIknj4"
+     }
+    },
+    {
+     "id": "sa-v-aircAruvnKk",
+     "title": "But what is a neural network? · 3Blue1Brown (19m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=aircAruvnKk"
+     }
+    },
+    {
+     "id": "sa-v-IHZwWFHWa-w",
+     "title": "Gradient descent, how neural networks learn · 3Blue1Brown (21m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=IHZwWFHWa-w"
+     }
+    },
+    {
+     "id": "sa-v-Ilg3gGewQ5U",
+     "title": "Backpropagation, intuitively · 3Blue1Brown (13m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=Ilg3gGewQ5U"
+     }
+    },
+    {
+     "id": "sa-v-tIeHLnjs5U8",
+     "title": "Backpropagation calculus · 3Blue1Brown (10m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=tIeHLnjs5U8"
+     }
+    },
+    {
+     "id": "sa-v-6ArSys5qHAU",
+     "title": "Neural networks pt 6: cross entropy · StatQuest (10m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=6ArSys5qHAU"
+     }
+    },
+    {
+     "id": "sa-drill-backprop-by-hand-through-a-2-layer-net-with-softmax-cross-en",
+     "title": "Backprop by hand through a 2-layer net with softmax + cross-entropy",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-story-star-think-big-frugality",
+     "title": "STAR: Think Big + Frugality",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-09",
+   "title": "Day 9 · Thu Oct 15 — Trees I · Optimizers & normalisation",
+   "problems": [
+    {
+     "id": "sa-maximum-depth-of-binary-tree",
+     "title": "Maximum Depth of Binary Tree",
+     "difficulty": "Easy",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/maximum-depth-of-binary-tree/",
+      "neetcode": "https://neetcode.io/problems/depth-of-binary-tree?list=neetcode150",
+      "article": "https://neetcode.io/solutions/maximum-depth-of-binary-tree",
+      "youtube": "https://www.youtube.com/watch?v=eD3tmO66aBA",
+      "gfg": "https://bit.ly/3CitiDM"
+     }
+    },
+    {
+     "id": "sa-diameter-of-binary-tree",
+     "title": "Diameter of Binary Tree",
+     "difficulty": "Easy",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/diameter-of-binary-tree/",
+      "neetcode": "https://neetcode.io/problems/binary-tree-diameter?list=neetcode150",
+      "article": "https://neetcode.io/solutions/diameter-of-binary-tree",
+      "youtube": "https://youtu.be/Rezetez59Nk",
+      "gfg": "https://bit.ly/3wcfG9l"
+     }
+    },
+    {
+     "id": "sa-binary-tree-level-order-traversal",
+     "title": "Binary Tree Level Order Traversal",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/binary-tree-level-order-traversal/",
+      "neetcode": "https://neetcode.io/problems/level-order-traversal-of-binary-tree?list=neetcode150",
+      "article": "https://neetcode.io/solutions/binary-tree-level-order-traversal",
+      "youtube": "https://youtu.be/EoAsWbO7sqg",
+      "gfg": "https://bit.ly/3K6t9VR"
+     }
+    },
+    {
+     "id": "sa-binary-tree-right-side-view",
+     "title": "Binary Tree Right Side View",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/binary-tree-right-side-view/",
+      "neetcode": "https://neetcode.io/problems/binary-tree-right-side-view?list=neetcode150",
+      "article": "https://neetcode.io/solutions/binary-tree-right-side-view",
+      "youtube": "https://youtu.be/KV4mRzTjlAk",
+      "gfg": "https://bit.ly/3PCqyE9"
+     }
+    },
+    {
+     "id": "sa-binary-tree-zigzag-level-order-traversal",
+     "title": "Binary Tree Zigzag Level Order Traversal",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/",
+      "youtube": "https://youtu.be/3OXWEdlIGl4",
+      "gfg": "https://bit.ly/3K4mwn5"
+     }
+    },
+    {
+     "id": "sa-validate-binary-search-tree",
+     "title": "Validate Binary Search Tree",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/validate-binary-search-tree/",
+      "neetcode": "https://neetcode.io/problems/valid-binary-search-tree?list=neetcode150",
+      "article": "https://neetcode.io/solutions/validate-binary-search-tree",
+      "youtube": "https://youtu.be/f-sj7I5oXEI",
+      "gfg": "https://bit.ly/3poHDqN"
+     }
+    },
+    {
+     "id": "sa-v-NE88eqLngkg",
+     "title": "Optimisers: momentum, RMSprop, Adam · DeepBean (16m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=NE88eqLngkg"
+     }
+    },
+    {
+     "id": "sa-v-o4chPk_S5C0",
+     "title": "Batch norm vs layer norm · DataMListic (5m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=o4chPk_S5C0"
+     }
+    },
+    {
+     "id": "sa-read-decoupled-weight-decay-regularization-adamw-loshchilov-hutte",
+     "title": "Decoupled Weight Decay Regularization (AdamW) · Loshchilov & Hutter",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://arxiv.org/abs/1711.05101"
+     }
+    },
+    {
+     "id": "sa-drill-explain-adamw-s-decoupled-weight-decay-why-transformers-use-",
+     "title": "Explain AdamW's decoupled weight decay; why Transformers use LayerNorm, not BatchNorm",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-story-star-hire-and-develop-the-best-mentoring-or-teaching-someone",
+     "title": "STAR: Hire and Develop the Best — mentoring or teaching someone (Stripe: Obsess over talent)",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-10",
+   "title": "Day 10 · Fri Oct 16 — Trees II · Text & sequence models",
+   "problems": [
+    {
+     "id": "sa-lowest-common-ancestor-of-a-binary-tree",
+     "title": "Lowest Common Ancestor of a Binary Tree",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/",
+      "youtube": "https://www.youtube.com/watch?v=_-QHfMDde90",
+      "gfg": "https://bit.ly/3popvgG"
+     }
+    },
+    {
+     "id": "sa-min-distance-between-two-given-nodes-of-a-binary-tree",
+     "title": "Min distance between two given nodes of a binary tree",
+     "difficulty": "Medium",
+     "links": {
+      "gfg": "https://www.geeksforgeeks.org/problems/min-distance-between-two-given-nodes-of-a-binary-tree/1"
+     }
+    },
+    {
+     "id": "sa-all-nodes-distance-k-in-binary-tree",
+     "title": "All Nodes Distance K in Binary Tree",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/",
+      "youtube": "https://youtu.be/i9ORlEy6EsI",
+      "gfg": "https://bit.ly/3QytIu6"
+     }
+    },
+    {
+     "id": "sa-construct-binary-tree-from-preorder-and-inorder-traversal",
+     "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
+      "neetcode": "https://neetcode.io/problems/binary-tree-from-preorder-and-inorder-traversal?list=neetcode150",
+      "article": "https://neetcode.io/solutions/construct-binary-tree-from-preorder-and-inorder-traversal",
+      "youtube": "https://youtu.be/aZNaLrVebKQ",
+      "gfg": "https://bit.ly/3AoZ4N5"
+     }
+    },
+    {
+     "id": "sa-kth-smallest-element-in-a-bst",
+     "title": "Kth Smallest Element in a BST",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/kth-smallest-element-in-a-bst/",
+      "neetcode": "https://neetcode.io/problems/kth-smallest-integer-in-bst?list=neetcode150",
+      "article": "https://neetcode.io/solutions/kth-smallest-element-in-a-bst",
+      "youtube": "https://youtu.be/9TJYWh0adfk",
+      "gfg": "https://practice.geeksforgeeks.org/problems/find-k-th-smallest-element-in-bst/1#:~:text=Find%20the%20Kth%20Smallest%20element%20in%20the%20BST.&text=Your%20Task%3A,such%20element%20exists%20return%20%2D1."
+     }
+    },
+    {
+     "id": "sa-binary-tree-maximum-path-sum",
+     "title": "Binary Tree Maximum Path Sum",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/binary-tree-maximum-path-sum/",
+      "neetcode": "https://neetcode.io/problems/binary-tree-maximum-path-sum?list=neetcode150",
+      "article": "https://neetcode.io/solutions/binary-tree-maximum-path-sum",
+      "youtube": "https://youtu.be/WszrfSwMz58",
+      "gfg": "https://bit.ly/3QAFjbW"
+     }
+    },
+    {
+     "id": "sa-v-AsNTP8Kwu80",
+     "title": "Recurrent neural networks · StatQuest (17m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=AsNTP8Kwu80"
+     }
+    },
+    {
+     "id": "sa-v-YCzL96nL7j0",
+     "title": "LSTMs, clearly explained · StatQuest (21m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=YCzL96nL7j0"
+     }
+    },
+    {
+     "id": "sa-v-viZrOnJclY0",
+     "title": "Word embedding and word2vec · StatQuest (16m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=viZrOnJclY0"
+     }
+    },
+    {
+     "id": "sa-read-the-illustrated-word2vec-jay-alammar",
+     "title": "The Illustrated Word2vec · Jay Alammar",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://jalammar.github.io/illustrated-word2vec/"
+     }
+    },
+    {
+     "id": "sa-drill-classical-text-features-bow-tf-idf-n-grams-bm25-and-lstm-cos",
+     "title": "Classical text features (BoW, TF-IDF, n-grams, BM25) and LSTM cost intuition, no pen",
+     "difficulty": "Drill",
+     "links": {
+      "article": "https://en.wikipedia.org/wiki/Okapi_BM25"
+     }
+    },
+    {
+     "id": "sa-story-star-a-technical-task-you-couldn-t-finish-how-you-introspect",
+     "title": "STAR: a technical task you couldn't finish — how you introspected and what you'd change",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-11",
+   "title": "Day 11 · Sat Oct 17 — Tries & backtracking · Transformers · Stripe build",
+   "problems": [
+    {
+     "id": "sa-implement-trie-prefix-tree",
+     "title": "Implement Trie (Prefix Tree)",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/implement-trie-prefix-tree/",
+      "neetcode": "https://neetcode.io/problems/implement-prefix-tree?list=neetcode150",
+      "article": "https://neetcode.io/solutions/implement-trie-prefix-tree",
+      "gfg": "https://bit.ly/3pqacEj"
+     }
+    },
+    {
+     "id": "sa-design-add-and-search-words-data-structure",
+     "title": "Design Add and Search Words Data Structure",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
+      "neetcode": "https://neetcode.io/problems/design-word-search-data-structure?list=neetcode150",
+      "article": "https://neetcode.io/solutions/design-add-and-search-words-data-structure"
+     }
+    },
+    {
+     "id": "sa-subsets",
+     "title": "Subsets",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/subsets/",
+      "neetcode": "https://neetcode.io/problems/subsets?list=neetcode150",
+      "article": "https://neetcode.io/solutions/subsets",
+      "youtube": "https://youtu.be/LqKaUv1G3_I",
+      "gfg": "https://bit.ly/3STXz1t"
+     }
+    },
+    {
+     "id": "sa-combination-sum",
+     "title": "Combination Sum",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/combination-sum/",
+      "neetcode": "https://neetcode.io/problems/combination-target-sum?list=neetcode150",
+      "article": "https://neetcode.io/solutions/combination-sum",
+      "gfg": "https://bit.ly/3C9bJ91"
+     }
+    },
+    {
+     "id": "sa-permutations",
+     "title": "Permutations",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/permutations/",
+      "neetcode": "https://neetcode.io/problems/permutations?list=neetcode150",
+      "article": "https://neetcode.io/solutions/permutations"
+     }
+    },
+    {
+     "id": "sa-letter-combinations-of-a-phone-number",
+     "title": "Letter Combinations of a Phone Number",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/",
+      "neetcode": "https://neetcode.io/problems/combinations-of-a-phone-number?list=neetcode150",
+      "article": "https://neetcode.io/solutions/letter-combinations-of-a-phone-number",
+      "gfg": "https://bit.ly/3K1INBO"
+     }
+    },
+    {
+     "id": "sa-word-search",
+     "title": "Word Search",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/word-search/",
+      "neetcode": "https://neetcode.io/problems/search-for-word?list=neetcode150",
+      "article": "https://neetcode.io/solutions/word-search",
+      "gfg": "https://bit.ly/3Ca9xOL"
+     }
+    },
+    {
+     "id": "sa-generate-parentheses",
+     "title": "Generate Parentheses",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/generate-parentheses/",
+      "neetcode": "https://neetcode.io/problems/generate-parentheses?list=neetcode150",
+      "article": "https://neetcode.io/solutions/generate-parentheses",
+      "gfg": "https://bit.ly/3K5keUw"
+     }
+    },
+    {
+     "id": "sa-v--Zea7GB2OwA",
+     "title": "What are HTTP requests? · Codecademy (5m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=-Zea7GB2OwA"
+     }
+    },
+    {
+     "id": "sa-read-how-pagination-works-in-a-real-api-stripe-docs",
+     "title": "How pagination works in a real API · Stripe docs",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://docs.stripe.com/api/pagination"
+     }
+    },
+    {
+     "id": "sa-build-integration-drill-page-through-a-json-api-retry-429-5xx-with",
+     "title": "Integration drill: page through a JSON API, retry 429/5xx with backoff, aggregate results (75m)",
+     "difficulty": "Build",
+     "links": {
+      "article": "https://jsonplaceholder.typicode.com/"
+     }
+    },
+    {
+     "id": "sa-v-PSs6nxngL6k",
+     "title": "Attention for neural networks · StatQuest (16m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=PSs6nxngL6k"
+     }
+    },
+    {
+     "id": "sa-v-wjZofJX0v4M",
+     "title": "Transformers, the tech behind LLMs · 3Blue1Brown (27m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=wjZofJX0v4M"
+     }
+    },
+    {
+     "id": "sa-v-eMlx5fFNoYc",
+     "title": "Attention in transformers, step by step · 3Blue1Brown (26m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=eMlx5fFNoYc"
+     }
+    },
+    {
+     "id": "sa-v-KphmOJnLAdI",
+     "title": "The matrix math behind transformers · StatQuest (24m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=KphmOJnLAdI"
+     }
+    },
+    {
+     "id": "sa-read-the-illustrated-transformer-jay-alammar",
+     "title": "The Illustrated Transformer · Jay Alammar",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://jalammar.github.io/illustrated-transformer/"
+     }
+    },
+    {
+     "id": "sa-drill-derive-self-attention-cost-o-n-d-trace-one-token-from-embedd",
+     "title": "Derive self-attention cost O(n²·d); trace one token from embedding to next-token logits",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-story-record-3-stories-on-video-2-minutes-each-cut-the-filler",
+     "title": "Record 3 stories on video, 2 minutes each; cut the filler",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-12",
+   "title": "Day 12 · Sun Oct 18 — Graphs I · BERT, GPT & efficient LLMs · Stripe mock 2",
+   "problems": [
+    {
+     "id": "sa-number-of-islands",
+     "title": "Number of Islands",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/number-of-islands/",
+      "neetcode": "https://neetcode.io/problems/count-number-of-islands?list=neetcode150",
+      "article": "https://neetcode.io/solutions/number-of-islands"
+     }
+    },
+    {
+     "id": "sa-rotting-oranges",
+     "title": "Rotting Oranges",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/rotting-oranges/",
+      "neetcode": "https://neetcode.io/problems/rotting-fruit?list=neetcode150",
+      "article": "https://neetcode.io/solutions/rotting-oranges",
+      "youtube": "https://www.youtube.com/watch?v=yf3oUhkvqA0",
+      "gfg": "https://bit.ly/3R4htWb"
+     }
+    },
+    {
+     "id": "sa-clone-graph",
+     "title": "Clone Graph",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/clone-graph/",
+      "neetcode": "https://neetcode.io/problems/clone-graph?list=neetcode150",
+      "article": "https://neetcode.io/solutions/clone-graph"
+     }
+    },
+    {
+     "id": "sa-course-schedule",
+     "title": "Course Schedule",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/course-schedule/",
+      "neetcode": "https://neetcode.io/problems/course-schedule?list=neetcode150",
+      "article": "https://neetcode.io/solutions/course-schedule",
+      "youtube": "https://youtu.be/WAOfKpxYHR8",
+      "gfg": "https://practice.geeksforgeeks.org/problems/course-schedule/1"
+     }
+    },
+    {
+     "id": "sa-course-schedule-ii",
+     "title": "Course Schedule II",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/course-schedule-ii/",
+      "neetcode": "https://neetcode.io/problems/course-schedule-ii?list=neetcode150",
+      "article": "https://neetcode.io/solutions/course-schedule-ii",
+      "youtube": "https://www.youtube.com/watch?v=9twcmtQj4DU",
+      "gfg": "https://practice.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1"
+     }
+    },
+    {
+     "id": "sa-word-ladder",
+     "title": "Word Ladder",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/word-ladder/",
+      "neetcode": "https://neetcode.io/problems/word-ladder?list=neetcode150",
+      "article": "https://neetcode.io/solutions/word-ladder",
+      "gfg": "https://practice.geeksforgeeks.org/problems/word-ladder/1"
+     }
+    },
+    {
+     "id": "sa-evaluate-division",
+     "title": "Evaluate Division",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/evaluate-division/",
+      "neetcode": "https://neetcode.io/problems/evaluate-division?list=neetcode250",
+      "article": "https://neetcode.io/solutions/evaluate-division"
+     }
+    },
+    {
+     "id": "sa-accounts-merge",
+     "title": "Accounts Merge",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/accounts-merge/",
+      "neetcode": "https://neetcode.io/problems/accounts-merge?list=neetcode250",
+      "article": "https://neetcode.io/solutions/accounts-merge",
+      "youtube": "https://youtu.be/FMwpt_aQOGw",
+      "gfg": "https://practice.geeksforgeeks.org/problems/merging-details/1"
+     }
+    },
+    {
+     "id": "sa-mock-timed-45m-currency-converter-direct-rate-one-hop-best-rate-o",
+     "title": "Timed 45m: currency converter — direct rate → one hop → best rate over any path",
+     "difficulty": "Mock",
+     "links": {}
+    },
+    {
+     "id": "sa-v-bQ5BoolX9Ag",
+     "title": "Decoder-only transformers (GPT) · StatQuest (37m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=bQ5BoolX9Ag"
+     }
+    },
+    {
+     "id": "sa-read-the-illustrated-bert-jay-alammar",
+     "title": "The Illustrated BERT · Jay Alammar",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://jalammar.github.io/illustrated-bert/"
+     }
+    },
+    {
+     "id": "sa-v-DhRoTONcyZE",
+     "title": "What is LoRA? Explained by its inventor · Edward Hu (7m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=DhRoTONcyZE"
+     }
+    },
+    {
+     "id": "sa-v-80bIUggRJf4",
+     "title": "The KV cache: memory usage in transformers · Efficient NLP (9m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=80bIUggRJf4"
+     }
+    },
+    {
+     "id": "sa-v-gBMO1JZav44",
+     "title": "How FlashAttention speeds up attention · Jia-Bin Huang (12m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=gBMO1JZav44"
+     }
+    },
+    {
+     "id": "sa-v-qoQJq5UwV1c",
+     "title": "How LLMs survive in low precision (quantisation) · Julia Turc (21m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=qoQJq5UwV1c"
+     }
+    },
+    {
+     "id": "sa-drill-bert-vs-gpt-masked-vs-causal-attention-and-when-each-wins-wh",
+     "title": "BERT vs GPT: masked vs causal attention and when each wins; what LoRA's rank r controls",
+     "difficulty": "Drill",
+     "links": {
+      "article": "https://arxiv.org/abs/2106.09685"
+     }
+    },
+    {
+     "id": "sa-v-6p1m2nCE7jE",
+     "title": "Amazon behavioural interviews, LPs explained · Exponent (12m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=6p1m2nCE7jE"
+     }
+    },
+    {
+     "id": "sa-story-fill-an-lp-story-matrix-every-lp-should-have-at-least-one-st",
+     "title": "Fill an LP × story matrix: every LP should have at least one story",
+     "difficulty": "Story",
+     "links": {}
+    }
+   ]
+  },
+  {
+   "id": "sa-day-13",
+   "title": "Day 13 · Mon Oct 19 — Graphs II · Agents, RAG & VLMs · Rate limiter",
+   "problems": [
+    {
+     "id": "sa-redundant-connection",
+     "title": "Redundant Connection",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/redundant-connection/",
+      "neetcode": "https://neetcode.io/problems/redundant-connection?list=neetcode150",
+      "article": "https://neetcode.io/solutions/redundant-connection"
+     }
+    },
+    {
+     "id": "sa-network-delay-time",
+     "title": "Network Delay Time",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/network-delay-time/",
+      "neetcode": "https://neetcode.io/problems/network-delay-time?list=neetcode150",
+      "article": "https://neetcode.io/solutions/network-delay-time",
+      "gfg": "https://bit.ly/3pr6ObZ"
+     }
+    },
+    {
+     "id": "sa-cheapest-flights-within-k-stops",
+     "title": "Cheapest Flights Within K Stops",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/cheapest-flights-within-k-stops/",
+      "neetcode": "https://neetcode.io/problems/cheapest-flight-path?list=neetcode150",
+      "article": "https://neetcode.io/solutions/cheapest-flights-within-k-stops",
+      "youtube": "https://youtu.be/9XybHVqTHcQ",
+      "gfg": "https://bit.ly/3OnPWi4"
+     }
+    },
+    {
+     "id": "sa-reconstruct-itinerary",
+     "title": "Reconstruct Itinerary",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/reconstruct-itinerary/",
+      "neetcode": "https://neetcode.io/problems/reconstruct-flight-path?list=neetcode150",
+      "article": "https://neetcode.io/solutions/reconstruct-itinerary"
+     }
+    },
+    {
+     "id": "sa-read-scaling-your-api-with-rate-limiters-stripe-engineering-blog",
+     "title": "Scaling your API with rate limiters · Stripe engineering blog",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://stripe.com/blog/rate-limiters"
+     }
+    },
+    {
+     "id": "sa-build-rate-limiter-per-api-key-fixed-window-sliding-log-token-buck",
+     "title": "Rate limiter per API key: fixed window → sliding log → token bucket (60m)",
+     "difficulty": "Build",
+     "links": {}
+    },
+    {
+     "id": "sa-v-h-7S6HNq0Vg",
+     "title": "CME295 lecture 7: agentic LLMs · Stanford (watch at 1.5×) (109m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=h-7S6HNq0Vg"
+     }
+    },
+    {
+     "id": "sa-v-T-D1OfcDW1M",
+     "title": "What is retrieval-augmented generation? · IBM (7m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=T-D1OfcDW1M"
+     }
+    },
+    {
+     "id": "sa-v-KcSXcpluDe4",
+     "title": "How AI understands images (CLIP) · Computerphile (18m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=KcSXcpluDe4"
+     }
+    },
+    {
+     "id": "sa-v-93yLu0S7ie0",
+     "title": "SigLIP: sigmoid loss for image–text pretraining · Papers in Public (5m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=93yLu0S7ie0"
+     }
+    },
+    {
+     "id": "sa-v-lOD_EE96jhM",
+     "title": "What are vision language models? · IBM (10m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=lOD_EE96jhM"
+     }
+    },
+    {
+     "id": "sa-drill-vlm-vs-llm-why-siglip-s-sigmoid-loss-is-steadier-than-clip-s",
+     "title": "VLM vs LLM; why SigLIP's sigmoid loss is steadier than CLIP's softmax across batches",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-story-drill-one-story-five-why-s-deep-the-probing-amazon-s-intervi",
+     "title": "Drill one story five 'why?'s deep — the probing Amazon's interviewers actually do",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-14",
+   "title": "Day 14 · Tue Oct 20 — DP I · Contrastive learning",
+   "problems": [
+    {
+     "id": "sa-climbing-stairs",
+     "title": "Climbing Stairs",
+     "difficulty": "Easy",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/climbing-stairs/",
+      "neetcode": "https://neetcode.io/problems/climbing-stairs?list=neetcode150",
+      "article": "https://neetcode.io/solutions/climbing-stairs",
+      "gfg": "https://practice.geeksforgeeks.org/problems/count-ways-to-reach-the-nth-stair-1587115620/1"
+     }
+    },
+    {
+     "id": "sa-house-robber",
+     "title": "House Robber",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/house-robber/",
+      "neetcode": "https://neetcode.io/problems/house-robber?list=neetcode150",
+      "article": "https://neetcode.io/solutions/house-robber",
+      "youtube": "https://www.youtube.com/watch?v=GrMBfJNk_NY",
+      "gfg": "https://bit.ly/3QOMRs1"
+     }
+    },
+    {
+     "id": "sa-coin-change",
+     "title": "Coin Change",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/coin-change/",
+      "neetcode": "https://neetcode.io/problems/coin-change?list=neetcode150",
+      "article": "https://neetcode.io/solutions/coin-change",
+      "youtube": "https://www.youtube.com/watch?v=myPeWb3Y68A",
+      "gfg": "https://practice.geeksforgeeks.org/problems/-minimum-number-of-coins4426/1"
+     }
+    },
+    {
+     "id": "sa-coin-change-ii",
+     "title": "Coin Change II",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/coin-change-ii/",
+      "neetcode": "https://neetcode.io/problems/coin-change-ii?list=neetcode150",
+      "article": "https://neetcode.io/solutions/coin-change-ii"
+     }
+    },
+    {
+     "id": "sa-word-break",
+     "title": "Word Break",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/word-break/",
+      "neetcode": "https://neetcode.io/problems/word-break?list=neetcode150",
+      "article": "https://neetcode.io/solutions/word-break",
+      "gfg": "https://bit.ly/3bVT5XN"
+     }
+    },
+    {
+     "id": "sa-longest-increasing-subsequence",
+     "title": "Longest Increasing Subsequence",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/longest-increasing-subsequence/",
+      "neetcode": "https://neetcode.io/problems/longest-increasing-subsequence?list=neetcode150",
+      "article": "https://neetcode.io/solutions/longest-increasing-subsequence",
+      "youtube": "https://youtu.be/on2hvxBXJH4",
+      "gfg": "https://practice.geeksforgeeks.org/problems/longest-increasing-subsequence-1587115620/1"
+     }
+    },
+    {
+     "id": "sa-v-UqJauYELn6c",
+     "title": "Contrastive learning with SimCLR · Deepia (15m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=UqJauYELn6c"
+     }
+    },
+    {
+     "id": "sa-v-dC3_IKaBXTk",
+     "title": "Contrastive loss · ritvikmath (20m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=dC3_IKaBXTk"
+     }
+    },
+    {
+     "id": "sa-v-gL5Hi3U8yM4",
+     "title": "MoCo (+v2): momentum contrast · Soroush Mehraban (31m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=gL5Hi3U8yM4"
+     }
+    },
+    {
+     "id": "sa-read-contrastive-representation-learning-lilian-weng",
+     "title": "Contrastive representation learning · Lilian Weng",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://lilianweng.github.io/posts/2021-05-31-contrastive/"
+     }
+    },
+    {
+     "id": "sa-drill-infonce-what-temperature-does-growing-in-batch-negatives-whe",
+     "title": "InfoNCE: what temperature does; growing in-batch negatives when GPU memory is full",
+     "difficulty": "Drill",
+     "links": {
+      "article": "https://arxiv.org/abs/1911.05722"
+     }
+    },
+    {
+     "id": "sa-story-star-success-and-scale-bring-broad-responsibility",
+     "title": "STAR: Success and Scale Bring Broad Responsibility",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-15",
+   "title": "Day 15 · Wed Oct 21 — DP II · Retrieval, ANN & distillation",
+   "problems": [
+    {
+     "id": "sa-unique-paths",
+     "title": "Unique Paths",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/unique-paths/",
+      "neetcode": "https://neetcode.io/problems/count-paths?list=neetcode150",
+      "article": "https://neetcode.io/solutions/unique-paths",
+      "youtube": "https://www.youtube.com/watch?v=sdE0A2Oxofw",
+      "gfg": "https://practice.geeksforgeeks.org/problems/number-of-unique-paths/0"
+     }
+    },
+    {
+     "id": "sa-longest-common-subsequence",
+     "title": "Longest Common Subsequence",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/longest-common-subsequence/",
+      "neetcode": "https://neetcode.io/problems/longest-common-subsequence?list=neetcode150",
+      "article": "https://neetcode.io/solutions/longest-common-subsequence",
+      "youtube": "https://youtu.be/-zI4mrF2Pb4",
+      "gfg": "https://practice.geeksforgeeks.org/problems/longest-common-subsequence-1587115620/1"
+     }
+    },
+    {
+     "id": "sa-longest-palindromic-substring",
+     "title": "Longest Palindromic Substring",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/longest-palindromic-substring/",
+      "neetcode": "https://neetcode.io/problems/longest-palindromic-substring?list=neetcode150",
+      "article": "https://neetcode.io/solutions/longest-palindromic-substring",
+      "gfg": "https://bit.ly/3CeQ27D"
+     }
+    },
+    {
+     "id": "sa-edit-distance",
+     "title": "Edit Distance",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/edit-distance/",
+      "neetcode": "https://neetcode.io/problems/edit-distance?list=neetcode150",
+      "article": "https://neetcode.io/solutions/edit-distance",
+      "youtube": "https://youtu.be/fJaKO8FbDdo",
+      "gfg": "https://practice.geeksforgeeks.org/problems/edit-distance3702/1"
+     }
+    },
+    {
+     "id": "sa-partition-equal-subset-sum",
+     "title": "Partition Equal Subset Sum",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/partition-equal-subset-sum/",
+      "neetcode": "https://neetcode.io/problems/partition-equal-subset-sum?list=neetcode150",
+      "article": "https://neetcode.io/solutions/partition-equal-subset-sum",
+      "youtube": "https://www.youtube.com/watch?v=7win3dcgo3k",
+      "gfg": "https://practice.geeksforgeeks.org/problems/subset-sum-problem2014/1"
+     }
+    },
+    {
+     "id": "sa-v-FqA3cUWCsrk",
+     "title": "Two-tower models for recommenders · ML Simplified (7m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=FqA3cUWCsrk"
+     }
+    },
+    {
+     "id": "sa-v-3CwWGSV0l9o",
+     "title": "Two towers vs siamese networks vs triplet loss · DataMListic (4m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=3CwWGSV0l9o"
+     }
+    },
+    {
+     "id": "sa-v-tA85v3aGBIU",
+     "title": "Bi-encoder vs cross-encoder, with benchmarks · Abid Saudagar (12m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=tA85v3aGBIU"
+     }
+    },
+    {
+     "id": "sa-v-77QH0Y2PYKg",
+     "title": "HNSW explained · DataMListic (8m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=77QH0Y2PYKg"
+     }
+    },
+    {
+     "id": "sa-v-t9mRf2S5vDI",
+     "title": "Product quantisation for vector search · James Briggs (30m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=t9mRf2S5vDI"
+     }
+    },
+    {
+     "id": "sa-v-BUCSTKQOzcM",
+     "title": "Knowledge distillation explained · CodeEmporium (13m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=BUCSTKQOzcM"
+     }
+    },
+    {
+     "id": "sa-read-faiss-index-types-and-their-parameters-faiss-wiki",
+     "title": "Faiss index types and their parameters · Faiss wiki",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://github.com/facebookresearch/faiss/wiki/Faiss-indexes"
+     }
+    },
+    {
+     "id": "sa-read-cross-encoders-vs-bi-encoders-sentence-transformers-docs",
+     "title": "Cross-encoders vs bi-encoders · Sentence-Transformers docs",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://www.sbert.net/examples/cross_encoder/applications/README.html"
+     }
+    },
+    {
+     "id": "sa-drill-ann-knobs-hnsw-m-efconstruction-efsearch-ivf-nlist-nprobe-pq",
+     "title": "ANN knobs: HNSW M / efConstruction / efSearch, IVF nlist / nprobe, PQ m: recall vs latency vs memory",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-story-gap-check-write-stories-for-any-lp-still-without-one",
+     "title": "Gap check: write stories for any LP still without one",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-16",
+   "title": "Day 16 · Thu Oct 22 — Greedy & matrix · Recommenders & cold start",
+   "problems": [
+    {
+     "id": "sa-maximum-subarray",
+     "title": "Maximum Subarray",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/maximum-subarray/",
+      "neetcode": "https://neetcode.io/problems/maximum-subarray?list=neetcode150",
+      "article": "https://neetcode.io/solutions/maximum-subarray",
+      "youtube": "https://www.youtube.com/watch?v=AHZpyENo7k4",
+      "gfg": "https://bit.ly/3dzyloY"
+     }
+    },
+    {
+     "id": "sa-jump-game",
+     "title": "Jump Game",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/jump-game/",
+      "neetcode": "https://neetcode.io/problems/jump-game?list=neetcode150",
+      "article": "https://neetcode.io/solutions/jump-game",
+      "youtube": "https://youtu.be/tZAa_jJ3SwQ",
+      "gfg": "https://bit.ly/3AbFYKe"
+     }
+    },
+    {
+     "id": "sa-jump-game-ii",
+     "title": "Jump Game II",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/jump-game-ii/",
+      "neetcode": "https://neetcode.io/problems/jump-game-ii?list=neetcode150",
+      "article": "https://neetcode.io/solutions/jump-game-ii",
+      "gfg": "https://bit.ly/3Av2ezM"
+     }
+    },
+    {
+     "id": "sa-gas-station",
+     "title": "Gas Station",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/gas-station/",
+      "neetcode": "https://neetcode.io/problems/gas-station?list=neetcode150",
+      "article": "https://neetcode.io/solutions/gas-station"
+     }
+    },
+    {
+     "id": "sa-rotate-image",
+     "title": "Rotate Image",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/rotate-image/",
+      "neetcode": "https://neetcode.io/problems/rotate-matrix?list=neetcode150",
+      "article": "https://neetcode.io/solutions/rotate-image",
+      "youtube": "https://youtu.be/Z0R2u6gd3GU",
+      "gfg": "https://bit.ly/3PqpeV8"
+     }
+    },
+    {
+     "id": "sa-spiral-matrix",
+     "title": "Spiral Matrix",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/spiral-matrix/",
+      "neetcode": "https://neetcode.io/problems/spiral-matrix?list=neetcode150",
+      "article": "https://neetcode.io/solutions/spiral-matrix",
+      "youtube": "https://youtu.be/3Zv-s9UUrFM",
+      "gfg": "https://bit.ly/3ppEJ53"
+     }
+    },
+    {
+     "id": "sa-v-ZspR5PZemcs",
+     "title": "How Netflix recommends movies: matrix factorisation · Luis Serrano (33m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=ZspR5PZemcs"
+     }
+    },
+    {
+     "id": "sa-v-UFpF108gyaw",
+     "title": "Mitigating cold start in recommenders · TensorFlow (6m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=UFpF108gyaw"
+     }
+    },
+    {
+     "id": "sa-read-system-design-for-recommendations-and-search-eugene-yan",
+     "title": "System design for recommendations and search · Eugene Yan",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://eugeneyan.com/writing/system-design-for-discovery/"
+     }
+    },
+    {
+     "id": "sa-drill-amazon-cold-start-item-offline-content-embeddings-bi-vs-cros",
+     "title": "Amazon cold-start item: offline content embeddings, bi- vs cross-encoder, ANN, distillation trade-offs",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-story-mock-three-amazon-lp-questions-out-loud-with-pacer-as-the-in",
+     "title": "Mock: three Amazon LP questions out loud, with Pacer as the interviewer",
+     "difficulty": "Story",
+     "links": {}
+    }
+   ]
+  },
+  {
+   "id": "sa-day-17",
+   "title": "Day 17 · Fri Oct 23 — Design data structures · Learning to rank",
+   "problems": [
+    {
+     "id": "sa-lru-cache",
+     "title": "LRU Cache",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/lru-cache/",
+      "neetcode": "https://neetcode.io/problems/lru-cache?list=neetcode150",
+      "article": "https://neetcode.io/solutions/lru-cache",
+      "gfg": "https://bit.ly/3zZneNN"
+     }
+    },
+    {
+     "id": "sa-insert-delete-getrandom-o1",
+     "title": "Insert Delete GetRandom O(1)",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/insert-delete-getrandom-o1/"
+     }
+    },
+    {
+     "id": "sa-lfu-cache",
+     "title": "LFU Cache",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/lfu-cache/",
+      "neetcode": "https://neetcode.io/problems/lfu-cache?list=neetcode250",
+      "article": "https://neetcode.io/solutions/lfu-cache",
+      "youtube": "https://www.youtube.com/watch?v=mzqHlAW7jeE",
+      "gfg": "https://bit.ly/3fpYDLQ"
+     }
+    },
+    {
+     "id": "sa-encode-and-decode-tinyurl",
+     "title": "Encode and Decode TinyURL",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/encode-and-decode-tinyurl/"
+     }
+    },
+    {
+     "id": "sa-design-twitter",
+     "title": "Design Twitter",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/design-twitter/",
+      "neetcode": "https://neetcode.io/problems/design-twitter-feed?list=neetcode150",
+      "article": "https://neetcode.io/solutions/design-twitter",
+      "gfg": "https://practice.geeksforgeeks.org/problems/design-twitter/1"
+     }
+    },
+    {
+     "id": "sa-v-YroewVVp7SM",
+     "title": "Learning to rank · ritvikmath (6m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=YroewVVp7SM"
+     }
+    },
+    {
+     "id": "sa-v-2XegvMul_mE",
+     "title": "Every ranking metric: MRR, MAP, NDCG · ritvikmath (21m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=2XegvMul_mE"
+     }
+    },
+    {
+     "id": "sa-v-2GcXQ-YGJNw",
+     "title": "Multi-gate mixture of experts (MMoE) · With Regards To AI (14m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=2GcXQ-YGJNw"
+     }
+    },
+    {
+     "id": "sa-read-from-ranknet-to-lambdarank-to-lambdamart-microsoft-research",
+     "title": "From RankNet to LambdaRank to LambdaMART · Microsoft Research",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://www.microsoft.com/en-us/research/publication/from-ranknet-to-lambdarank-to-lambdamart-an-overview/"
+     }
+    },
+    {
+     "id": "sa-read-multi-task-loss-weighting-by-uncertainty-kendall-et-al",
+     "title": "Multi-task loss weighting by uncertainty · Kendall et al.",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://arxiv.org/abs/1705.07115"
+     }
+    },
+    {
+     "id": "sa-drill-design-a-multi-task-loss-for-search-click-add-to-cart-purcha",
+     "title": "Design a multi-task loss for search: click, add-to-cart, purchase; weighting and label leakage",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-story-star-ownership-second-story-something-outside-your-scope-tha",
+     "title": "STAR: Ownership, second story — something outside your scope that you fixed",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-18",
+   "title": "Day 18 · Sat Oct 24 — Amazon high-frequency set · ML system design · Bug squash",
+   "problems": [
+    {
+     "id": "sa-maximum-coins-from-k-consecutive-bags",
+     "title": "Maximum Coins From K Consecutive Bags",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/maximum-coins-from-k-consecutive-bags/"
+     }
+    },
+    {
+     "id": "sa-largest-rectangle-in-histogram",
+     "title": "Largest Rectangle in Histogram",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
+      "neetcode": "https://neetcode.io/problems/largest-rectangle-in-histogram?list=neetcode150",
+      "article": "https://neetcode.io/solutions/largest-rectangle-in-histogram",
+      "youtube": "https://youtu.be/Bzat9vgD0fs",
+      "gfg": "https://bit.ly/3AnVYd5"
+     }
+    },
+    {
+     "id": "sa-asteroid-collision",
+     "title": "Asteroid Collision",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/asteroid-collision/",
+      "neetcode": "https://neetcode.io/problems/asteroid-collision?list=neetcode250",
+      "article": "https://neetcode.io/solutions/asteroid-collision",
+      "youtube": "https://youtu.be/_eYGqw_VDR4",
+      "gfg": "https://bit.ly/3Tpi0Tw"
+     }
+    },
+    {
+     "id": "sa-next-permutation",
+     "title": "Next Permutation",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/next-permutation/",
+      "youtube": "https://youtu.be/JDOXKqF60RQ",
+      "gfg": "https://bit.ly/3dug78u"
+     }
+    },
+    {
+     "id": "sa-first-missing-positive",
+     "title": "First Missing Positive",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/first-missing-positive/",
+      "neetcode": "https://neetcode.io/problems/first-missing-positive?list=neetcode250",
+      "article": "https://neetcode.io/solutions/first-missing-positive"
+     }
+    },
+    {
+     "id": "sa-string-compression",
+     "title": "String Compression",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/string-compression/"
+     }
+    },
+    {
+     "id": "sa-maximum-profit-in-job-scheduling",
+     "title": "Maximum Profit in Job Scheduling",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/maximum-profit-in-job-scheduling/"
+     }
+    },
+    {
+     "id": "sa-sliding-window-maximum",
+     "title": "Sliding Window Maximum",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/sliding-window-maximum/",
+      "neetcode": "https://neetcode.io/problems/sliding-window-maximum?list=neetcode150",
+      "article": "https://neetcode.io/solutions/sliding-window-maximum",
+      "youtube": "https://youtu.be/NwBvene4Imo",
+      "gfg": "https://bit.ly/3w7SSri"
+     }
+    },
+    {
+     "id": "sa-v-bHx8A8tbj2c",
+     "title": "Start Python debugging with pdb · Real Python (4m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=bHx8A8tbj2c"
+     }
+    },
+    {
+     "id": "sa-v-Q-kqm0AgJZ8",
+     "title": "Git bisect is insanely good · Joshua Morony (4m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=Q-kqm0AgJZ8"
+     }
+    },
+    {
+     "id": "sa-mock-bug-squash-clone-a-small-open-source-repo-run-its-tests-fix-",
+     "title": "Bug squash: clone a small open-source repo, run its tests, fix failures with a debugger (60m)",
+     "difficulty": "Mock",
+     "links": {
+      "article": "https://git-scm.com/docs/git-bisect"
+     }
+    },
+    {
+     "id": "sa-v-lh9CNRDqKBk",
+     "title": "System design for recommendations and search · Eugene Yan (58m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=lh9CNRDqKBk"
+     }
+    },
+    {
+     "id": "sa-v-7_E4wnZGJKo",
+     "title": "Design a ranking model: full mock interview · Exponent (48m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=7_E4wnZGJKo"
+     }
+    },
+    {
+     "id": "sa-drill-write-the-amazon-com-search-relevance-design-business-metric",
+     "title": "Write the Amazon.com search relevance design: business metric → labels → retrieval → ranking → offline/online metrics",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-v-STZ-KZQkPs0",
+     "title": "Prepare stories for advanced follow-ups · Amazon Bound (10m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=STZ-KZQkPs0"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-19",
+   "title": "Day 19 · Sun Oct 25 — Stripe practical set · Labels & experiments · Stripe mock 3",
+   "problems": [
+    {
+     "id": "sa-alert-using-same-key-card-three-or-more-times-in-a-one-hour-period",
+     "title": "Alert Using Same Key-Card Three or More Times in a One Hour Period",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/alert-using-same-key-card-three-or-more-times-in-a-one-hour-period/"
+     }
+    },
+    {
+     "id": "sa-validate-ip-address",
+     "title": "Validate IP Address",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/validate-ip-address/"
+     }
+    },
+    {
+     "id": "sa-basic-calculator",
+     "title": "Basic Calculator",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/basic-calculator/"
+     }
+    },
+    {
+     "id": "sa-number-of-black-blocks",
+     "title": "Number of Black Blocks",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/number-of-black-blocks/"
+     }
+    },
+    {
+     "id": "sa-remove-covered-intervals",
+     "title": "Remove Covered Intervals",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/remove-covered-intervals/"
+     }
+    },
+    {
+     "id": "sa-mock-timed-45m-shipping-invoice-calculator-flat-rates-tiered-per-",
+     "title": "Timed 45m: shipping & invoice calculator — flat rates → tiered per-unit pricing → proration by days used",
+     "difficulty": "Mock",
+     "links": {}
+    },
+    {
+     "id": "sa-v-0oc49DyA3hU",
+     "title": "Hypothesis testing and the null hypothesis · StatQuest (15m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=0oc49DyA3hU"
+     }
+    },
+    {
+     "id": "sa-v-vemZtEM63GY",
+     "title": "p-values: what they are · StatQuest (11m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=vemZtEM63GY"
+     }
+    },
+    {
+     "id": "sa-v-Rsc5znwR5FA",
+     "title": "Statistical power · StatQuest (8m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=Rsc5znwR5FA"
+     }
+    },
+    {
+     "id": "sa-read-how-not-to-run-an-a-b-test-evan-miller",
+     "title": "How not to run an A/B test · Evan Miller",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://www.evanmiller.org/how-not-to-run-an-ab-test.html"
+     }
+    },
+    {
+     "id": "sa-read-data-distribution-shifts-and-monitoring-chip-huyen",
+     "title": "Data distribution shifts and monitoring · Chip Huyen",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://huyenchip.com/2022/02/07/data-distribution-shifts-and-monitoring.html"
+     }
+    },
+    {
+     "id": "sa-read-learning-from-crowds-weighting-annotators-raykar-et-al-jmlr",
+     "title": "Learning from crowds (weighting annotators) · Raykar et al., JMLR",
+     "difficulty": "Read",
+     "links": {
+      "article": "https://jmlr.org/papers/v11/raykar10a.html"
+     }
+    },
+    {
+     "id": "sa-drill-annotators-drop-outlier-regression-labels-median-mad-and-wei",
+     "title": "Annotators: drop outlier regression labels (median/MAD) and weight annotators by agreement",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-drill-regression-labels-vs-pairwise-ranking-bradley-terry-cost-noi",
+     "title": "Regression labels vs pairwise ranking (Bradley–Terry): cost, noise, what each can learn",
+     "difficulty": "Drill",
+     "links": {
+      "article": "https://en.wikipedia.org/wiki/Bradley%E2%80%93Terry_model"
+     }
+    },
+    {
+     "id": "sa-story-map-every-story-to-stripe-s-6-operating-principles-and-fill-",
+     "title": "Map every story to Stripe's 6 operating principles and fill the gaps",
+     "difficulty": "Story",
+     "links": {}
+    }
+   ]
+  },
+  {
+   "id": "sa-day-20",
+   "title": "Day 20 · Mon Oct 26 — Weak spots · ML depth (your resume)",
+   "problems": [
+    {
+     "id": "sa-serialize-and-deserialize-binary-tree",
+     "title": "Serialize and Deserialize Binary Tree",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
+      "neetcode": "https://neetcode.io/problems/serialize-and-deserialize-binary-tree?list=neetcode150",
+      "article": "https://neetcode.io/solutions/serialize-and-deserialize-binary-tree",
+      "youtube": "https://www.youtube.com/watch?v=-YbXySKJsX8",
+      "gfg": "https://bit.ly/3PqPDSE"
+     }
+    },
+    {
+     "id": "sa-word-search-ii",
+     "title": "Word Search II",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/word-search-ii/",
+      "neetcode": "https://neetcode.io/problems/search-for-word-ii?list=neetcode150",
+      "article": "https://neetcode.io/solutions/word-search-ii"
+     }
+    },
+    {
+     "id": "sa-drill-re-solve-the-4-problems-you-flagged-hardest-since-day-1-time",
+     "title": "Re-solve the 4 problems you flagged hardest since Day 1, timed, no notes",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-drill-resume-deep-dive-for-each-project-science-framing-alternativ",
+     "title": "Resume deep dive: for each project — science framing, alternatives and why not, data, model, loss, metrics",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-drill-explain-your-strongest-project-to-pacer-and-let-it-cross-exa",
+     "title": "Explain your strongest project to Pacer and let it cross-examine you for 20 minutes",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-story-final-story-bank-12-stories-each-tagged-with-2-3-lps-and-one",
+     "title": "Final story bank: 12 stories, each tagged with 2–3 LPs and one operating principle",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    },
+    {
+     "id": "sa-v-YojGTqNM6m8",
+     "title": "Stripe software engineer interview process · Exponent (6m)",
+     "difficulty": "Video",
+     "links": {
+      "youtube": "https://www.youtube.com/watch?v=YojGTqNM6m8"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-day-21",
+   "title": "Day 21 · Tue Oct 27 — Full mock day",
+   "problems": [
+    {
+     "id": "sa-mock-stripe-team-screen-sim-60m-card-ledger-luhn-check-masking-ro",
+     "title": "Stripe team-screen sim, 60m: card ledger — Luhn check → masking → routing by card prefix",
+     "difficulty": "Mock",
+     "links": {
+      "article": "https://en.wikipedia.org/wiki/Luhn_algorithm"
+     }
+    },
+    {
+     "id": "sa-mock-amazon-dsa-mock-60m-solve-the-two-problems-below-cold-and-na",
+     "title": "Amazon DSA mock, 60m: solve the two problems below cold and narrate complexity",
+     "difficulty": "Mock",
+     "links": {}
+    },
+    {
+     "id": "sa-fruit-into-baskets",
+     "title": "Fruit Into Baskets",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/fruit-into-baskets/"
+     }
+    },
+    {
+     "id": "sa-maximum-product-subarray",
+     "title": "Maximum Product Subarray",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/maximum-product-subarray/",
+      "neetcode": "https://neetcode.io/problems/maximum-product-subarray?list=neetcode150",
+      "article": "https://neetcode.io/solutions/maximum-product-subarray",
+      "youtube": "https://www.youtube.com/watch?v=hnswaLJvr6g",
+      "gfg": "https://bit.ly/3PrlQsU"
+     }
+    },
+    {
+     "id": "sa-mock-ml-breadth-rapid-fire-40-questions-in-45m-across-days-1-19-w",
+     "title": "ML breadth rapid-fire: 40 questions in 45m across Days 1–19, with Pacer as quizmaster",
+     "difficulty": "Mock",
+     "links": {}
+    },
+    {
+     "id": "sa-mock-ml-application-mock-multi-class-classification-under-busines",
+     "title": "ML application mock: multi-class classification under business constraints (bias for action)",
+     "difficulty": "Mock",
+     "links": {}
+    },
+    {
+     "id": "sa-mock-lp-mock-4-questions-2-follow-ups-each",
+     "title": "LP mock: 4 questions, 2 follow-ups each",
+     "difficulty": "Mock",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    }
+   ]
+  },
+  {
+   "id": "sa-rev-1",
+   "title": "Revision 1 · Wed Oct 28 — DSA patterns & ML breadth",
+   "problems": [
+    {
+     "id": "sa-redo-minimum-window-substring",
+     "title": "Redo: Minimum Window Substring",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/minimum-window-substring/",
+      "neetcode": "https://neetcode.io/problems/minimum-window-with-characters?list=neetcode150",
+      "article": "https://neetcode.io/solutions/minimum-window-substring",
+      "youtube": "https://youtu.be/WJaij9ffOIY",
+      "gfg": "https://practice.geeksforgeeks.org/problems/smallest-window-in-a-string-containing-all-the-characters-of-another-string-1587115621/1"
+     }
+    },
+    {
+     "id": "sa-redo-interval-list-intersections",
+     "title": "Redo: Interval List Intersections",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/interval-list-intersections/"
+     }
+    },
+    {
+     "id": "sa-redo-lru-cache",
+     "title": "Redo: LRU Cache",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/lru-cache/",
+      "neetcode": "https://neetcode.io/problems/lru-cache?list=neetcode150",
+      "article": "https://neetcode.io/solutions/lru-cache",
+      "gfg": "https://bit.ly/3zZneNN"
+     }
+    },
+    {
+     "id": "sa-redo-merge-k-sorted-lists",
+     "title": "Redo: Merge k Sorted Lists",
+     "difficulty": "Hard",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/merge-k-sorted-lists/",
+      "neetcode": "https://neetcode.io/problems/merge-k-sorted-linked-lists?list=neetcode150",
+      "article": "https://neetcode.io/solutions/merge-k-sorted-lists",
+      "youtube": "https://www.youtube.com/watch?v=jXu-H7XuClE",
+      "gfg": "https://bit.ly/3QObTXC"
+     }
+    },
+    {
+     "id": "sa-redo-course-schedule",
+     "title": "Redo: Course Schedule",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/course-schedule/",
+      "neetcode": "https://neetcode.io/problems/course-schedule?list=neetcode150",
+      "article": "https://neetcode.io/solutions/course-schedule",
+      "youtube": "https://youtu.be/WAOfKpxYHR8",
+      "gfg": "https://practice.geeksforgeeks.org/problems/course-schedule/1"
+     }
+    },
+    {
+     "id": "sa-redo-coin-change",
+     "title": "Redo: Coin Change",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/coin-change/",
+      "neetcode": "https://neetcode.io/problems/coin-change?list=neetcode150",
+      "article": "https://neetcode.io/solutions/coin-change",
+      "youtube": "https://www.youtube.com/watch?v=myPeWb3Y68A",
+      "gfg": "https://practice.geeksforgeeks.org/problems/-minimum-number-of-coins4426/1"
+     }
+    },
+    {
+     "id": "sa-redo-lowest-common-ancestor-of-a-binary-tree",
+     "title": "Redo: Lowest Common Ancestor of a Binary Tree",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/",
+      "youtube": "https://www.youtube.com/watch?v=_-QHfMDde90",
+      "gfg": "https://bit.ly/3popvgG"
+     }
+    },
+    {
+     "id": "sa-redo-word-break",
+     "title": "Redo: Word Break",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/word-break/",
+      "neetcode": "https://neetcode.io/problems/word-break?list=neetcode150",
+      "article": "https://neetcode.io/solutions/word-break",
+      "gfg": "https://bit.ly/3bVT5XN"
+     }
+    },
+    {
+     "id": "sa-drill-ml-breadth-flash-review-regression-trees-boosting-nns-transf",
+     "title": "ML breadth flash review: regression → trees → boosting → NNs → Transformers → contrastive → ranking",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-drill-re-derive-by-hand-normal-equation-logistic-gradient-entropy-",
+     "title": "Re-derive by hand: normal equation, logistic gradient, entropy/Gini split, attention cost",
+     "difficulty": "Drill",
+     "links": {}
+    }
+   ]
+  },
+  {
+   "id": "sa-rev-2",
+   "title": "Revision 2 · Thu Oct 29 — Stripe practical & stories",
+   "problems": [
+    {
+     "id": "sa-mock-redo-the-accept-language-parser-cold-45m-all-three-parts",
+     "title": "Redo the Accept-Language parser cold, 45m, all three parts",
+     "difficulty": "Mock",
+     "links": {
+      "article": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Accept-Language"
+     }
+    },
+    {
+     "id": "sa-redo-invalid-transactions",
+     "title": "Redo: Invalid Transactions",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/invalid-transactions/"
+     }
+    },
+    {
+     "id": "sa-redo-simple-bank-system",
+     "title": "Redo: Simple Bank System",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/simple-bank-system/"
+     }
+    },
+    {
+     "id": "sa-redo-evaluate-division",
+     "title": "Redo: Evaluate Division",
+     "difficulty": "Medium",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/evaluate-division/",
+      "neetcode": "https://neetcode.io/problems/evaluate-division?list=neetcode250",
+      "article": "https://neetcode.io/solutions/evaluate-division"
+     }
+    },
+    {
+     "id": "sa-drill-ml-depth-rehearse-your-top-2-projects-aloud-10-minutes-each",
+     "title": "ML depth: rehearse your top 2 projects aloud, 10 minutes each",
+     "difficulty": "Drill",
+     "links": {}
+    },
+    {
+     "id": "sa-story-final-pass-12-stories-90-seconds-each-out-loud",
+     "title": "Final pass: 12 stories, 90 seconds each, out loud",
+     "difficulty": "Story",
+     "links": {
+      "article": "https://www.amazon.jobs/content/en/our-workplace/leadership-principles"
+     }
+    },
+    {
+     "id": "sa-build-interview-day-setup-check-ide-run-and-debug-test-harness-htt",
+     "title": "Interview-day setup check: IDE, run and debug, test harness, HTTP client, quiet room",
+     "difficulty": "Build",
+     "links": {}
+    }
+   ]
+  },
+  {
+   "id": "sa-interview-day",
+   "title": "Interview day · Fri Oct 30",
+   "problems": [
+    {
+     "id": "sa-redo-two-sum",
+     "title": "Redo: Two Sum",
+     "difficulty": "Easy",
+     "links": {
+      "leetcode": "https://leetcode.com/problems/two-sum/",
+      "neetcode": "https://neetcode.io/problems/two-integer-sum?list=neetcode150",
+      "article": "https://neetcode.io/solutions/two-sum",
+      "gfg": "https://bit.ly/3SVYU8f"
+     }
+    },
+    {
+     "id": "sa-story-skim-your-story-bank-and-project-one-pagers-20m-nothing-new",
+     "title": "Skim your story bank and project one-pagers (20m), nothing new",
+     "difficulty": "Story",
+     "links": {}
+    },
+    {
+     "id": "sa-drill-before-each-round-restate-the-problem-ask-about-constraints-",
+     "title": "Before each round: restate the problem, ask about constraints, test as you go",
+     "difficulty": "Drill",
+     "links": {}
+    }
+   ]
+  }
+ ]
+}

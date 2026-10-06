@@ -11,12 +11,10 @@ import {
   PanelLeftOpen,
   ShieldCheck,
 } from 'lucide-react';
-import { TRACK_META, TRACK_ORDER } from '../data';
-import { useTrackStats } from '../hooks/useTrackStats';
+import { TRACK_META } from '../data';
+import { useTrackStats, useVisibleTracks } from '../hooks/useTrackStats';
 import { usePaceStore, currentStreak } from '../state/store';
-import { useAuthUser } from '../hooks/useAuth';
 import { useIsDesktop } from '../hooks/useIsDesktop';
-import { isPaceAdmin } from '../lib/admin';
 import Lane from './Lane';
 import ThemeToggle from './ThemeToggle';
 import AccountButton from './AccountButton';
@@ -28,15 +26,17 @@ export default function Sidebar({ onOpenSearch }: { onOpenSearch: () => void }) 
   const location = useLocation();
   const stats = useTrackStats();
   const solveLog = usePaceStore((s) => s.solveLog);
-  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const {
+    isAdmin,
+    visibleTrackOrder: TRACK_ORDER,
+    visibleRegisteredTracks: registeredTracks,
+  } = useVisibleTracks();
   const streak = currentStreak(solveLog);
 
   const sidebarCollapsed = usePaceStore((s) => s.sidebarCollapsed);
   const toggleSidebar = usePaceStore((s) => s.toggleSidebar);
 
   const isDesktop = useIsDesktop(1080);
-  const { user } = useAuthUser();
-  const isAdmin = isPaceAdmin(user);
 
   // Keyboard shortcut Ctrl+B or Cmd+B to toggle sidebar on desktop
   useEffect(() => {

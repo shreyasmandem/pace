@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { TrackId } from '../types';
-import { getTrack } from '../data';
+import { getTrack, isAdminOnlyTrack } from '../data';
+import { auth } from '../lib/firebase';
+import { isPaceAdmin } from '../lib/admin';
 
 export type Theme = 'light' | 'dark' | 'system';
 
@@ -128,6 +130,9 @@ export const usePaceStore = create<PaceState>()(
       registeredTracks: [],
       registerTrack: (trackId) =>
         set((state) => {
+          if (isAdminOnlyTrack(trackId) && !isPaceAdmin(auth?.currentUser ?? null)) {
+            return state;
+          }
           const current = state.registeredTracks || [];
           if (current.includes(trackId)) return state;
           return { registeredTracks: [...current, trackId] };

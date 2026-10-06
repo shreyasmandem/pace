@@ -1,6 +1,13 @@
 import { useMemo } from 'react';
-import { getAllProblems, TRACK_ORDER } from '../data';
+import {
+  getAllProblems,
+  TRACK_ORDER,
+  getVisibleTrackOrder,
+  filterVisibleTracks,
+} from '../data';
 import { usePaceStore } from '../state/store';
+import { useAuthUser } from './useAuth';
+import { isPaceAdmin } from '../lib/admin';
 import type { TrackId } from '../types';
 
 export interface TrackStat {
@@ -8,6 +15,25 @@ export interface TrackStat {
   total: number;
   solved: number;
   percent: number;
+}
+
+export function useVisibleTracks() {
+  const { user, loading } = useAuthUser();
+  const isAdmin = isPaceAdmin(user);
+  const rawRegisteredTracks = usePaceStore((s) => s.registeredTracks || []);
+
+  const visibleTrackOrder = useMemo(() => getVisibleTrackOrder(isAdmin), [isAdmin]);
+  const visibleRegisteredTracks = useMemo(
+    () => filterVisibleTracks(rawRegisteredTracks, isAdmin),
+    [rawRegisteredTracks, isAdmin]
+  );
+
+  return {
+    isAdmin,
+    authLoading: loading,
+    visibleTrackOrder,
+    visibleRegisteredTracks,
+  };
 }
 
 export function useTrackStats(): Record<TrackId, TrackStat> {
@@ -57,15 +83,15 @@ export function useDifficultyBreakdown(trackId: TrackId): DifficultyBreakdown {
 
 export function useAggregateStat() {
   const stats = useTrackStats();
-  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const { visibleRegisteredTracks } = useVisibleTracks();
 
   return useMemo(() => {
-    if (registeredTracks.length === 0) {
+    if (visibleRegisteredTracks.length === 0) {
       return { total: 0, solved: 0, percent: 0 };
     }
-    const values = registeredTracks.map((id) => stats[id]).filter(Boolean);
+    const values = visibleRegisteredTracks.map((id) => stats[id]).filter(Boolean);
     const total = values.reduce((n, s) => n + s.total, 0);
     const solved = values.reduce((n, s) => n + s.solved, 0);
     return { total, solved, percent: total ? (solved / total) * 100 : 0 };
-  }, [stats, registeredTracks]);
+  }, [stats, visibleRegisteredTracks]);
 }

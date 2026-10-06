@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useParams, useSearchParams, Navigate } from 'react-router-dom';
 import { Check, Lock, Search, Sparkles } from 'lucide-react';
-import { getTopicNote, getTrack, TRACK_META } from '../data';
-import { useDifficultyBreakdown, useTrackStats } from '../hooks/useTrackStats';
+import { getTopicNote, getTrack, TRACK_META, isAdminOnlyTrack } from '../data';
+import { useDifficultyBreakdown, useTrackStats, useVisibleTracks } from '../hooks/useTrackStats';
 import { usePaceStore } from '../state/store';
 import type { TrackId } from '../types';
 import Lane from '../components/Lane';
@@ -37,7 +37,11 @@ export default function TrackSheet() {
   }, []);
 
   const progress = usePaceStore((s) => s.progress);
-  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const {
+    isAdmin,
+    authLoading,
+    visibleRegisteredTracks: registeredTracks,
+  } = useVisibleTracks();
   const registerTrack = usePaceStore((s) => s.registerTrack);
   const stats = useTrackStats();
   const safeId = (trackId && trackId in TRACK_META ? trackId : 'a2z') as TrackId;
@@ -70,6 +74,11 @@ export default function TrackSheet() {
   }, [track.groups, query, difficulty, status, progress]);
 
   const allProblemIds = useMemo(() => track.groups.flatMap((g) => g.problems.map((p) => p.id)), [track.groups]);
+
+  if (isAdminOnlyTrack(id)) {
+    if (authLoading) return null;
+    if (!isAdmin) return <Navigate to="/" replace />;
+  }
 
   if (!isEnrolled) {
     return (

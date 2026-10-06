@@ -2,6 +2,7 @@ import a2zRaw from './a2z.json';
 import nc150Raw from './neetcode150.json';
 import nc250Raw from './neetcode250.json';
 import blind75Raw from './blind75.json';
+import stripeAmazonRaw from './stripe-amazon.json';
 import topicNotesRaw from './topic-notes.json';
 import companiesRaw from './companies.json';
 import type {
@@ -21,6 +22,7 @@ const a2z = a2zRaw as A2ZData;
 const nc150 = nc150Raw as GroupedTrackData;
 const nc250 = nc250Raw as GroupedTrackData;
 const blind75 = blind75Raw as GroupedTrackData;
+const stripeAmazon = stripeAmazonRaw as GroupedTrackData;
 
 export const topicNotes = topicNotesRaw as TopicNotes;
 
@@ -61,9 +63,37 @@ export const TRACK_META: Record<TrackId, TrackMeta> = {
     sourceUrl: 'https://neetcode.io/practice/practice/blind75',
     accent: 'var(--track-blind75)',
   },
+  'stripe-amazon': {
+    id: 'stripe-amazon',
+    label: 'Stripe × Amazon Sprint',
+    shortLabel: 'Stripe × Amazon',
+    subtitle:
+      'Oct 7 → Oct 30: DSA, Stripe practical coding, Amazon Applied Scientist ML and Leadership Principles, day by day.',
+    source: 'Stripe & Amazon interview write-ups',
+    sourceUrl:
+      'https://medium.com/nybles/amazon-applied-scientist-intern-interview-experience-ml-challenge-2025-5092441d0b2e',
+    accent: 'var(--difficulty-medium)',
+  },
 };
 
-export const TRACK_ORDER: TrackId[] = ['a2z', 'nc150', 'nc250', 'blind75'];
+export const ADMIN_ONLY_TRACKS: TrackId[] = ['stripe-amazon'];
+
+export const TRACK_ORDER: TrackId[] = ['stripe-amazon', 'a2z', 'nc150', 'nc250', 'blind75'];
+
+export const PUBLIC_TRACK_ORDER: TrackId[] = ['a2z', 'nc150', 'nc250', 'blind75'];
+
+export function isAdminOnlyTrack(trackId: string): boolean {
+  return ADMIN_ONLY_TRACKS.includes(trackId as TrackId);
+}
+
+export function getVisibleTrackOrder(isAdmin: boolean): TrackId[] {
+  return isAdmin ? TRACK_ORDER : PUBLIC_TRACK_ORDER;
+}
+
+export function filterVisibleTracks(tracks: TrackId[], isAdmin: boolean): TrackId[] {
+  if (isAdmin) return tracks;
+  return tracks.filter((id) => !isAdminOnlyTrack(id));
+}
 
 function normalizeA2Z(): NormalizedTrack {
   return {
@@ -87,6 +117,7 @@ const NORMALIZED: Record<TrackId, NormalizedTrack> = {
   nc150: normalizeGrouped(nc150),
   nc250: normalizeGrouped(nc250),
   blind75: normalizeGrouped(blind75),
+  'stripe-amazon': normalizeGrouped(stripeAmazon),
 };
 
 /** The A2Z track keeps its step/subStep hierarchy for the sheet page; every other track is a flat list of groups. */
@@ -104,6 +135,7 @@ export function getAllProblems(id: TrackId) {
 
 export function getTopicNote(trackId: TrackId, groupId: string, groupTitle: string): string | null {
   if (trackId === 'a2z') return topicNotes.a2z[groupId] ?? null;
+  if (trackId === 'stripe-amazon') return topicNotes.stripeAmazon[groupId] ?? null;
   return topicNotes.neetcode[groupTitle] ?? null;
 }
 

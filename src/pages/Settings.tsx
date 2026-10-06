@@ -3,7 +3,8 @@ import { Download, Moon, Sun, Upload, Monitor, LogOut, Cloud, CloudOff, RefreshC
 import { usePaceStore, currentStreak } from '../state/store';
 import type { Theme, TutorLanguage } from '../state/store';
 import type { TrackId } from '../types';
-import { TRACK_ORDER, TRACK_META, getTrack } from '../data';
+import { TRACK_META, getTrack } from '../data';
+import { useVisibleTracks } from '../hooks/useTrackStats';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { doc, setDoc } from 'firebase/firestore';
 import { useAuthUser, useSyncStatus, notifyProfileUpdated } from '../hooks/useAuth';
@@ -65,7 +66,10 @@ export default function Settings() {
   const setTheme = usePaceStore((s) => s.setTheme);
   const tutorLanguage = usePaceStore((s) => s.tutorLanguage || 'python');
   const setTutorLanguage = usePaceStore((s) => s.setTutorLanguage);
-  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const {
+    visibleTrackOrder: TRACK_ORDER,
+    visibleRegisteredTracks: registeredTracks,
+  } = useVisibleTracks();
   const registerTrack = usePaceStore((s) => s.registerTrack);
   const unregisterTrack = usePaceStore((s) => s.unregisterTrack);
   const exportSnapshot = usePaceStore((s) => s.exportSnapshot);

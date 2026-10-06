@@ -38,12 +38,12 @@ export interface A2ZData {
 }
 
 export interface GroupedTrackData {
-  trackId: 'nc150' | 'nc250' | 'blind75';
+  trackId: 'nc150' | 'nc250' | 'blind75' | 'stripe-amazon';
   title: string;
   groups: TopicGroup[];
 }
 
-export type TrackId = 'a2z' | 'nc150' | 'nc250' | 'blind75';
+export type TrackId = 'a2z' | 'nc150' | 'nc250' | 'blind75' | 'stripe-amazon';
 
 export interface TrackMeta {
   id: TrackId;
@@ -65,6 +65,7 @@ export interface NormalizedTrack {
 export interface TopicNotes {
   a2z: Record<string, string>;
   neetcode: Record<string, string>;
+  stripeAmazon: Record<string, string>;
 }
 
 export interface CompanyMeta {

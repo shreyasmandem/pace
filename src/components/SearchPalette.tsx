@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, X, CornerDownLeft, Building2 } from 'lucide-react';
 import { getTrack, TRACK_META, TRACK_ORDER, COMPANIES } from '../data';
+import { useVisibleTracks } from '../hooks/useTrackStats';
 import { usePaceStore } from '../state/store';
 import styles from './SearchPalette.module.css';
 
@@ -29,7 +30,7 @@ export default function SearchPalette({ onClose }: { onClose: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const progress = usePaceStore((s) => s.progress);
-  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const { visibleRegisteredTracks: registeredTracks } = useVisibleTracks();
 
   useEffect(() => {
     inputRef.current?.focus();

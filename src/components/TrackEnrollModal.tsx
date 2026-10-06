@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { X, Check, Compass, ArrowRight, Trash2 } from 'lucide-react';
-import { TRACK_ORDER, TRACK_META, getTrack, getAllProblems } from '../data';
+import { TRACK_META, getTrack, getAllProblems } from '../data';
+import { useVisibleTracks } from '../hooks/useTrackStats';
 import { usePaceStore } from '../state/store';
 import type { TrackId } from '../types';
 import ConfirmDialog from './ConfirmDialog';
@@ -18,7 +19,10 @@ export default function TrackEnrollModal({ isOpen, onClose }: TrackEnrollModalPr
   const [mounted, setMounted] = useState(false);
   const [unregisteringTrackId, setUnregisteringTrackId] = useState<TrackId | null>(null);
 
-  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const {
+    visibleTrackOrder: TRACK_ORDER,
+    visibleRegisteredTracks: registeredTracks,
+  } = useVisibleTracks();
   const registerTrack = usePaceStore((s) => s.registerTrack);
   const unregisterTrack = usePaceStore((s) => s.unregisterTrack);
   const progress = usePaceStore((s) => s.progress);

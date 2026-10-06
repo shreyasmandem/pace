@@ -9,9 +9,9 @@ import {
   Check,
   Sparkles,
 } from 'lucide-react';
-import { TRACK_META, TRACK_ORDER } from '../data';
+import { TRACK_META } from '../data';
 import { getDayOfYear } from '../data/dailyQuotes';
-import { useAggregateStat, useTrackStats } from '../hooks/useTrackStats';
+import { useAggregateStat, useTrackStats, useVisibleTracks } from '../hooks/useTrackStats';
 import { useAuthUser } from '../hooks/useAuth';
 import { usePaceStore, currentStreak } from '../state/store';
 import { signInWithGoogle, firebaseEnabled } from '../lib/firebase';
@@ -25,7 +25,7 @@ export default function Home() {
   const { user } = useAuthUser();
   const aggregate = useAggregateStat();
   const trackStats = useTrackStats();
-  const registeredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const { visibleTrackOrder: TRACK_ORDER, visibleRegisteredTracks: registeredTracks } = useVisibleTracks();
   const registerTrack = usePaceStore((s) => s.registerTrack);
   const notes = usePaceStore((s) => s.notes);
   const bookmarks = usePaceStore((s) => s.bookmarks);
