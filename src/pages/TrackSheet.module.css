@@ -360,17 +360,13 @@
 }
 
 .oaReasoningBanner {
-  padding: var(--space-4);
+  padding: 12px 14px;
   border-radius: var(--radius-md);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent) 9%, var(--surface)) 0%,
-    var(--surface) 100%
-  );
-  border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--border-hairline));
+  background: var(--surface);
+  border: 1px solid var(--border-hairline);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   margin-bottom: var(--space-5);
 }
 
@@ -379,48 +375,22 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-  flex-wrap: wrap;
 }
 
 .oaReasoningLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.74rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
 }
 
 .oaTimeTag {
   font-size: 0.74rem;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: var(--accent);
-  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  color: var(--text-tertiary);
 }
 
 .oaReasoningBody {
-  font-size: 0.87rem;
-  color: var(--text-primary);
-  line-height: 1.55;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
   margin: 0;
-}
-
-.oaPatternPills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.oaPatternPill {
-  padding: 3px 9px;
-  border-radius: var(--radius-full);
-  font-size: 0.72rem;
-  font-weight: 600;
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  color: var(--accent);
-  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
 }

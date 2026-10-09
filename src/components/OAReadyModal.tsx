@@ -2,33 +2,23 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import {
+  ArrowLeft,
   ArrowRight,
-  BookmarkCheck,
-  Bot,
-  Building2,
-  Calendar,
   Check,
-  CheckCircle2,
-  Clock,
-  Compass,
-  FolderKanban,
-  Layers,
-  RotateCcw,
+  MessageSquare,
   Sparkles,
-  Target,
   Trash2,
   X,
-  Zap,
 } from 'lucide-react';
 import { COMPANIES, getCompanyMeta } from '../data';
-import { buildOAReadyTrack, type OAScrapeTelemetry } from '../lib/oaReady';
 import { usePaceStore } from '../state/store';
 import type { CustomTrack, OAFocusMode, Problem } from '../types';
+import { buildOAReadyTrack } from '../lib/oaReady';
 import TopicSection from './TopicSection';
 import ConfirmDialog from './ConfirmDialog';
 import styles from './OAReadyModal.module.css';
 
-export interface OAReadyModalProps {
+interface OAReadyModalProps {
   initialCompanyId: string;
   onClose: () => void;
   onOpenGeneralChat?: () => void;
@@ -36,53 +26,31 @@ export interface OAReadyModalProps {
 }
 
 const DAY_PRESETS = [
-  { value: 1, label: '1d Blitz' },
-  { value: 3, label: '3 Days' },
-  { value: 5, label: '5 Days' },
-  { value: 7, label: '7 Days' },
-  { value: 14, label: '14 Days' },
-  { value: 30, label: '30 Days' },
+  { label: '1d', value: 1 },
+  { label: '3d', value: 3 },
+  { label: '5d', value: 5 },
+  { label: '7d', value: 7 },
+  { label: '14d', value: 14 },
 ];
 
 const HOUR_PRESETS = [
-  { value: 1, label: '1h / day' },
-  { value: 2, label: '2h / day' },
-  { value: 3, label: '3h / day' },
-  { value: 4, label: '4h / day' },
-  { value: 6, label: '6h / day' },
+  { label: '1h', value: 1 },
+  { label: '2h', value: 2 },
+  { label: '3h', value: 3 },
+  { label: '4h', value: 4 },
+  { label: '6h', value: 6 },
 ];
 
-const FOCUS_STRATEGIES: Array<{
-  id: OAFocusMode;
-  title: string;
-  badge: string;
-  desc: string;
-}> = [
-  {
-    id: 'high_frequency',
-    title: 'High-Frequency OA Sprint',
-    badge: 'Recommended',
-    desc: 'Prioritizes verified 30-day & 3-month company assessment hits + Blind 75 pattern anchors.',
-  },
-  {
-    id: 'balanced',
-    title: 'Balanced Pattern Mastery',
-    badge: 'Structured',
-    desc: 'Stepped progression from Easy speed warm-ups to Medium core invariants and Hard stretch problems.',
-  },
-  {
-    id: 'crash_course',
-    title: 'Last-Minute Crash Course',
-    badge: '<48h Prep',
-    desc: 'Ultra-high ROI must-solve patterns designed to maximize test-case pass rate in minimal hours.',
-  },
-  {
-    id: 'weakness_focus',
-    title: 'Hard & Differentiator Focus',
-    badge: 'Deep Dive',
-    desc: 'Targets OA filter topics: Dynamic Programming, Graph BFS/DFS, Monotonic Stack, and Greedy.',
-  },
+const FOCUS_OPTIONS: Array<{ id: OAFocusMode; label: string }> = [
+  { id: 'high_frequency', label: 'Most Asked' },
+  { id: 'balanced', label: 'Balanced' },
+  { id: 'weakness_focus', label: 'Weak Spots' },
+  { id: 'crash_course', label: 'Crash Course' },
 ];
+
+const ALL_COMPANIES_SORTED = [...COMPANIES].sort((a, b) =>
+  a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+);
 
 export default function OAReadyModal({
   initialCompanyId,
@@ -91,63 +59,45 @@ export default function OAReadyModal({
   onOpenProblemTutor,
 }: OAReadyModalProps) {
   const navigate = useNavigate();
+
   const progress = usePaceStore((s) => s.progress);
-  const customTracks = usePaceStore((s) => s.customTracks || {});
+  const customTracks = usePaceStore((s) => s.customTracks);
   const saveCustomTrack = usePaceStore((s) => s.saveCustomTrack);
   const renameCustomTrack = usePaceStore((s) => s.renameCustomTrack);
   const deleteCustomTrack = usePaceStore((s) => s.deleteCustomTrack);
 
-  const savedTracksList = useMemo(
-    () => Object.values(customTracks).sort((a, b) => b.createdAt - a.createdAt),
-    [customTracks]
+  const [selectedCompanyId, setSelectedCompanyId] = useState(initialCompanyId);
+  const selectedCompanyMeta = useMemo(
+    () => getCompanyMeta(selectedCompanyId) || COMPANIES[0],
+    [selectedCompanyId]
   );
 
-  const [activeTab, setActiveTab] = useState<'config' | 'builder' | 'saved'>('config');
-
-  // Form states
-  const [companyId, setCompanyId] = useState(initialCompanyId || 'google');
-  const [companyFilter, setCompanyFilter] = useState('');
   const [days, setDays] = useState<number>(5);
   const [hoursPerDay, setHoursPerDay] = useState<number>(2);
   const [focusMode, setFocusMode] = useState<OAFocusMode>('high_frequency');
-  const [trackName, setTrackName] = useState<string>('');
-  const [nameManuallyEdited, setNameManuallyEdited] = useState(false);
-  const [customPrompt, setCustomPrompt] = useState<string>('');
+  const [trackName, setTrackName] = useState<string>(
+    `${selectedCompanyMeta.name} OA (${days}d)`
+  );
+  const [userEditedName, setUserEditedName] = useState(false);
 
-  // Dynamic Builder states
+  const [view, setView] = useState<'configure' | 'builder'>('configure');
   const [isBuilding, setIsBuilding] = useState(false);
-  const [buildStep, setBuildStep] = useState(0); // 0..4
-  const [revealedSectionsCount, setRevealedSectionsCount] = useState(0);
+  const [revealedCount, setRevealedCount] = useState<number>(0);
   const [builtTrack, setBuiltTrack] = useState<CustomTrack | null>(null);
-  const [telemetry, setTelemetry] = useState<OAScrapeTelemetry | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [deleteTargetTrack, setDeleteTargetTrack] = useState<CustomTrack | null>(null);
 
-  const buildTimersRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
+  const buildCancelRef = useRef<number>(0);
 
-  const selectedCompanyMeta = useMemo(
-    () =>
-      getCompanyMeta(companyId) || {
-        id: companyId,
-        name: companyId.charAt(0).toUpperCase() + companyId.slice(1),
-        total: 0,
-        easy: 0,
-        medium: 0,
-        hard: 0,
-      },
-    [companyId]
-  );
-
-  // Keep default track name synced unless user typed a custom name
+  // Sync default track name when company or days change
   useEffect(() => {
-    if (!nameManuallyEdited) {
-      setTrackName(`${selectedCompanyMeta.name} OA Ready (${days}d)`);
+    if (!userEditedName) {
+      setTrackName(`${selectedCompanyMeta.name} OA (${days}d)`);
     }
-  }, [selectedCompanyMeta.name, days, nameManuallyEdited]);
+  }, [selectedCompanyMeta.name, days, userEditedName]);
 
-  // Body & HTML scroll lock
+  // Lock background scroll
   useEffect(() => {
-    if (typeof document === 'undefined') return;
     const origBody = document.body.style.overflow;
     const origHtml = document.documentElement.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -158,696 +108,425 @@ export default function OAReadyModal({
     };
   }, []);
 
-  // Cleanup timers on unmount
+  // Close on Escape
   useEffect(() => {
-    return () => {
-      buildTimersRef.current.forEach((t) => clearTimeout(t));
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !deleteTargetTrack) onClose();
     };
-  }, []);
-
-  // Escape key closes modal
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !deleteTargetTrack) {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [onClose, deleteTargetTrack]);
 
-  const filteredCompanies = useMemo(() => {
-    const q = companyFilter.trim().toLowerCase();
-    const sorted = [...COMPANIES].sort((a, b) => a.name.localeCompare(b.name));
-    if (!q) return sorted;
-    return sorted.filter(
-      (c) => c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q)
-    );
-  }, [companyFilter]);
+  const totalHours = Math.max(1, Math.round(days * hoursPerDay * 10) / 10);
+  const estimatedProblems = useMemo(() => {
+    const mins = totalHours * 60;
+    const avg = focusMode === 'crash_course' ? 24 : 30;
+    return Math.max(5, Math.min(85, Math.round(mins / avg)));
+  }, [totalHours, focusMode]);
 
-  const totalHoursBudget = useMemo(
-    () => Math.round(Math.max(1, days) * Math.max(0.5, hoursPerDay) * 10) / 10,
-    [days, hoursPerDay]
-  );
+  const savedTracksList = useMemo(() => {
+    return Object.values(customTracks || {}).sort((a, b) => b.createdAt - a.createdAt);
+  }, [customTracks]);
 
-  const estimatedProblemCount = useMemo(() => {
-    const mins = totalHoursBudget * 60;
-    const minCount = focusMode === 'crash_course' ? 6 : 8;
-    return Math.min(120, Math.max(minCount, Math.round(mins / 30)));
-  }, [totalHoursBudget, focusMode]);
-
-  const clearBuildTimers = () => {
-    buildTimersRef.current.forEach((t) => clearTimeout(t));
-    buildTimersRef.current = [];
-  };
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
   const handleStartBuild = async () => {
-    clearBuildTimers();
-    setActiveTab('builder');
+    const runId = ++buildCancelRef.current;
+    setView('builder');
     setIsBuilding(true);
+    setRevealedCount(0);
     setIsSaved(false);
-    setBuildStep(1);
-    setRevealedSectionsCount(0);
 
-    // Step 1: Immediate fast deterministic build so sections can start rendering dynamically
-    const initialResult = await buildOAReadyTrack(
-      {
-        companyId,
-        trackTitle: trackName.trim() || `${selectedCompanyMeta.name} OA Ready (${days}d)`,
-        days,
-        hoursPerDay,
-        focusMode,
-        customPrompt,
-        progress,
-      },
-      false
-    );
+    try {
+      const cleanTitle = trackName.trim() || `${selectedCompanyMeta.name} OA (${days}d)`;
 
-    setBuiltTrack(initialResult.track);
-    setTelemetry(initialResult.telemetry);
+      // Instant deterministic blueprint first so sections start revealing immediately
+      const initialResult = await buildOAReadyTrack(
+        {
+          companyId: selectedCompanyId,
+          trackTitle: cleanTitle,
+          days,
+          hoursPerDay,
+          focusMode,
+          progress,
+        },
+        false
+      );
 
-    const totalGroups = initialResult.track.groups.length;
+      if (buildCancelRef.current !== runId) return;
+      setBuiltTrack(initialResult.track);
 
-    // Schedule pipeline telemetry stages & dynamic section-by-section construction
-    const t1 = setTimeout(() => setBuildStep(2), 420);
-    const t2 = setTimeout(() => setBuildStep(3), 860);
-    const t3 = setTimeout(() => setBuildStep(4), 1300);
-    buildTimersRef.current.push(t1, t2, t3);
+      // Kick off AI reasoning refinement in parallel while sections reveal one by one
+      const aiPromise = buildOAReadyTrack(
+        {
+          companyId: selectedCompanyId,
+          trackTitle: cleanTitle,
+          days,
+          hoursPerDay,
+          focusMode,
+          progress,
+        },
+        true
+      ).catch(() => initialResult);
 
-    for (let i = 1; i <= totalGroups; i++) {
-      const timer = setTimeout(() => {
-        setRevealedSectionsCount(i);
-      }, 650 + i * 420);
-      buildTimersRef.current.push(timer);
-    }
+      const totalGroups = initialResult.track.groups.length;
+      for (let i = 1; i <= totalGroups; i++) {
+        await sleep(320);
+        if (buildCancelRef.current !== runId) return;
+        setRevealedCount(i);
+      }
 
-    const finishTimer = setTimeout(() => {
+      const aiRes = await aiPromise;
+      if (buildCancelRef.current !== runId) return;
+
+      setBuiltTrack((prev) =>
+        prev
+          ? {
+              ...prev,
+              overallReasoning: aiRes.track.overallReasoning,
+              sectionMeta: aiRes.track.sectionMeta,
+            }
+          : aiRes.track
+      );
       setIsBuilding(false);
-      setBuildStep(5);
-      setRevealedSectionsCount(totalGroups);
-    }, 850 + totalGroups * 420);
-    buildTimersRef.current.push(finishTimer);
-
-    // Concurrently run Pacer AI Groq refinement in background to upgrade reasoning notes smoothly
-    buildOAReadyTrack(
-      {
-        companyId,
-        trackTitle: trackName.trim() || `${selectedCompanyMeta.name} OA Ready (${days}d)`,
-        days,
-        hoursPerDay,
-        focusMode,
-        customPrompt,
-        progress,
-      },
-      true
-    )
-      .then((aiResult) => {
-        setBuiltTrack((prev) => {
-          if (!prev) return aiResult.track;
-          return {
-            ...prev,
-            overallReasoning: aiResult.track.overallReasoning,
-            sectionMeta: aiResult.track.sectionMeta,
-          };
-        });
-      })
-      .catch(() => {
-        // Keep deterministic reasoning if offline
-      });
+    } catch (err) {
+      console.error('OA Ready build error:', err);
+      setIsBuilding(false);
+    }
   };
 
-  const handleSaveTrackToAccount = () => {
+  const handleSaveTrack = () => {
     if (!builtTrack) return;
-    const finalTitle = trackName.trim() || builtTrack.title;
+    const cleanTitle = trackName.trim() || builtTrack.title;
     const shortLabel =
-      finalTitle.length > 18
-        ? `${builtTrack.companyName.slice(0, 12)} OA`
-        : finalTitle;
-
+      cleanTitle.length > 16 ? `${selectedCompanyMeta.name.slice(0, 10)} OA` : cleanTitle;
     const toSave: CustomTrack = {
       ...builtTrack,
-      title: finalTitle,
+      title: cleanTitle,
       shortLabel,
     };
-
     saveCustomTrack(toSave);
     setBuiltTrack(toSave);
     setIsSaved(true);
   };
 
-  const handleTrackNameChangeInBlueprint = (val: string) => {
+  const handleTrackNameEdit = (val: string) => {
     setTrackName(val);
-    setNameManuallyEdited(true);
-    if (builtTrack) {
-      const updated = {
-        ...builtTrack,
-        title: val,
-        shortLabel: val.length > 18 ? `${builtTrack.companyName.slice(0, 12)} OA` : val,
-      };
-      setBuiltTrack(updated);
-      if (isSaved && val.trim()) {
-        renameCustomTrack(builtTrack.id, val.trim());
-      }
+    setUserEditedName(true);
+    if (isSaved && builtTrack) {
+      renameCustomTrack(builtTrack.id, val);
     }
   };
 
-  const handleOpenSavedTrackInModal = (track: CustomTrack) => {
-    clearBuildTimers();
-    setBuiltTrack(track);
-    setTrackName(track.title);
-    setNameManuallyEdited(true);
-    setIsBuilding(false);
-    setBuildStep(5);
-    setRevealedSectionsCount(track.groups.length);
-    setIsSaved(true);
-    const totalProbs = track.groups.reduce((acc, g) => acc + g.problems.length, 0);
-    setTelemetry({
-      companyProblemsScanned: getCompanyMeta(track.companyId)?.total || totalProbs,
-      canonicalProblemsScanned: 855,
-      crossTrackMatches: Math.round(totalProbs * 0.65),
-      dominantTopics: track.keyPatterns,
-      totalMinutesBudget: Math.round(track.totalHoursBudget * 60),
-      selectedProblemsCount: totalProbs,
-    });
-    setActiveTab('builder');
-  };
+  const totalBuiltProblems = useMemo(() => {
+    if (!builtTrack) return 0;
+    return builtTrack.groups.reduce((acc, g) => acc + g.problems.length, 0);
+  }, [builtTrack]);
 
-  const buildProgressPercent = useMemo(() => {
-    if (!isBuilding && buildStep >= 5) return 100;
-    if (!builtTrack || builtTrack.groups.length === 0) return Math.min(90, buildStep * 22);
-    const sectionRatio = revealedSectionsCount / builtTrack.groups.length;
-    return Math.min(96, Math.round(20 + sectionRatio * 76));
-  }, [isBuilding, buildStep, builtTrack, revealedSectionsCount]);
-
-  if (typeof document === 'undefined') return null;
+  const progressPercent = useMemo(() => {
+    if (!builtTrack) return 15;
+    if (!isBuilding) return 100;
+    const total = Math.max(1, builtTrack.groups.length);
+    return Math.min(95, Math.round(15 + (revealedCount / total) * 80));
+  }, [builtTrack, isBuilding, revealedCount]);
 
   return createPortal(
     <div className={styles.backdrop} onClick={onClose} role="dialog" aria-modal="true">
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
+      <div
+        className={`${styles.modal} ${view === 'builder' ? styles.modalWide : ''}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Minimal Header */}
         <div className={styles.header}>
           <div className={styles.headerLeft}>
-            <div className={styles.pacerLogoBadge}>
-              <Sparkles size={19} />
-            </div>
-            <div className={styles.headerTitleGroup}>
-              <div className={styles.headerTitleRow}>
-                <h2 className={styles.headerTitle}>OA Ready</h2>
-                <span className={styles.aiBadge}>
-                  <Sparkles size={10} />
-                  Pacer AI Architect
-                </span>
-              </div>
-              <p className={styles.headerSubtitle}>
-                Scrapes 500+ company OA vaults &amp; canonical tracks to engineer your personalized assessment roadmap.
-              </p>
-            </div>
-          </div>
-
-          <div className={styles.headerActions}>
-            <div className={styles.navTabs}>
+            {view === 'builder' ? (
               <button
                 type="button"
-                className={`${styles.navTabBtn} ${activeTab === 'config' ? styles.navTabActive : ''}`}
-                onClick={() => setActiveTab('config')}
+                className={styles.closeBtn}
+                onClick={() => {
+                  buildCancelRef.current++;
+                  setIsBuilding(false);
+                  setView('configure');
+                }}
+                title="Back to settings"
               >
-                <Compass size={13} />
-                <span>Configure</span>
+                <ArrowLeft size={16} />
               </button>
-              {builtTrack && (
-                <button
-                  type="button"
-                  className={`${styles.navTabBtn} ${activeTab === 'builder' ? styles.navTabActive : ''}`}
-                  onClick={() => setActiveTab('builder')}
-                >
-                  <Layers size={13} />
-                  <span>OA Track ({builtTrack.groups.reduce((a, g) => a + g.problems.length, 0)})</span>
-                </button>
-              )}
-              {savedTracksList.length > 0 && (
-                <button
-                  type="button"
-                  className={`${styles.navTabBtn} ${activeTab === 'saved' ? styles.navTabActive : ''}`}
-                  onClick={() => setActiveTab('saved')}
-                >
-                  <FolderKanban size={13} />
-                  <span>Saved ({savedTracksList.length})</span>
-                </button>
-              )}
-            </div>
+            ) : (
+              <Sparkles size={16} className={styles.headerIcon} />
+            )}
+            <h2 className={styles.title}>
+              {view === 'builder' && builtTrack
+                ? builtTrack.title
+                : `OA Ready — ${selectedCompanyMeta.name}`}
+            </h2>
+          </div>
 
+          <div className={styles.headerRight}>
             {onOpenGeneralChat && (
               <button
                 type="button"
-                className={styles.askPacerQuickBtn}
+                className={styles.textBtn}
                 onClick={() => {
                   onClose();
                   onOpenGeneralChat();
                 }}
-                title={`Open Pacer AI Chat for ${selectedCompanyMeta.name}`}
               >
-                <Bot size={14} />
-                <span>Ask Pacer Chat</span>
+                <MessageSquare size={12} />
+                <span>Chat</span>
               </button>
             )}
-
-            <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Close">
-              <X size={18} />
+            <button
+              type="button"
+              className={styles.closeBtn}
+              onClick={onClose}
+              aria-label="Close OA Ready"
+            >
+              <X size={17} />
             </button>
           </div>
         </div>
 
         {/* Body */}
         <div className={styles.body}>
-          {activeTab === 'config' && (
-            <div className={styles.configContainer}>
-              {/* Intro Banner */}
-              <div className={styles.introBanner}>
-                <div className={styles.introText}>
-                  <h4>Tell Pacer AI about your upcoming Online Assessment</h4>
-                  <p>
-                    Pacer scans every verified question for <strong>{selectedCompanyMeta.name}</strong>,
-                    cross-references Striver&apos;s A2Z, NeetCode 150/250, and Blind 75, filters out
-                    problems you&apos;ve already solved, and builds a reasoned, time-boxed track you can
-                    save directly to your account.
-                  </p>
-                </div>
-                <div className={styles.budgetPreviewBadge}>
-                  <span className={styles.budgetHours}>{totalHoursBudget} hrs total</span>
-                  <span className={styles.budgetSub}>
-                    ~{estimatedProblemCount} high-ROI problems
-                  </span>
-                </div>
-              </div>
-
-              <div className={styles.formGrid}>
-                {/* 1. Target Company */}
-                <div className={styles.fieldCard}>
-                  <div className={styles.fieldLabelRow}>
-                    <span className={styles.fieldLabel}>
-                      <Building2 size={15} color="var(--accent)" />
-                      Target Company
-                    </span>
-                    <span className={styles.fieldHint}>500+ companies indexed</span>
+          {view === 'configure' && (
+            <>
+              <div className={styles.form}>
+                {/* Company */}
+                <div className={styles.field}>
+                  <div className={styles.labelRow}>
+                    <span>Company</span>
+                    <span className={styles.labelHint}>{selectedCompanyMeta.total} questions</span>
                   </div>
-
-                  <div className={styles.companySelectRow}>
-                    <input
-                      type="text"
-                      className={styles.textInput}
-                      placeholder="Filter company list (e.g. Accenture, Amazon, Stripe)..."
-                      value={companyFilter}
-                      onChange={(e) => setCompanyFilter(e.target.value)}
-                    />
-                    <select
-                      className={styles.selectInput}
-                      value={companyId}
-                      onChange={(e) => setCompanyId(e.target.value)}
-                    >
-                      {filteredCompanies.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name} ({c.total} verified problems)
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className={styles.companyMetaStrip}>
-                    <span className={styles.metaPill}>Total: {selectedCompanyMeta.total}</span>
-                    <span className={styles.metaPill} style={{ color: 'var(--difficulty-easy)' }}>
-                      Easy: {selectedCompanyMeta.easy}
-                    </span>
-                    <span className={styles.metaPill} style={{ color: 'var(--difficulty-medium)' }}>
-                      Med: {selectedCompanyMeta.medium}
-                    </span>
-                    <span className={styles.metaPill} style={{ color: 'var(--difficulty-hard)' }}>
-                      Hard: {selectedCompanyMeta.hard}
-                    </span>
-                  </div>
-                </div>
-
-                {/* 2. Track Name & Custom Focus */}
-                <div className={styles.fieldCard}>
-                  <div className={styles.fieldLabelRow}>
-                    <span className={styles.fieldLabel}>
-                      <BookmarkCheck size={15} color="var(--accent)" />
-                      Personalized Track Name
-                    </span>
-                    <span className={styles.fieldHint}>Editable anytime</span>
-                  </div>
-
-                  <input
-                    type="text"
-                    className={styles.textInput}
-                    value={trackName}
+                  <select
+                    className={styles.select}
+                    value={selectedCompanyId}
                     onChange={(e) => {
-                      setTrackName(e.target.value);
-                      setNameManuallyEdited(true);
+                      setSelectedCompanyId(e.target.value);
+                      setUserEditedName(false);
                     }}
-                    placeholder={`e.g. ${selectedCompanyMeta.name} OA Ready`}
-                    maxLength={48}
-                  />
-
-                  <div className={styles.fieldLabelRow} style={{ marginTop: '4px' }}>
-                    <span className={styles.fieldLabel}>
-                      <Target size={14} color="var(--accent)" />
-                      Specific Topics or Role Notes (Optional)
-                    </span>
-                  </div>
-                  <input
-                    type="text"
-                    className={styles.textInput}
-                    value={customPrompt}
-                    onChange={(e) => setCustomPrompt(e.target.value)}
-                    placeholder="e.g. SDE Intern HackerRank, focus on Graphs, Sliding Window, DP..."
-                  />
+                  >
+                    {ALL_COMPANIES_SORTED.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                {/* 3. Days Available */}
-                <div className={styles.fieldCard}>
-                  <div className={styles.fieldLabelRow}>
-                    <span className={styles.fieldLabel}>
-                      <Calendar size={15} color="var(--accent)" />
-                      Days Until Your OA
-                    </span>
-                    <span className={styles.fieldHint}>{days} {days === 1 ? 'day' : 'days'}</span>
+                {/* Days left */}
+                <div className={styles.field}>
+                  <div className={styles.labelRow}>
+                    <span>Days until OA</span>
+                    <span className={styles.labelHint}>{days} {days === 1 ? 'day' : 'days'}</span>
                   </div>
-
-                  <div className={styles.pillRow}>
+                  <div className={styles.pills}>
                     {DAY_PRESETS.map((p) => (
                       <button
                         key={p.value}
                         type="button"
-                        className={`${styles.optionPill} ${days === p.value ? styles.optionPillActive : ''}`}
-                        onClick={() => {
-                          setDays(p.value);
-                          if (p.value === 1) setFocusMode('crash_course');
-                        }}
+                        className={`${styles.pill} ${days === p.value ? styles.pillActive : ''}`}
+                        onClick={() => setDays(p.value)}
                       >
                         {p.label}
                       </button>
                     ))}
                   </div>
-
-                  <div className={styles.customNumberRow}>
-                    <span className={styles.fieldHint}>Custom days:</span>
-                    <input
-                      type="number"
-                      min={1}
-                      max={60}
-                      className={styles.customNumberInput}
-                      value={days}
-                      onChange={(e) => setDays(Math.max(1, Math.min(60, Number(e.target.value) || 1)))}
-                    />
-                  </div>
                 </div>
 
-                {/* 4. Hours Per Day */}
-                <div className={styles.fieldCard}>
-                  <div className={styles.fieldLabelRow}>
-                    <span className={styles.fieldLabel}>
-                      <Clock size={15} color="var(--accent)" />
-                      Daily Preparation Time
-                    </span>
-                    <span className={styles.fieldHint}>{hoursPerDay} hrs / day</span>
+                {/* Daily hours */}
+                <div className={styles.field}>
+                  <div className={styles.labelRow}>
+                    <span>Hours per day</span>
+                    <span className={styles.labelHint}>{hoursPerDay}h / day</span>
                   </div>
-
-                  <div className={styles.pillRow}>
+                  <div className={styles.pills}>
                     {HOUR_PRESETS.map((p) => (
                       <button
                         key={p.value}
                         type="button"
-                        className={`${styles.optionPill} ${hoursPerDay === p.value ? styles.optionPillActive : ''}`}
+                        className={`${styles.pill} ${hoursPerDay === p.value ? styles.pillActive : ''}`}
                         onClick={() => setHoursPerDay(p.value)}
                       >
                         {p.label}
                       </button>
                     ))}
                   </div>
-
-                  <div className={styles.customNumberRow}>
-                    <span className={styles.fieldHint}>Custom hours/day:</span>
-                    <input
-                      type="number"
-                      min={0.5}
-                      max={12}
-                      step={0.5}
-                      className={styles.customNumberInput}
-                      value={hoursPerDay}
-                      onChange={(e) =>
-                        setHoursPerDay(Math.max(0.5, Math.min(12, Number(e.target.value) || 1)))
-                      }
-                    />
-                  </div>
                 </div>
 
-                {/* 5. Strategy Selection */}
-                <div className={`${styles.fieldCard} ${styles.fieldCardFull}`}>
-                  <div className={styles.fieldLabelRow}>
-                    <span className={styles.fieldLabel}>
-                      <Zap size={15} color="var(--accent)" />
-                      Pacer AI Curation Strategy
-                    </span>
-                    <span className={styles.fieldHint}>
-                      Automatically skips problems you have already solved
-                    </span>
+                {/* Focus */}
+                <div className={styles.field}>
+                  <div className={styles.labelRow}>
+                    <span>Focus</span>
                   </div>
-
-                  <div className={styles.strategyGrid}>
-                    {FOCUS_STRATEGIES.map((s) => (
+                  <div className={styles.pills}>
+                    {FOCUS_OPTIONS.map((f) => (
                       <button
-                        key={s.id}
+                        key={f.id}
                         type="button"
-                        className={`${styles.strategyCard} ${
-                          focusMode === s.id ? styles.strategyCardActive : ''
-                        }`}
-                        onClick={() => setFocusMode(s.id)}
+                        className={`${styles.pill} ${focusMode === f.id ? styles.pillActive : ''}`}
+                        onClick={() => setFocusMode(f.id)}
                       >
-                        <div className={styles.strategyTitle}>
-                          <span>{s.title}</span>
-                          <span className={styles.aiBadge}>{s.badge}</span>
-                        </div>
-                        <span className={styles.strategyDesc}>{s.desc}</span>
+                        {f.label}
                       </button>
                     ))}
                   </div>
                 </div>
-              </div>
 
-              <div className={styles.generateFooter}>
-                <span className={styles.generateFooterNote}>
-                  Pacer AI will scrape {selectedCompanyMeta.name}&apos;s question bank + all 4 core tracks
-                  to build a {totalHoursBudget}-hour custom track (~{estimatedProblemCount} problems).
-                </span>
-                <button type="button" className={styles.generateBtn} onClick={handleStartBuild}>
-                  <Sparkles size={16} />
-                  <span>Build My OA Ready Track</span>
-                  <ArrowRight size={16} />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'builder' && builtTrack && (
-            <div className={styles.builderPage}>
-              {/* Live Dynamic Building Telemetry Header */}
-              <div className={styles.telemetryPanel}>
-                <div className={styles.telemetryHeader}>
-                  <div className={styles.telemetryStatusTitle}>
-                    {isBuilding ? (
-                      <>
-                        <span className={styles.pulseDot} />
-                        <span>
-                          Pacer AI is dynamically building <strong>{builtTrack.title}</strong>...
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle2 size={16} color="var(--difficulty-easy)" />
-                        <span>
-                          OA Ready Blueprint Complete — <strong>{builtTrack.title}</strong>
-                        </span>
-                      </>
-                    )}
+                {/* Track Name */}
+                <div className={styles.field}>
+                  <div className={styles.labelRow}>
+                    <span>Track name</span>
+                    <span className={styles.labelHint}>For saving to your tracks</span>
                   </div>
-                  <span className="mono" style={{ fontSize: '0.78rem', color: 'var(--accent)' }}>
-                    {buildProgressPercent}%
-                  </span>
-                </div>
-
-                <div className={styles.progressBarTrack}>
-                  <div
-                    className={styles.progressBarFill}
-                    style={{ width: `${buildProgressPercent}%` }}
+                  <input
+                    type="text"
+                    className={styles.input}
+                    value={trackName}
+                    onChange={(e) => handleTrackNameEdit(e.target.value)}
+                    placeholder={`${selectedCompanyMeta.name} OA`}
                   />
                 </div>
 
-                <div className={styles.stepsList}>
-                  <div
-                    className={`${styles.stepItem} ${
-                      buildStep === 1 ? styles.stepItemActive : buildStep > 1 ? styles.stepItemDone : ''
-                    }`}
-                  >
-                    <span>{buildStep > 1 ? '✓' : '▸'}</span>
-                    <span>
-                      Scraped {telemetry?.companyProblemsScanned || 0} {builtTrack.companyName} OA problems
-                    </span>
-                  </div>
-                  <div
-                    className={`${styles.stepItem} ${
-                      buildStep === 2 ? styles.stepItemActive : buildStep > 2 ? styles.stepItemDone : ''
-                    }`}
-                  >
-                    <span>{buildStep > 2 ? '✓' : '▸'}</span>
-                    <span>
-                      Cross-referenced {telemetry?.canonicalProblemsScanned || 855} A2Z, NC150/250 &amp; Blind 75 items
-                    </span>
-                  </div>
-                  <div
-                    className={`${styles.stepItem} ${
-                      buildStep === 3 ? styles.stepItemActive : buildStep > 3 ? styles.stepItemDone : ''
-                    }`}
-                  >
-                    <span>{buildStep > 3 ? '✓' : '▸'}</span>
-                    <span>
-                      Calibrated for {builtTrack.days}d × {builtTrack.hoursPerDay}h/day ({builtTrack.totalHoursBudget}h budget)
-                    </span>
-                  </div>
-                  <div
-                    className={`${styles.stepItem} ${
-                      buildStep === 4 ? styles.stepItemActive : buildStep > 4 ? styles.stepItemDone : ''
-                    }`}
-                  >
-                    <span>{buildStep > 4 ? '✓' : '▸'}</span>
-                    <span>
-                      Assembled {revealedSectionsCount} of {builtTrack.groups.length} prioritized OA phases
-                    </span>
-                  </div>
+                {/* Footer */}
+                <div className={styles.footer}>
+                  <span className={styles.budgetSummary}>
+                    <strong>{totalHours}h total</strong> · ~{estimatedProblems} problems
+                  </span>
+                  <button type="button" className={styles.primaryBtn} onClick={handleStartBuild}>
+                    <span>Build Track</span>
+                    <ArrowRight size={14} />
+                  </button>
                 </div>
               </div>
 
-              {/* Executive Strategy & Save Bar */}
-              <div className={styles.strategyHeroCard}>
-                <div className={styles.strategyHeroTop}>
-                  <div>
-                    <div className={styles.strategyBadgeRow}>
-                      <span className={styles.pacerReasoningTag}>
-                        <Sparkles size={11} />
-                        Why Pacer Chose This Path
-                      </span>
-                      {builtTrack.keyPatterns.map((pat) => (
-                        <span key={pat} className={styles.metaPill}>
-                          {pat}
-                        </span>
-                      ))}
-                    </div>
-                    <p className={styles.strategyReasoningText}>{builtTrack.overallReasoning}</p>
-                  </div>
+              {/* Compact Saved OA Tracks list if any exist */}
+              {savedTracksList.length > 0 && (
+                <div className={styles.savedSection}>
+                  <span className={styles.savedTitle}>Saved OA Tracks</span>
+                  {savedTracksList.map((ct) => {
+                    const probs = ct.groups.flatMap((g) => g.problems);
+                    const solved = probs.reduce((acc, p) => acc + (progress[p.id] ? 1 : 0), 0);
+                    return (
+                      <div key={ct.id} className={styles.savedRow}>
+                        <div className={styles.savedRowLeft}>
+                          <div className={styles.savedRowName}>{ct.title}</div>
+                          <div className={styles.savedRowMeta}>
+                            {ct.companyName} · {solved}/{probs.length} solved
+                          </div>
+                        </div>
+                        <div className={styles.savedRowActions}>
+                          <button
+                            type="button"
+                            className={styles.textBtn}
+                            onClick={() => {
+                              onClose();
+                              navigate(`/track/${ct.id}`);
+                            }}
+                          >
+                            <span>Open</span>
+                            <ArrowRight size={12} />
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.iconBtn}
+                            onClick={() => setDeleteTargetTrack(ct)}
+                            title="Delete track"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
+              )}
+            </>
+          )}
 
-                <div className={styles.telemetryMetricsRow}>
-                  <span className={styles.metricBadge}>
-                    Curated Problems:{' '}
-                    <strong>
-                      {builtTrack.groups.reduce((acc, g) => acc + g.problems.length, 0)}
-                    </strong>
-                  </span>
-                  <span className={styles.metricBadge}>
-                    Prep Window: <strong>{builtTrack.days}d ({builtTrack.hoursPerDay}h/day)</strong>
-                  </span>
-                  <span className={styles.metricBadge}>
-                    Total Time Budget: <strong>{builtTrack.totalHoursBudget} hrs</strong>
-                  </span>
-                  {telemetry && (
-                    <span className={styles.metricBadge}>
-                      Cross-Track Matches: <strong>{telemetry.crossTrackMatches}</strong>
+          {view === 'builder' && builtTrack && (
+            <div className={styles.resultContainer}>
+              {/* Live build progress bar (only visible while building) */}
+              {isBuilding && (
+                <div className={styles.buildStatusRow}>
+                  <div className={styles.buildStatusText}>
+                    <span>
+                      <span className={styles.pulseDot} />
+                      Building section {Math.min(revealedCount + 1, builtTrack.groups.length)} of{' '}
+                      {builtTrack.groups.length}...
                     </span>
-                  )}
-                </div>
-
-                {/* Save as Personalized Track Controls */}
-                <div className={styles.saveTrackBar}>
-                  <div className={styles.saveTrackNameGroup}>
-                    <label className={styles.saveTrackLabel} htmlFor="oaCustomTrackName">
-                      Track Name:
-                    </label>
-                    <input
-                      id="oaCustomTrackName"
-                      type="text"
-                      className={styles.saveTrackInput}
-                      value={trackName}
-                      onChange={(e) => handleTrackNameChangeInBlueprint(e.target.value)}
-                      placeholder="Name your personalized OA track..."
-                      maxLength={48}
+                    <span className="mono">{progressPercent}%</span>
+                  </div>
+                  <div className={styles.progressTrack}>
+                    <div
+                      className={styles.progressFill}
+                      style={{ width: `${progressPercent}%` }}
                     />
                   </div>
+                </div>
+              )}
 
-                  <div className={styles.saveTrackActions}>
+              {/* Concise Pacer Reasoning */}
+              <div className={styles.reasoningBox}>
+                <div className={styles.reasoningHeader}>
+                  <span>Why this path ({totalBuiltProblems} problems · {totalHours}h)</span>
+                </div>
+                <p className={styles.reasoningText}>{builtTrack.overallReasoning}</p>
+              </div>
+
+              {/* Clean Save Bar */}
+              <div className={styles.saveBar}>
+                <input
+                  type="text"
+                  className={styles.saveNameInput}
+                  value={trackName}
+                  onChange={(e) => handleTrackNameEdit(e.target.value)}
+                  placeholder="Track name..."
+                />
+                <div className={styles.saveActions}>
+                  {!isSaved ? (
                     <button
                       type="button"
-                      className={styles.rebuildBtn}
-                      onClick={() => setActiveTab('config')}
+                      className={styles.primaryBtn}
+                      onClick={handleSaveTrack}
+                      style={{ height: 32, fontSize: '0.8rem', padding: '0 13px' }}
                     >
-                      <RotateCcw size={13} />
-                      <span>Adjust Preferences</span>
+                      <span>Save as Track</span>
                     </button>
-
-                    {!isSaved ? (
+                  ) : (
+                    <>
+                      <span className={styles.savedBadge}>
+                        <Check size={13} />
+                        <span>Saved</span>
+                      </span>
                       <button
                         type="button"
-                        className={styles.saveTrackPrimaryBtn}
-                        onClick={handleSaveTrackToAccount}
+                        className={styles.textBtn}
+                        style={{ height: 32 }}
+                        onClick={() => {
+                          onClose();
+                          navigate(`/track/${builtTrack.id}`);
+                        }}
                       >
-                        <Sparkles size={14} />
-                        <span>Save as Personalized Track</span>
+                        <span>Open in Tracks</span>
+                        <ArrowRight size={12} />
                       </button>
-                    ) : (
-                      <>
-                        <span className={styles.savedSuccessBtn}>
-                          <Check size={14} />
-                          <span>Saved to Enrolled Tracks</span>
-                        </span>
-                        <button
-                          type="button"
-                          className={styles.openSavedTrackBtn}
-                          onClick={() => {
-                            onClose();
-                            navigate(`/track/${builtTrack.id}`);
-                          }}
-                        >
-                          <span>Open in Track View</span>
-                          <ArrowRight size={14} />
-                        </button>
-                      </>
-                    )}
-                  </div>
+                    </>
+                  )}
                 </div>
               </div>
 
-              {/* Dynamic Section-by-Section Rendering */}
-              <div className={styles.sectionsContainer}>
-                {builtTrack.groups.slice(0, revealedSectionsCount).map((group, idx) => {
+              {/* Dynamic Sections */}
+              <div className={styles.sectionsList}>
+                {builtTrack.groups.slice(0, revealedCount).map((group, idx) => {
                   const secMeta = builtTrack.sectionMeta?.[group.id];
                   return (
-                    <div key={group.id} className={styles.sectionBuildCard}>
-                      {secMeta && (
-                        <div className={styles.sectionReasonBanner}>
-                          <div className={styles.sectionReasonLeft}>
-                            <Sparkles size={14} className={styles.sectionReasonIcon} />
-                            <span>
-                              <strong>Pacer Section Rationale:</strong> {secMeta.reasoning}
-                            </span>
-                          </div>
-                          <span className={styles.sectionTimeTag}>
-                            ~{secMeta.estimatedMinutes} mins
-                          </span>
-                        </div>
-                      )}
+                    <div key={group.id} className={styles.sectionItem}>
                       <TopicSection
                         group={group}
                         index={idx}
                         accent="var(--accent)"
-                        note={null}
+                        note={secMeta ? secMeta.reasoning : null}
                         defaultOpen={idx === 0}
                         onOpenTutor={(session) => {
                           if (onOpenProblemTutor && session.currentProblem) {
@@ -858,79 +537,7 @@ export default function OAReadyModal({
                     </div>
                   );
                 })}
-
-                {isBuilding && revealedSectionsCount < builtTrack.groups.length && (
-                  <div className={styles.buildingPlaceholderCard}>
-                    <span className={styles.pulseDot} />
-                    <span>
-                      Building{' '}
-                      <strong>
-                        {builtTrack.groups[revealedSectionsCount]?.title || 'next OA section'}
-                      </strong>{' '}
-                      — selecting highest-frequency problems for your time window...
-                    </span>
-                  </div>
-                )}
               </div>
-            </div>
-          )}
-
-          {activeTab === 'saved' && (
-            <div className={styles.savedTracksList}>
-              {savedTracksList.length === 0 ? (
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>
-                  You haven&apos;t saved any personalized OA Ready tracks yet. Configure one in the
-                  Configure tab!
-                </p>
-              ) : (
-                savedTracksList.map((ct) => {
-                  const probs = ct.groups.flatMap((g) => g.problems);
-                  const solved = probs.reduce((acc, p) => acc + (progress[p.id] ? 1 : 0), 0);
-                  return (
-                    <div key={ct.id} className={styles.savedTrackItem}>
-                      <div className={styles.savedTrackInfo}>
-                        <div className={styles.savedTrackTitle}>{ct.title}</div>
-                        <div className={styles.savedTrackMeta}>
-                          {ct.companyName} • {ct.days}d ({ct.hoursPerDay}h/day) •{' '}
-                          <strong className="mono">
-                            {solved}/{probs.length}
-                          </strong>{' '}
-                          solved
-                        </div>
-                        <div className={styles.savedTrackReasoning}>{ct.overallReasoning}</div>
-                      </div>
-                      <div className={styles.savedTrackRight}>
-                        <button
-                          type="button"
-                          className={styles.rebuildBtn}
-                          onClick={() => handleOpenSavedTrackInModal(ct)}
-                        >
-                          <span>Inspect / Solve Here</span>
-                        </button>
-                        <button
-                          type="button"
-                          className={styles.openSavedTrackBtn}
-                          onClick={() => {
-                            onClose();
-                            navigate(`/track/${ct.id}`);
-                          }}
-                        >
-                          <span>Open Track</span>
-                          <ArrowRight size={14} />
-                        </button>
-                        <button
-                          type="button"
-                          className={styles.deleteTrackBtn}
-                          onClick={() => setDeleteTargetTrack(ct)}
-                          title="Delete custom OA track"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
             </div>
           )}
         </div>
@@ -939,8 +546,8 @@ export default function OAReadyModal({
       {deleteTargetTrack && (
         <ConfirmDialog
           title={`Delete "${deleteTargetTrack.title}"?`}
-          body={`This removes your personalized "${deleteTargetTrack.title}" OA track from your enrolled tracks. Are you sure?`}
-          confirmLabel="Delete OA Track"
+          body={`This removes "${deleteTargetTrack.title}" from your saved tracks.`}
+          confirmLabel="Delete"
           onConfirm={() => {
             deleteCustomTrack(deleteTargetTrack.id);
             if (builtTrack?.id === deleteTargetTrack.id) {

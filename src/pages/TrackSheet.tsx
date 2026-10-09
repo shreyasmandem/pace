@@ -188,24 +188,12 @@ export default function TrackSheet() {
       {customTrack && (
         <div className={styles.oaReasoningBanner}>
           <div className={styles.oaReasoningTop}>
-            <span className={styles.oaReasoningLabel}>
-              <Sparkles size={14} />
-              <span>Pacer AI Assessment Blueprint — Why This Path Was Chosen</span>
-            </span>
+            <span className={styles.oaReasoningLabel}>Why this path</span>
             <span className={`${styles.oaTimeTag} mono`}>
-              {customTrack.days}d • {customTrack.hoursPerDay}h/day ({customTrack.days * customTrack.hoursPerDay}h budget)
+              {customTrack.days}d · {customTrack.hoursPerDay}h/day
             </span>
           </div>
           <p className={styles.oaReasoningBody}>{customTrack.overallReasoning}</p>
-          {customTrack.keyPatterns && customTrack.keyPatterns.length > 0 && (
-            <div className={styles.oaPatternPills}>
-              {customTrack.keyPatterns.map((pat) => (
-                <span key={pat} className={styles.oaPatternPill}>
-                  {pat}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       )}
 
