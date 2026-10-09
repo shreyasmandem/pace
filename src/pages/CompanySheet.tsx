@@ -516,7 +516,9 @@ export default function CompanySheet() {
 
                   <button
                     className={`${styles.iconButton} ${styles.tutorBtn} ${
-                      tutorChats?.[`company_${currentCompanyId}_${p.id}`]?.length || hasNote
+                      tutorChats?.[p.id]?.length ||
+                      tutorChats?.[`company_${currentCompanyId}_${p.id}`]?.length ||
+                      hasNote
                         ? styles.tutorActive
                         : ''
                     }`}

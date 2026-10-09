@@ -249,13 +249,23 @@ export default function AITutorDrawer({
     }
   };
 
+  // Effective chat and note key (tied to current problem if present, or topicKey)
+  const effectiveChatKey = currentProblem?.id || topicKey;
+
+  // Reset input and errors whenever the active problem/topic key changes
+  useEffect(() => {
+    setInput('');
+    setError(null);
+    setConfirmClear(false);
+  }, [effectiveChatKey]);
+
   // Zustand Store - safe defensive access with stable EMPTY_MESSAGES fallback
-  const chatMessages = usePaceStore((s) => s.tutorChats?.[topicKey] ?? EMPTY_MESSAGES);
+  const chatMessages = usePaceStore((s) => s.tutorChats?.[effectiveChatKey] ?? EMPTY_MESSAGES);
   const addTutorMessage = usePaceStore((s) => s.addTutorMessage);
   const clearTutorChat = usePaceStore((s) => s.clearTutorChat);
 
   // Manual note support (tied to current problem if present, or topicKey)
-  const noteKey = currentProblem?.id || topicKey;
+  const noteKey = effectiveChatKey;
   const note = usePaceStore((s) => (s.notes && s.notes[noteKey]) ?? '');
   const setNote = usePaceStore((s) => s.setNote);
 
@@ -266,7 +276,7 @@ export default function AITutorDrawer({
 
   useEffect(() => {
     scrollToBottom(false);
-  }, [chatMessages.length, tab]);
+  }, [chatMessages.length, tab, effectiveChatKey]);
 
   useEffect(() => {
     if (loading) {
@@ -280,7 +290,7 @@ export default function AITutorDrawer({
     } else {
       notesTextareaRef.current?.focus();
     }
-  }, [tab]);
+  }, [tab, effectiveChatKey]);
 
   // Context passed to Groq
   const tutorContext: TutorContext = {
@@ -304,7 +314,7 @@ export default function AITutorDrawer({
     setError(null);
 
     // Add user message to state
-    addTutorMessage(topicKey, { role: 'user', content: messageContent });
+    addTutorMessage(effectiveChatKey, { role: 'user', content: messageContent });
 
     setLoading(true);
     try {
@@ -312,7 +322,7 @@ export default function AITutorDrawer({
       const history = [...chatMessages, { role: 'user' as const, content: messageContent }];
       const assistantReply = await askGroqTutor(tutorContext, history, messageContent);
 
-      addTutorMessage(topicKey, { role: 'assistant', content: assistantReply });
+      addTutorMessage(effectiveChatKey, { role: 'assistant', content: assistantReply });
     } catch (err: any) {
       setError(err?.message || 'Failed to connect to AI Tutor. Please try again.');
     } finally {
@@ -554,7 +564,7 @@ export default function AITutorDrawer({
                 className={styles.iconBtn}
                 onClick={() => {
                   if (confirmClear) {
-                    clearTutorChat(topicKey);
+                    clearTutorChat(effectiveChatKey);
                     setConfirmClear(false);
                   } else {
                     setConfirmClear(true);

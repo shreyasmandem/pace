@@ -756,8 +756,8 @@ export default function Planner() {
                       className={styles.tutorBtn}
                       onClick={() =>
                         setTutorSession({
-                          topicKey: item.topicTitle || item.trackId || 'planner',
-                          topicTitle: item.topicTitle || 'DSA Strategy',
+                          topicKey: item.problemId || item.id || `plan_${item.id}`,
+                          topicTitle: item.title || item.topicTitle || 'DSA Strategy',
                           trackTitle: trackMeta?.label || 'Planner Roadmap',
                           item,
                         })

@@ -211,9 +211,9 @@ export default function TrackSheet() {
             highlightId={highlightId}
             onOpenTutor={(session) => {
               setTutorSession({
-                topicKey: `${safeId}_${session.topicId}`,
+                topicKey: session.currentProblem ? session.currentProblem.id : `${safeId}_${session.topicId}`,
                 topicId: session.topicId,
-                topicTitle: session.topicTitle,
+                topicTitle: session.currentProblem ? session.currentProblem.title : session.topicTitle,
                 problems: session.problems,
                 currentProblem: session.currentProblem,
               });
@@ -221,9 +221,9 @@ export default function TrackSheet() {
             onOpenNotes={(problemId) => {
               const prob = group.problems.find((p) => p.id === problemId);
               setTutorSession({
-                topicKey: `${safeId}_${group.id}`,
+                topicKey: prob ? prob.id : `${safeId}_${group.id}`,
                 topicId: group.id,
-                topicTitle: group.title,
+                topicTitle: prob ? prob.title : group.title,
                 problems: group.problems,
                 currentProblem: prob || null,
               });
