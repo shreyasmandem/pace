@@ -171,17 +171,17 @@ export default function AITutorDrawer({
     };
   }, []);
 
-  // Body scroll lock (mobile full-screen only)
+  // Body and document scroll lock across all devices (eliminates double scrollbars and background scroll wheel)
   useEffect(() => {
     if (typeof document === 'undefined') return;
-    const isMobile = window.innerWidth <= 760;
-    if (isMobile) {
-      const origOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = origOverflow;
-      };
-    }
+    const origBodyOverflow = document.body.style.overflow;
+    const origHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = origBodyOverflow;
+      document.documentElement.style.overflow = origHtmlOverflow;
+    };
   }, []);
 
   // Escape key closes modal or exits fullscreen first

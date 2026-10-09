@@ -31,6 +31,19 @@ export default function TrackEnrollModal({ isOpen, onClose }: TrackEnrollModalPr
     setMounted(true);
   }, []);
 
+  // Body and document scroll lock when modal is open
+  useEffect(() => {
+    if (!isOpen || typeof document === 'undefined') return;
+    const origBodyOverflow = document.body.style.overflow;
+    const origHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = origBodyOverflow;
+      document.documentElement.style.overflow = origHtmlOverflow;
+    };
+  }, [isOpen]);
+
   // Close on Escape key press
   useEffect(() => {
     if (!isOpen) return;

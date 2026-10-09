@@ -18,6 +18,15 @@ export default function NotesDrawer({
 
   useEffect(() => {
     textareaRef.current?.focus();
+    if (typeof document === 'undefined') return;
+    const origBodyOverflow = document.body.style.overflow;
+    const origHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = origBodyOverflow;
+      document.documentElement.style.overflow = origHtmlOverflow;
+    };
   }, []);
 
   return (

@@ -14,6 +14,15 @@ export default function ConfirmDialog({ title, body, confirmLabel, onConfirm, on
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
+    if (typeof document === 'undefined') return;
+    const origBodyOverflow = document.body.style.overflow;
+    const origHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = origBodyOverflow;
+      document.documentElement.style.overflow = origHtmlOverflow;
+    };
   }, []);
 
   if (!mounted || typeof document === 'undefined') return null;
