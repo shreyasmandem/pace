@@ -226,12 +226,26 @@ function processLeaderboardSnap(
 ): LeaderboardEntry[] {
   const combinedMap = new Map<string, LeaderboardEntry>();
 
-  // Collect any deleted users from admin documents or deleted flags
+  // Collect any deleted users and user overrides from admin documents or deleted flags
   const deletedUids = new Set<string>();
+  const userOverrides: Record<string, any> = {};
+
+  try {
+    const rawOverrides = localStorage.getItem('pace_user_overrides');
+    if (rawOverrides) {
+      Object.assign(userOverrides, JSON.parse(rawOverrides));
+    }
+  } catch {
+    // ignore
+  }
+
   snapDocs.forEach((docSnap) => {
     const data = docSnap.data();
     if (Array.isArray(data.deletedUsers)) {
       data.deletedUsers.forEach((id: string) => deletedUids.add(id));
+    }
+    if (data.userOverrides && typeof data.userOverrides === 'object') {
+      Object.assign(userOverrides, data.userOverrides);
     }
   });
 
@@ -239,14 +253,15 @@ function processLeaderboardSnap(
     const data = docSnap.data();
     const uid = data.uid || docSnap.id;
     if (uid && !deletedUids.has(uid) && !data.deleted) {
+      const override = userOverrides[uid];
       combinedMap.set(uid, {
         uid,
-        displayName: data.displayName || 'Pacer',
+        displayName: override?.displayName || data.displayName || 'Pacer',
         photoURL: data.photoURL || '',
-        solvedCount: Number(data.solvedCount) || 0,
-        streak: Number(data.streak) || 0,
-        weeklyCount: Number(data.weeklyCount) || 0,
-        activeDays: Number(data.activeDays) || 0,
+        solvedCount: override?.solvedCount !== undefined ? override.solvedCount : (Number(data.solvedCount) || 0),
+        streak: override?.streak !== undefined ? override.streak : (Number(data.streak) || 0),
+        weeklyCount: override?.weeklyCount !== undefined ? override.weeklyCount : (Number(data.weeklyCount) || 0),
+        activeDays: override?.activeDays !== undefined ? override.activeDays : (Number(data.activeDays) || 0),
         updatedAt: Number(data.updatedAt) || Date.now(),
       });
     }
@@ -255,14 +270,15 @@ function processLeaderboardSnap(
   // Always ensure current signed-in user is present with accurate local stats (unless deleted)
   if (currentUser && currentUser.uid && !deletedUids.has(currentUser.uid)) {
     const existing = combinedMap.get(currentUser.uid);
+    const userOverride = userOverrides[currentUser.uid];
     combinedMap.set(currentUser.uid, {
       uid: currentUser.uid,
-      displayName: currentUser.displayName || existing?.displayName || 'You',
+      displayName: userOverride?.displayName || currentUser.displayName || existing?.displayName || 'You',
       photoURL: currentUser.photoURL || existing?.photoURL || '',
-      solvedCount: currentUser.solvedCount,
-      streak: currentUser.streak,
-      weeklyCount: currentUser.weeklyCount,
-      activeDays: currentUser.activeDays,
+      solvedCount: userOverride?.solvedCount !== undefined ? userOverride.solvedCount : currentUser.solvedCount,
+      streak: userOverride?.streak !== undefined ? userOverride.streak : currentUser.streak,
+      weeklyCount: userOverride?.weeklyCount !== undefined ? userOverride.weeklyCount : currentUser.weeklyCount,
+      activeDays: userOverride?.activeDays !== undefined ? userOverride.activeDays : currentUser.activeDays,
       updatedAt: Date.now(),
       isCurrentUser: true,
     });

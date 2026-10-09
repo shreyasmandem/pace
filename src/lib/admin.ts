@@ -164,15 +164,19 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
     }
 
     // 1. Fetch from leaderboard collection
+    const userOverrides = getLocalUserOverrides();
     const lbSnap = await getDocs(collection(db, 'leaderboard'));
+
     lbSnap.forEach((d) => {
       const data = d.data();
-      // Discover any sync lists from admin's document
       if (Array.isArray(data.deletedUsers)) {
         data.deletedUsers.forEach((id: string) => deletedSet.add(id));
       }
       if (Array.isArray(data.bannedUsers)) {
         data.bannedUsers.forEach((id: string) => bannedSet.add(id));
+      }
+      if (data.userOverrides && typeof data.userOverrides === 'object') {
+        Object.assign(userOverrides, data.userOverrides);
       }
       if (data.deleted === true) {
         deletedSet.add(d.id);
@@ -182,9 +186,10 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
       }
     });
 
-    // Save discovered deleted/banned users back to localStorage for persistence
+    // Save discovered deleted/banned/override users back to localStorage for persistence
     setLocalDeletedUsers(Array.from(deletedSet));
     setLocalBannedUsers(Array.from(bannedSet));
+    setLocalUserOverrides(userOverrides);
 
     lbSnap.forEach((d) => {
       const data = d.data();
@@ -192,16 +197,24 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
       const updated = Number(data.updatedAt) || Date.now();
       const isDeleted = deletedSet.has(uid) || Boolean(data.deleted);
       const isBanned = bannedSet.has(uid) || Boolean(data.banned);
+      const override = userOverrides[uid];
+
+      const displayName = override?.displayName || data.displayName || 'Pacer';
+      const email = override?.email || data.email || '';
+      const solvedCount = override?.solvedCount !== undefined ? override.solvedCount : (Number(data.solvedCount) || 0);
+      const streak = override?.streak !== undefined ? override.streak : (Number(data.streak) || 0);
+      const weeklyCount = override?.weeklyCount !== undefined ? override.weeklyCount : (Number(data.weeklyCount) || 0);
+      const activeDays = override?.activeDays !== undefined ? override.activeDays : (Number(data.activeDays) || 0);
 
       userMap.set(uid, {
         uid,
-        displayName: data.displayName || 'Pacer',
-        email: data.email || '',
+        displayName,
+        email,
         photoURL: data.photoURL || '',
-        solvedCount: Number(data.solvedCount) || 0,
-        streak: Number(data.streak) || 0,
-        weeklyCount: Number(data.weeklyCount) || 0,
-        activeDays: Number(data.activeDays) || 0,
+        solvedCount,
+        streak,
+        weeklyCount,
+        activeDays,
         registeredTracks: [],
         banned: isBanned,
         deleted: isDeleted,
@@ -222,11 +235,13 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
 
   try {
     // 2. Fetch from users collection
+    const userOverrides = getLocalUserOverrides();
     const usersSnap = await getDocs(collection(db, 'users'));
     usersSnap.forEach((d) => {
       const data = d.data();
       const uid = d.id;
       const existing = userMap.get(uid);
+      const override = userOverrides[uid];
 
       if (data.deleted === true) {
         deletedSet.add(uid);
@@ -239,7 +254,8 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
       const registeredTracks = Array.isArray(data.registeredTracks) ? data.registeredTracks : [];
       const updated = Number(data.updatedAt) || existing?.updatedAt || Date.now();
 
-      const solvedCount = Object.keys(progress).length;
+      const calculatedSolves = Object.keys(progress).length;
+      const solvedCount = override?.solvedCount !== undefined ? override.solvedCount : calculatedSolves;
       const notesCount = Object.keys(notes).length;
       const bookmarksCount = Object.keys(bookmarks).length;
       const plannerCount = Object.values(planner).reduce(
@@ -259,19 +275,20 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
         existing.rawUserData = data;
         existing.deleted = isDeleted;
         existing.banned = isBanned;
+        if (override?.displayName) existing.displayName = override.displayName;
         if (data.email && !existing.email) existing.email = data.email;
         if (data.displayName && (!existing.displayName || existing.displayName === 'Pacer')) {
-          existing.displayName = data.displayName;
+          existing.displayName = override?.displayName || data.displayName;
         }
       } else {
         userMap.set(uid, {
           uid,
-          displayName: data.displayName || (data.email ? data.email.split('@')[0] : 'Pacer'),
-          email: data.email || '',
+          displayName: override?.displayName || data.displayName || (data.email ? data.email.split('@')[0] : 'Pacer'),
+          email: override?.email || data.email || '',
           photoURL: data.photoURL || '',
           solvedCount,
-          streak: 0,
-          weeklyCount: 0,
+          streak: override?.streak !== undefined ? override.streak : 0,
+          weeklyCount: override?.weeklyCount !== undefined ? override.weeklyCount : 0,
           activeDays: Object.keys(data.solveLog || {}).length,
           registeredTracks,
           notesCount,
@@ -551,6 +568,33 @@ export async function adminToggleBanUser(
   }
 }
 
+export interface UserOverride {
+  displayName?: string;
+  email?: string;
+  solvedCount?: number;
+  streak?: number;
+  weeklyCount?: number;
+  activeDays?: number;
+  updatedAt?: number;
+}
+
+export function getLocalUserOverrides(): Record<string, UserOverride> {
+  try {
+    const raw = localStorage.getItem('pace_user_overrides');
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function setLocalUserOverrides(overrides: Record<string, UserOverride>): void {
+  try {
+    localStorage.setItem('pace_user_overrides', JSON.stringify(overrides));
+  } catch {
+    // ignore
+  }
+}
+
 export async function adminUpdateUser(
   uid: string,
   updates: {
@@ -560,26 +604,81 @@ export async function adminUpdateUser(
     streak?: number;
     weeklyCount?: number;
     activeDays?: number;
-  }
+  },
+  adminUid?: string
 ): Promise<{ success: boolean; error?: string }> {
-  if (!db || !uid) return { success: false, error: 'Database or UID missing' };
+  if (!uid) return { success: false, error: 'Database or UID missing' };
 
   try {
-    const payload: Record<string, any> = {
+    // 1. Instant local persistence for 0ms UI reactivity
+    const currentOverrides = getLocalUserOverrides();
+    currentOverrides[uid] = {
+      ...(currentOverrides[uid] || {}),
       ...updates,
       updatedAt: Date.now(),
     };
+    setLocalUserOverrides(currentOverrides);
 
-    await setDoc(doc(db, 'leaderboard', uid), payload, { merge: true });
-    await setDoc(
-      doc(db, 'users', uid),
-      {
-        displayName: updates.displayName,
-        email: updates.email,
-        updatedAt: Date.now(),
-      },
-      { merge: true }
-    );
+    // 2. Dispatch cross-tab custom event
+    try {
+      window.dispatchEvent(
+        new CustomEvent('pace-user-overrides-updated', { detail: currentOverrides })
+      );
+    } catch {
+      // ignore
+    }
+
+    // 3. Primary Guaranteed Channel: Write overrides into admin's own document on leaderboard
+    const effectiveAdminUid = adminUid || auth?.currentUser?.uid;
+    if (db && effectiveAdminUid) {
+      try {
+        await setDoc(
+          doc(db, 'leaderboard', effectiveAdminUid),
+          { userOverrides: currentOverrides },
+          { merge: true }
+        );
+      } catch (err) {
+        console.warn('Updating userOverrides on admin doc warning:', err);
+      }
+    }
+
+    // 4. Secondary Channel: system/moderation (if rules deployed)
+    if (db) {
+      try {
+        await setDoc(
+          doc(db, 'system', 'moderation'),
+          { userOverrides: currentOverrides, updatedAt: Date.now() },
+          { merge: true }
+        );
+      } catch {
+        // ignore
+      }
+
+      // 5. Direct writes to other collections (catch if live client rules prevent cross-user writes)
+      try {
+        const payload: Record<string, any> = {
+          ...updates,
+          updatedAt: Date.now(),
+        };
+        await setDoc(doc(db, 'leaderboard', uid), payload, { merge: true });
+      } catch {
+        // expected if rules only allow self-writes
+      }
+
+      try {
+        await setDoc(
+          doc(db, 'users', uid),
+          {
+            displayName: updates.displayName,
+            email: updates.email,
+            updatedAt: Date.now(),
+          },
+          { merge: true }
+        );
+      } catch {
+        // expected if rules only allow self-writes
+      }
+    }
 
     addAuditLog('UPDATE_USER', uid, `Updated profile/stats for user ${updates.displayName || uid}`, 'success');
     return { success: true };

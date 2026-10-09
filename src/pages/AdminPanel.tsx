@@ -158,12 +158,16 @@ export default function AdminPanel() {
   // Save Edit User
   const handleSaveEditUser = async () => {
     if (!editUser) return;
-    const res = await adminUpdateUser(editUser.uid, {
-      displayName: editDisplayName.trim(),
-      solvedCount: Number(editSolvedCount) || 0,
-      streak: Number(editStreak) || 0,
-      weeklyCount: Number(editWeeklyCount) || 0,
-    });
+    const res = await adminUpdateUser(
+      editUser.uid,
+      {
+        displayName: editDisplayName.trim(),
+        solvedCount: Number(editSolvedCount) || 0,
+        streak: Number(editStreak) || 0,
+        weeklyCount: Number(editWeeklyCount) || 0,
+      },
+      user?.uid
+    );
 
     if (res.success) {
       showToast(`Saved changes for ${editDisplayName || editUser.uid}`);

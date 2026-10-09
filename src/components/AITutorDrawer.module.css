@@ -58,10 +58,16 @@
 
 .panelFullScreen .thread,
 .panelFullScreen .notesContainer {
-  max-width: 920px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 100%;
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding-left: max(var(--space-5), calc((100vw - 920px) / 2));
+  padding-right: max(var(--space-5), calc((100vw - 920px) / 2));
+}
+
+.panelFullScreen .inputArea {
+  padding-left: max(var(--space-5), calc((100vw - 920px) / 2));
+  padding-right: max(var(--space-5), calc((100vw - 920px) / 2));
 }
 
 .panelFullScreen .inputContainer {
@@ -222,6 +228,25 @@
   flex-direction: column;
   gap: var(--space-4);
   scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.thread::-webkit-scrollbar {
+  width: 6px;
+}
+
+.thread::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thread::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+
+.thread::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
 }
 
 /* Welcome empty state */
