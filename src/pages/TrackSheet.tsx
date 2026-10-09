@@ -1,14 +1,14 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useParams, useSearchParams, Navigate } from 'react-router-dom';
-import { Check, Lock, Search, Sparkles } from 'lucide-react';
-import { getTopicNote, getTrack, TRACK_META, isAdminOnlyTrack } from '../data';
+import { useParams, useSearchParams, Navigate, Link, useNavigate } from 'react-router-dom';
+import { Check, Lock, Search, Sparkles, Trash2 } from 'lucide-react';
+import { getTopicNote, getTrack, TRACK_META, isAdminOnlyTrack, getCustomTrack } from '../data';
 import { useDifficultyBreakdown, useTrackStats, useVisibleTracks } from '../hooks/useTrackStats';
 import { usePaceStore } from '../state/store';
-import type { TrackId } from '../types';
+import type { TrackId, Problem } from '../types';
 import Lane from '../components/Lane';
 import TopicSection from '../components/TopicSection';
 import AITutorDrawer from '../components/AITutorDrawer';
-import type { Problem } from '../types';
+import ConfirmDialog from '../components/ConfirmDialog';
 import styles from './TrackSheet.module.css';
 
 const DIFFICULTIES = ['All', 'Easy', 'Medium', 'Hard'];
@@ -24,6 +24,7 @@ interface TutorSessionState {
 
 export default function TrackSheet() {
   const { trackId } = useParams<{ trackId: string }>();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const highlightId = searchParams.get('highlight');
 
@@ -31,12 +32,15 @@ export default function TrackSheet() {
   const [difficulty, setDifficulty] = useState('All');
   const [status, setStatus] = useState('All');
   const [tutorSession, setTutorSession] = useState<TutorSessionState | null>(null);
+  const [confirmDeleteCustom, setConfirmDeleteCustom] = useState(false);
 
   const handleCloseTutor = useCallback(() => {
     setTutorSession(null);
   }, []);
 
   const progress = usePaceStore((s) => s.progress);
+  const customTracks = usePaceStore((s) => s.customTracks);
+  const deleteCustomTrack = usePaceStore((s) => s.deleteCustomTrack);
   const {
     isAdmin,
     authLoading,
@@ -53,8 +57,9 @@ export default function TrackSheet() {
   const id = trackId as TrackId;
   const meta = TRACK_META[id];
   const track = getTrack(id);
-  const stat = stats[id];
+  const stat = stats[id] || { solved: 0, total: 0, percent: 0 };
   const isEnrolled = registeredTracks.includes(id);
+  const customTrack = customTracks?.[id] || getCustomTrack(id);
 
   const filteredGroups = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -72,8 +77,6 @@ export default function TrackSheet() {
       })
       .filter((g) => g.problems.length > 0);
   }, [track.groups, query, difficulty, status, progress]);
-
-  const allProblemIds = useMemo(() => track.groups.flatMap((g) => g.problems.map((p) => p.id)), [track.groups]);
 
   if (isAdminOnlyTrack(id)) {
     if (authLoading) return null;
@@ -133,15 +136,34 @@ export default function TrackSheet() {
     <div className={styles.page}>
       <header className={styles.hero}>
         <div className={styles.heroText}>
-          <div className={styles.registeredBadge}>
-            <Check size={12} />
-            <span>Registered Track</span>
+          <div className={styles.badgeRow}>
+            <div className={styles.registeredBadge}>
+              <Check size={12} />
+              <span>{customTrack ? 'Personalized OA Track' : 'Registered Track'}</span>
+            </div>
+            {customTrack && (
+              <button
+                type="button"
+                className={styles.deleteCustomBtn}
+                onClick={() => setConfirmDeleteCustom(true)}
+                title="Delete personalized OA track"
+              >
+                <Trash2 size={13} />
+                <span>Delete Track</span>
+              </button>
+            )}
           </div>
           <h1 className={styles.title}>{meta.label}</h1>
           <p className={styles.subtitle}>{meta.subtitle}</p>
-          <a href={meta.sourceUrl} target="_blank" rel="noreferrer" className={styles.sourceLink}>
-            Source curriculum: {meta.source} ↗
-          </a>
+          {customTrack ? (
+            <Link to={`/company/${customTrack.companyId}`} className={styles.sourceLink}>
+              View all {customTrack.companyName} questions & OA Ready Studio →
+            </Link>
+          ) : (
+            <a href={meta.sourceUrl} target="_blank" rel="noreferrer" className={styles.sourceLink}>
+              Source curriculum: {meta.source} ↗
+            </a>
+          )}
         </div>
         <div className={styles.heroStat}>
           <span className={`${styles.heroFigure} numeric`}>{Math.round(stat.percent)}%</span>
@@ -162,6 +184,30 @@ export default function TrackSheet() {
           </div>
         </div>
       </header>
+
+      {customTrack && (
+        <div className={styles.oaReasoningBanner}>
+          <div className={styles.oaReasoningTop}>
+            <span className={styles.oaReasoningLabel}>
+              <Sparkles size={14} />
+              <span>Pacer AI Assessment Blueprint — Why This Path Was Chosen</span>
+            </span>
+            <span className={`${styles.oaTimeTag} mono`}>
+              {customTrack.days}d • {customTrack.hoursPerDay}h/day ({customTrack.days * customTrack.hoursPerDay}h budget)
+            </span>
+          </div>
+          <p className={styles.oaReasoningBody}>{customTrack.overallReasoning}</p>
+          {customTrack.keyPatterns && customTrack.keyPatterns.length > 0 && (
+            <div className={styles.oaPatternPills}>
+              {customTrack.keyPatterns.map((pat) => (
+                <span key={pat} className={styles.oaPatternPill}>
+                  {pat}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className={styles.toolbar}>
         <label className={styles.search}>
@@ -240,6 +286,20 @@ export default function TrackSheet() {
           problems={tutorSession.problems}
           currentProblem={tutorSession.currentProblem}
           onClose={handleCloseTutor}
+        />
+      )}
+
+      {confirmDeleteCustom && customTrack && (
+        <ConfirmDialog
+          title={`Delete "${customTrack.title}"?`}
+          body={`This removes your personalized "${customTrack.title}" OA Ready track from your enrolled tracks.`}
+          confirmLabel="Delete Track"
+          onConfirm={() => {
+            deleteCustomTrack(customTrack.id);
+            setConfirmDeleteCustom(false);
+            navigate('/');
+          }}
+          onCancel={() => setConfirmDeleteCustom(false)}
         />
       )}
     </div>

@@ -2,6 +2,8 @@ import { doc, onSnapshot, setDoc, type Unsubscribe } from 'firebase/firestore';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth, db } from '../lib/firebase';
 import { usePaceStore, currentStreak, type ChatMessage, type PlanItem, type TrackId, type TutorLanguage } from './store';
+import type { CustomTrack } from '../types';
+import { syncCustomTracksRegistry } from '../data';
 import { publishToLeaderboard, calculateWeeklySolves } from '../lib/leaderboard';
 import {
   getLocalDeletedUsers,
@@ -20,6 +22,7 @@ type SyncableState = {
   solveLog: Record<string, number>;
   planner: Record<string, PlanItem[]>;
   registeredTracks: TrackId[];
+  customTracks: Record<string, CustomTrack>;
   tutorLanguage?: TutorLanguage;
   tutorChats?: Record<string, ChatMessage[]>;
 };
@@ -31,6 +34,7 @@ const SYNC_FIELDS: (keyof SyncableState)[] = [
   'solveLog',
   'planner',
   'registeredTracks',
+  'customTracks',
   'tutorLanguage',
   'tutorChats',
 ];
@@ -71,13 +75,31 @@ function cleanPlannerMap(map: Record<string, PlanItem[]> | undefined): Record<st
   return clean;
 }
 
-function cleanRegisteredTracks(list: any): TrackId[] {
+function cleanCustomTracksMap(map: Record<string, CustomTrack> | undefined): Record<string, CustomTrack> {
+  const clean: Record<string, CustomTrack> = {};
+  if (!map || typeof map !== 'object') return clean;
+  for (const [k, v] of Object.entries(map)) {
+    if (v && typeof v === 'object' && typeof v.id === 'string' && v.id.startsWith('oa_')) {
+      clean[k] = v;
+    }
+  }
+  return clean;
+}
+
+function cleanRegisteredTracks(list: any, customTracks?: Record<string, CustomTrack>): TrackId[] {
   if (!Array.isArray(list)) return [];
   const isAdmin = isPaceAdmin(auth?.currentUser ?? null);
-  const valid: TrackId[] = isAdmin
+  const validBuiltIn: string[] = isAdmin
     ? ['a2z', 'nc150', 'nc250', 'blind75', 'stripe-amazon']
     : ['a2z', 'nc150', 'nc250', 'blind75'];
-  return list.filter((id) => valid.includes(id));
+  return list.filter((id) => {
+    if (typeof id !== 'string') return false;
+    if (validBuiltIn.includes(id)) return true;
+    if (id.startsWith('oa_')) {
+      return !customTracks || Boolean(customTracks[id]);
+    }
+    return false;
+  });
 }
 
 function cleanTutorChatsMap(map: Record<string, ChatMessage[]> | undefined): Record<string, ChatMessage[]> {
@@ -90,13 +112,15 @@ function cleanTutorChatsMap(map: Record<string, ChatMessage[]> | undefined): Rec
 }
 
 function pickSyncable(state: ReturnType<typeof usePaceStore.getState>): SyncableState {
+  const customTracks = cleanCustomTracksMap(state.customTracks);
   return {
     progress: cleanProgressMap(state.progress),
     notes: cleanNotesMap(state.notes),
     bookmarks: cleanBookmarksMap(state.bookmarks),
     solveLog: state.solveLog || {},
     planner: cleanPlannerMap(state.planner),
-    registeredTracks: cleanRegisteredTracks(state.registeredTracks),
+    registeredTracks: cleanRegisteredTracks(state.registeredTracks, customTracks),
+    customTracks,
     tutorLanguage: state.tutorLanguage || 'python',
     tutorChats: cleanTutorChatsMap(state.tutorChats),
   };
@@ -233,11 +257,12 @@ function pushToFirestore(uid: string) {
       solveLog: payload.solveLog,
       planner: payload.planner,
       registeredTracks: payload.registeredTracks,
+      customTracks: payload.customTracks,
       tutorChats,
       resetVersion: 2,
       updatedAt: now,
     },
-    { mergeFields: ['progress', 'notes', 'bookmarks', 'solveLog', 'planner', 'registeredTracks', 'tutorChats', 'resetVersion', 'updatedAt'] }
+    { mergeFields: ['progress', 'notes', 'bookmarks', 'solveLog', 'planner', 'registeredTracks', 'customTracks', 'tutorChats', 'resetVersion', 'updatedAt'] }
   )
     .then(() => {
       setStatus('synced');
@@ -352,6 +377,7 @@ async function startSyncing(user: User) {
       // Check if remote data needs the global v2 reset
       if (!remoteData?.resetVersion || remoteData.resetVersion < 2) {
         isInitialLoad = false;
+        syncCustomTracksRegistry({});
         const cleanReset: SyncableState = {
           progress: {},
           notes: cleanNotesMap(remoteData.notes),
@@ -359,6 +385,7 @@ async function startSyncing(user: User) {
           solveLog: {},
           planner: cleanPlannerMap(remoteData.planner),
           registeredTracks: [],
+          customTracks: {},
           tutorChats: {},
         };
         applyingRemoteUpdate = true;
@@ -393,10 +420,22 @@ async function startSyncing(user: User) {
           Object.keys(local.bookmarks).length > 0 ||
           Object.keys(local.notes).length > 0 ||
           Object.keys(local.planner).length > 0 ||
+          Object.keys(local.customTracks || {}).length > 0 ||
           Object.keys(local.tutorChats || {}).length > 0;
 
         // One-time merge on initial sign-in if this device had offline solves before logging in
         if (hasLocalProgress && remoteUpdatedAt > 0) {
+          const mergedCustomTracks = {
+            ...cleanCustomTracksMap(remoteData.customTracks),
+            ...(local.customTracks || {}),
+          };
+          syncCustomTracksRegistry(mergedCustomTracks);
+          const mergedRegistered = Array.from(
+            new Set([
+              ...cleanRegisteredTracks(remoteData.registeredTracks, mergedCustomTracks),
+              ...cleanRegisteredTracks(local.registeredTracks, mergedCustomTracks),
+            ])
+          );
           const merged: SyncableState = {
             progress: {
               ...cleanProgressMap(remoteData.progress),
@@ -415,7 +454,8 @@ async function startSyncing(user: User) {
               ...cleanPlannerMap(remoteData.planner),
               ...local.planner,
             },
-            registeredTracks: cleanRegisteredTracks(remoteData.registeredTracks || local.registeredTracks),
+            registeredTracks: mergedRegistered,
+            customTracks: mergedCustomTracks,
             tutorLanguage: remoteData.tutorLanguage || local.tutorLanguage || 'python',
             tutorChats: {
               ...cleanTutorChatsMap(remoteData.tutorChats),
@@ -437,13 +477,16 @@ async function startSyncing(user: User) {
       }
 
       // Clean remote state from Firestore
+      const remoteCustomTracks = cleanCustomTracksMap(remoteData.customTracks);
+      syncCustomTracksRegistry(remoteCustomTracks);
       const cleanRemote: SyncableState = {
         progress: cleanProgressMap(remoteData.progress),
         notes: cleanNotesMap(remoteData.notes),
         bookmarks: cleanBookmarksMap(remoteData.bookmarks),
         solveLog: remoteData.solveLog || {},
         planner: cleanPlannerMap(remoteData.planner),
-        registeredTracks: cleanRegisteredTracks(remoteData.registeredTracks),
+        registeredTracks: cleanRegisteredTracks(remoteData.registeredTracks, remoteCustomTracks),
+        customTracks: remoteCustomTracks,
         tutorLanguage: remoteData.tutorLanguage || local.tutorLanguage || 'python',
         tutorChats: cleanTutorChatsMap(remoteData.tutorChats),
       };

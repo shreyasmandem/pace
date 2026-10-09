@@ -317,6 +317,14 @@
   transform: translateY(1px);
 }
 
+.badgeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
 .registeredBadge {
   display: inline-flex;
   align-items: center;
@@ -328,5 +336,91 @@
   background: color-mix(in srgb, var(--difficulty-easy) 15%, transparent);
   color: var(--difficulty-easy);
   border: 1px solid color-mix(in srgb, var(--difficulty-easy) 30%, transparent);
-  margin-bottom: 6px;
+}
+
+.deleteCustomBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: transparent;
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-hairline);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.deleteCustomBtn:hover {
+  color: var(--difficulty-hard);
+  border-color: color-mix(in srgb, var(--difficulty-hard) 35%, transparent);
+  background: color-mix(in srgb, var(--difficulty-hard) 10%, transparent);
+}
+
+.oaReasoningBanner {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 9%, var(--surface)) 0%,
+    var(--surface) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, var(--border-hairline));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: var(--space-5);
+}
+
+.oaReasoningTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.oaReasoningLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+}
+
+.oaTimeTag {
+  font-size: 0.74rem;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.oaReasoningBody {
+  font-size: 0.87rem;
+  color: var(--text-primary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.oaPatternPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.oaPatternPill {
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
 }

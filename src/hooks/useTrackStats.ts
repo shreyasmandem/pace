@@ -21,11 +21,12 @@ export function useVisibleTracks() {
   const { user, loading } = useAuthUser();
   const isAdmin = isPaceAdmin(user);
   const rawRegisteredTracks = usePaceStore((s) => s.registeredTracks || []);
+  const customTracks = usePaceStore((s) => s.customTracks);
 
-  const visibleTrackOrder = useMemo(() => getVisibleTrackOrder(isAdmin), [isAdmin]);
+  const visibleTrackOrder = useMemo(() => getVisibleTrackOrder(isAdmin), [isAdmin, customTracks]);
   const visibleRegisteredTracks = useMemo(
     () => filterVisibleTracks(rawRegisteredTracks, isAdmin),
-    [rawRegisteredTracks, isAdmin]
+    [rawRegisteredTracks, isAdmin, customTracks]
   );
 
   return {
@@ -38,6 +39,7 @@ export function useVisibleTracks() {
 
 export function useTrackStats(): Record<TrackId, TrackStat> {
   const progress = usePaceStore((s) => s.progress);
+  const customTracks = usePaceStore((s) => s.customTracks);
 
   return useMemo(() => {
     const out = {} as Record<TrackId, TrackStat>;
@@ -52,7 +54,7 @@ export function useTrackStats(): Record<TrackId, TrackStat> {
       };
     }
     return out;
-  }, [progress]);
+  }, [progress, customTracks]);
 }
 
 export interface DifficultyBreakdown {

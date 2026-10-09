@@ -13,11 +13,12 @@ import {
 } from 'lucide-react';
 import { COMPANIES, fetchCompanyProblems, getCompanyMeta } from '../data';
 import { usePaceStore } from '../state/store';
-import type { CompanyProblem } from '../types';
+import type { CompanyProblem, Problem } from '../types';
 import Lane from '../components/Lane';
 import AITutorDrawer from '../components/AITutorDrawer';
 import ConfirmDialog from '../components/ConfirmDialog';
 import ResourceLinks from '../components/ResourceLinks';
+import OAReadyModal from '../components/OAReadyModal';
 import { noteUserSolveIntent } from '../lib/celebrate';
 import styles from './CompanySheet.module.css';
 
@@ -67,6 +68,7 @@ export default function CompanySheet() {
 
   const [tutorProblem, setTutorProblem] = useState<CompanyProblem | null>(null);
   const [companyTutorOpen, setCompanyTutorOpen] = useState(false);
+  const [oaReadyOpen, setOaReadyOpen] = useState(false);
   const [confirmingReset, setConfirmingReset] = useState(false);
 
   const handleCloseTutor = useCallback(() => {
@@ -312,11 +314,11 @@ export default function CompanySheet() {
             <h1 className={styles.title}>{companyMeta.name}</h1>
             <button
               className={styles.companyTutorBtn}
-              onClick={() => setCompanyTutorOpen(true)}
-              title={`Ask Pacer about ${companyMeta.name} interview questions`}
+              onClick={() => setOaReadyOpen(true)}
+              title={`Build a personalized ${companyMeta.name} OA Ready track with Pacer AI`}
             >
               <Sparkles size={13} />
-              <span>Ask Pacer</span>
+              <span>OA Ready</span>
             </button>
           </div>
           <p className={styles.subtitle}>
@@ -597,6 +599,33 @@ export default function CompanySheet() {
               : null
           }
           onClose={handleCloseTutor}
+        />
+      )}
+
+      {/* OA Ready Studio Modal */}
+      {oaReadyOpen && (
+        <OAReadyModal
+          initialCompanyId={currentCompanyId}
+          onClose={() => setOaReadyOpen(false)}
+          onOpenGeneralChat={() => setCompanyTutorOpen(true)}
+          onOpenProblemTutor={(prob: Problem) => {
+            const existing = problems.find((cp) => cp.id === prob.id);
+            const normDiff: 'Easy' | 'Medium' | 'Hard' =
+              prob.difficulty === 'Easy' || prob.difficulty === 'Hard' ? prob.difficulty : 'Medium';
+            setTutorProblem(
+              existing || {
+                id: prob.id,
+                slug: prob.id,
+                title: prob.title,
+                difficulty: normDiff,
+                acceptance: null,
+                frequency: 0,
+                timeframe: 'All Time',
+                topics: [],
+                links: prob.links,
+              }
+            );
+          }}
         />
       )}
 

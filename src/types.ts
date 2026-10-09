@@ -43,7 +43,37 @@ export interface GroupedTrackData {
   groups: TopicGroup[];
 }
 
-export type TrackId = 'a2z' | 'nc150' | 'nc250' | 'blind75' | 'stripe-amazon';
+export type BuiltInTrackId = 'a2z' | 'nc150' | 'nc250' | 'blind75' | 'stripe-amazon';
+export type TrackId = BuiltInTrackId | `oa_${string}`;
+
+export type OAFocusMode = 'high_frequency' | 'balanced' | 'weakness_focus' | 'crash_course';
+
+export interface CustomTrackSectionMeta {
+  groupId: string;
+  reasoning: string;
+  estimatedMinutes: number;
+  priorityLevel: 'critical' | 'high' | 'core' | 'stretch';
+}
+
+export interface CustomTrack {
+  id: TrackId;
+  title: string;
+  shortLabel: string;
+  subtitle: string;
+  companyId: string;
+  companyName: string;
+  days: number;
+  hoursPerDay: number;
+  totalHoursBudget: number;
+  focusMode: OAFocusMode;
+  customPrompt?: string;
+  overallReasoning: string;
+  keyPatterns: string[];
+  groups: TopicGroup[];
+  sectionMeta: Record<string, CustomTrackSectionMeta>;
+  createdAt: number;
+  accent: string;
+}
 
 export interface TrackMeta {
   id: TrackId;
@@ -53,6 +83,9 @@ export interface TrackMeta {
   source: string;
   sourceUrl: string;
   accent: string;
+  isCustom?: boolean;
+  companyId?: string;
+  companyName?: string;
 }
 
 /** A track normalized to a flat list of topic groups, regardless of source shape. */

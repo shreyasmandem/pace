@@ -1,6 +1,6 @@
 import { buildSystemPrompt, contextField, polishReply, type PromptContext } from './tutorPrompt';
 
-function getGroqApiKey(): string {
+export function getGroqApiKey(): string {
   const envKey = (import.meta as any).env?.VITE_GROQ_API_KEY;
   if (envKey) return envKey;
   // Default Groq key for Pace AI Tutor
@@ -8,7 +8,7 @@ function getGroqApiKey(): string {
   return mask.map((b) => String.fromCharCode(b ^ 42)).join('');
 }
 
-const CANDIDATE_MODELS = ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b'];
+export const CANDIDATE_MODELS = ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b'];
 const MAX_HISTORY_ENTRIES = 10;
 const MAX_HISTORY_ENTRY_CHARS = 8000;
 

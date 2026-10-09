@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { TrackId } from '../types';
-import { getTrack, isAdminOnlyTrack } from '../data';
+import type { TrackId, CustomTrack } from '../types';
+import { getTrack, isAdminOnlyTrack, syncCustomTracksRegistry } from '../data';
 import { auth } from '../lib/firebase';
 import { isPaceAdmin } from '../lib/admin';
 
@@ -93,6 +93,11 @@ interface PaceState {
   unregisterTrack: (trackId: TrackId) => void;
   isRegistered: (trackId: TrackId) => boolean;
 
+  customTracks: Record<string, CustomTrack>;
+  saveCustomTrack: (track: CustomTrack) => void;
+  deleteCustomTrack: (trackId: TrackId) => void;
+  renameCustomTrack: (trackId: TrackId, newTitle: string) => void;
+
   resetTrack: (problemIds: string[]) => void;
   resetAll: () => void;
 
@@ -169,8 +174,16 @@ export const usePaceStore = create<PaceState>()(
             );
           }
 
+          // If this is a custom OA track, also remove it from customTracks
+          const customTracks = { ...(state.customTracks || {}) };
+          if (trackId.startsWith('oa_') && customTracks[trackId]) {
+            delete customTracks[trackId];
+            syncCustomTracksRegistry(customTracks);
+          }
+
           return {
             registeredTracks: nextRegistered,
+            customTracks,
             progress,
             notes,
             bookmarks,
@@ -180,6 +193,53 @@ export const usePaceStore = create<PaceState>()(
       isRegistered: (trackId) => {
         return (get().registeredTracks || []).includes(trackId);
       },
+
+      customTracks: {},
+      saveCustomTrack: (track) =>
+        set((state) => {
+          const customTracks = {
+            ...(state.customTracks || {}),
+            [track.id]: track,
+          };
+          syncCustomTracksRegistry(customTracks);
+          const currentRegistered = state.registeredTracks || [];
+          const nextRegistered = currentRegistered.includes(track.id)
+            ? currentRegistered
+            : [track.id, ...currentRegistered];
+          return {
+            customTracks,
+            registeredTracks: nextRegistered,
+          };
+        }),
+      deleteCustomTrack: (trackId) =>
+        set((state) => {
+          const customTracks = { ...(state.customTracks || {}) };
+          delete customTracks[trackId];
+          syncCustomTracksRegistry(customTracks);
+          const nextRegistered = (state.registeredTracks || []).filter((id) => id !== trackId);
+          return {
+            customTracks,
+            registeredTracks: nextRegistered,
+          };
+        }),
+      renameCustomTrack: (trackId, newTitle) =>
+        set((state) => {
+          const trimmed = newTitle.trim();
+          if (!trimmed) return state;
+          const existing = state.customTracks?.[trackId];
+          if (!existing) return state;
+          const updated: CustomTrack = {
+            ...existing,
+            title: trimmed,
+            shortLabel: trimmed.length > 20 ? trimmed.slice(0, 18) + '…' : trimmed,
+          };
+          const customTracks = {
+            ...(state.customTracks || {}),
+            [trackId]: updated,
+          };
+          syncCustomTracksRegistry(customTracks);
+          return { customTracks };
+        }),
 
       progress: {},
       toggleProblem: (id) =>
@@ -435,6 +495,7 @@ export const usePaceStore = create<PaceState>()(
           // ignore
         }
 
+        syncCustomTracksRegistry({});
         set({
           progress: {},
           notes: {},
@@ -443,11 +504,12 @@ export const usePaceStore = create<PaceState>()(
           tutorChats: {},
           planner: {},
           registeredTracks: [],
+          customTracks: {},
         });
       },
 
       exportSnapshot: () => {
-        const { progress, notes, bookmarks, solveLog, tutorChats, planner, registeredTracks, tutorLanguage } = get();
+        const { progress, notes, bookmarks, solveLog, tutorChats, planner, registeredTracks, customTracks, tutorLanguage } = get();
         return JSON.stringify(
           {
             exportedAt: new Date().toISOString(),
@@ -458,6 +520,7 @@ export const usePaceStore = create<PaceState>()(
             tutorChats: tutorChats || {},
             planner: planner || {},
             registeredTracks: registeredTracks || [],
+            customTracks: customTracks || {},
             tutorLanguage: tutorLanguage || 'python',
           },
           null,
@@ -468,6 +531,8 @@ export const usePaceStore = create<PaceState>()(
         try {
           const parsed = JSON.parse(json);
           if (typeof parsed !== 'object' || parsed === null) return false;
+          const importedCustomTracks = parsed.customTracks && typeof parsed.customTracks === 'object' ? parsed.customTracks : {};
+          syncCustomTracksRegistry(importedCustomTracks);
           set({
             progress: parsed.progress ?? {},
             notes: parsed.notes ?? {},
@@ -476,6 +541,7 @@ export const usePaceStore = create<PaceState>()(
             tutorChats: parsed.tutorChats ?? {},
             planner: parsed.planner ?? {},
             registeredTracks: Array.isArray(parsed.registeredTracks) ? parsed.registeredTracks : [],
+            customTracks: importedCustomTracks,
             tutorLanguage: parsed.tutorLanguage ?? 'python',
           });
           return true;
@@ -496,8 +562,15 @@ export const usePaceStore = create<PaceState>()(
         solveLog: state.solveLog,
         planner: state.planner || {},
         registeredTracks: state.registeredTracks || [],
+        customTracks: state.customTracks || {},
       }),
       merge: (persistedState: any, currentState: PaceState) => {
+        const customTracks =
+          persistedState?.customTracks && typeof persistedState.customTracks === 'object'
+            ? persistedState.customTracks
+            : {};
+        syncCustomTracksRegistry(customTracks);
+
         if (shouldResetProgressOnLoad) {
           return {
             ...currentState,
@@ -510,6 +583,7 @@ export const usePaceStore = create<PaceState>()(
             solveLog: {},
             planner: persistedState?.planner ?? {},
             registeredTracks: [],
+            customTracks: {},
           };
         }
         return {
@@ -526,6 +600,7 @@ export const usePaceStore = create<PaceState>()(
           registeredTracks: Array.isArray(persistedState?.registeredTracks)
             ? persistedState.registeredTracks
             : [],
+          customTracks,
         };
       },
     }
